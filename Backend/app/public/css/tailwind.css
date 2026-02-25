@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components{
+    .input_group{
+        @apply flex flex-col mb-4;
+    }  
+    /* .input_label{
+        @apply font-semibold block mb-2 text-sm  text-black dark:text-black;
+    }  */
+    .input_label{
+        @apply block mb-2 text-sm font-medium text-black dark:text-black;
+    }
+    .form_input{
+        @apply block min-w-0 grow bg-gray-200 py-1.5 pr-3 pl-1 rounded-md text-base text-black placeholder:text-gray-500 focus:outline-none sm:text-sm/6;
+    }
+    .button_primary{
+        @apply block w-full rounded-md bg-blue-600 py-2 px-4 text-white hover:bg-blue-700;
+    }
+    .button_neutral{
+        @apply block w-full rounded-md bg-gray-600 py-2 px-4 text-white hover:bg-gray-700;
+    }
+    .button_disabled{
+        @apply block w-full border border-[#2C3233] rounded-md  py-2 px-4 text-white hover:border-gray-400 ;
+    }
+    .bookcard_body{
+        @apply w-60 flex flex-col flex-wrap rounded-md bg-gray-100  dark:bg-gray-700 h-96 shadow-lg;
+    }
+    .bookcard_description{
+        @apply flex flex-row justify-center mt-5 overflow-scroll h-44 ;
+
+    }
+    .bookcard_description::-webkit-scrollbar{
+        @apply hidden; 
+    }
+    .book-modal-description{
+        @apply  mt-4  border border-dashed  border-[#2C3233] rounded-md p-4 h-min max-h-[25vh] overflow-scroll;
+    }
+    .book-modal-description::-webkit-scrollbar{
+        @apply hidden; 
+    }
+    #popupOverlay {
+        
+    display: none;
+    position: fixed;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    justify-content: center;
+    align-items: center;
+    }
+    #popupContainer {
+    position: absolute;
+    top: 0;
+    left: 10%;
+    width: 75vw;
+    height: 75vh;
+    }
+
+ /* Toast Notifications Styles */
+    .toast {
+  @apply pointer-events-auto flex items-start gap-3
+    rounded-lg border px-4 py-3 shadow-lg
+    bg-white text-black border-gray-200
+    dark:bg-[#141414] dark:text-white dark:border-[#2C3233]
+    transition-all duration-300 ease-out;
+}
+
+.toast-success {
+  @apply border-green-500/40 bg-green-50 dark:bg-green-900/20;
+}
+
+.toast-error {
+  @apply border-red-500/40 bg-red-50 dark:bg-red-900/20;
+}
+
+.toast-info {
+  @apply border-blue-500/40 bg-blue-50 dark:bg-blue-900/20;
+}
+
+.toast-warning {
+  @apply border-yellow-500/40 bg-yellow-50 dark:bg-yellow-900/20;
+}
+
+.toast-enter {
+  @apply opacity-0 -translate-y-2;
+}
+
+.toast-enter-active {
+  @apply opacity-100 translate-y-0;
+}
+.hover-color{
+    @apply hover:bg-[#CBCBCB] dark:hover:bg-[#222222];
+}
+.bg-colors{
+    @apply bg-[#F2F0EF] dark:bg-[#0F0F0F];
+}
+.text-colors{
+    @apply text-black dark:text-white;
+}
+#spinner {
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+#spinner:not(.hidden) {
+  display: flex;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+select,
+select::picker(select) {
+  appearance: base-select;
+  -webkit-appearance: base-select;
+  -moz-appearance: base-select;
+  @apply bg-colors text-colors border border-[#2C3233] rounded-xl focus:outline-none focus:ring-0 focus:border-[#2C3233];
+}
+.filter-button-active{
+    @apply bg-[#d5d5d5] dark:bg-[#0F0F0F] rounded-full;
+}
+.ul-wrap{
+    @apply w-fit border border-gray-300 relative  rounded-full ;
+    box-shadow: inset 10px 0 10px black;
+}
+
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+}

@@ -1,0 +1,81 @@
+
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+            - "${BACKEND_PORT:-80}:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+            - ./app:/app
+    php:
+        build:
+            context: .
+            dockerfile: PHP.Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - ./app:/app
+    mysql:
+        image: mariadb:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD:-secret123}'
+            MYSQL_USER: '${MYSQL_USER:-developer}'
+            MYSQL_PASSWORD: '${MYSQL_PASSWORD:-secret123}'
+            MYSQL_DATABASE: '${MYSQL_DATABASE:-developmentdb}'
+        volumes:
+            - mysqldata:/var/lib/mysql
+        ports:
+            - "${MYSQL_PORT:-3306}:3306"
+    phpmyadmin:
+        image: phpmyadmin:latest
+        ports:
+            - "${PHPMYADMIN_PORT:-8080}:80"
+        environment:
+            - PMA_HOST=mysql
+volumes:
+    mysqldata: {}
+
+
+# version: '3'
+
+# services:
+#   nginx:
+#     image: nginx:latest
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf
+#       - ./app:/app
+#     depends_on:
+#       - php
+
+#   php:
+#     build:
+#       context: .
+#       dockerfile: PHP.Dockerfile
+#     volumes:
+#       - ./app:/app
+#     depends_on:
+#       - mysql
+
+#   mysql:
+#     image: mariadb:latest
+#     environment:
+#       MYSQL_ROOT_PASSWORD: 'secret123'
+#       MYSQL_USER: 'developer'
+#       MYSQL_PASSWORD: 'secret123'
+#       MYSQL_DATABASE: 'developmentdb'
+#     volumes:
+#       - mysqldata:/var/lib/mysql
+#     # ❌ no ports: line here (no external DB access!)
+
+#   phpmyadmin:
+#     image: phpmyadmin:latest
+#     environment:
+#       PMA_HOST: mysql
+#     depends_on:
+#       - mysql
+#     # ❌ no ports: line here either (internal only)
+
+# volumes:
+#   mysqldata: {}
