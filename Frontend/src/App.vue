@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
-import MainNav from '@/components/MainNav.vue'
-import MainFooter from '@/components/MainFooter.vue'
+import MainNav from '@/components/organisms/MainNav.vue'
+import MainFooter from '@/components/organisms/MainFooter.vue'
 import { useAuth } from '@/composables/useAuth.js'
 
 const { fetchLoggedInUser } = useAuth()

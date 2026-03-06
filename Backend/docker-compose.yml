@@ -29,9 +29,32 @@ services:
     phpmyadmin:
         image: phpmyadmin:latest
         ports:
-            - "${PHPMYADMIN_PORT:-8080}:80"
+            # Change the left side from 8080 to 8081
+            - "${PHPMYADMIN_PORT:-8081}:80" 
         environment:
             - PMA_HOST=mysql
+        depends_on:
+            - mysql
+        
+    # 🟢 NEW: The Redis Message Broker
+    redis:
+        image: redis:alpine
+        ports:
+            - "${REDIS_PORT:-6379}:6379"
+
+    # 🟢 NEW: The Node.js WebSocket Server
+    websocket:
+        build:
+            context: ./websocket-server
+            dockerfile: Dockerfile
+        ports:
+            - "${WS_PORT:-6001}:8080"
+        depends_on:
+            - redis
+        environment:
+            # This tells Node.js how to find the Redis container
+            - REDIS_URL=redis://redis:6379
+
 volumes:
     mysqldata: {}
 

@@ -11,6 +11,7 @@ use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
 use App\Models\UserRole;
 use App\Repositories\BookAPI;
+use Predis\Client as RedisClient;
 
 class BookController extends Controller
 {
@@ -18,12 +19,18 @@ class BookController extends Controller
      private UserRepository $userRepository;
     private BookService $bookService;
     private BookRepository $bookRepository;
+    private RedisClient $redisClient;
     
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService($this->userRepository);
         $this->bookRepository = new BookRepository();
         $this->bookService = new BookService($this->bookRepository);
+        $this->redisClient = new RedisClient([
+            'scheme' => getenv('REDIS_SCHEME'),
+            'host'   => getenv('REDIS_HOST'),
+            'port'   => (int)(getenv('REDIS_PORT'))
+        ]);
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
@@ -182,6 +189,8 @@ class BookController extends Controller
             if ($hasNextPage) {
                 array_pop($books); 
             }
+            
+            $this->redisClient->publish('book-search', json_encode(['message' => 'Books searched', 'test' => getenv('REDIS_HOST')]));
             
             echo json_encode(['success' => true, 'books' => $books, 'hasNextPage' => $hasNextPage, 'currentPage' => $page]);
             

@@ -1,0 +1,17 @@
+{
+  "name": "bookswap-ws",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node watch server.js"
+  },
+  "dependencies": {
+    "redis": "^4.6.7",
+    "ws": "^8.13.0",
+    "wscat": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "@types/ws": "^8.18.1"
+  }
+}

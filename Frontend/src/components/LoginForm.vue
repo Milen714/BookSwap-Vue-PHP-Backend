@@ -2,8 +2,8 @@
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 import router from '@/Router';
 import { useRoute } from 'vue-router';
-import ErrorCard from '@/components/ErrorCard.vue';
-import SuccessCard from '@/components/SuccessCard.vue';
+import ErrorCard from '@/components/molecules/ErrorCard.vue';
+import SuccessCard from '@/components/molecules/SuccessCard.vue';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
