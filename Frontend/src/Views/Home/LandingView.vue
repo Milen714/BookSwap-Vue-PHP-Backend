@@ -3,12 +3,17 @@ import HeroSection from '@/components/HeroSection.vue';
 import BookPostCard from '@/components/BookPostCard.vue'
 import BookDetailsModal from '@/components/BookDetailsModal.vue'
 import BookRequestForm from '@/components/BookRequestForm.vue'
-import { ref, onMounted } from 'vue';
+import Pagination from '@/components/Pagination.vue'
+import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useAuth } from '@/composables/useAuth.js'
 
+const route = useRoute();
 const { authState } = useAuth()
 const books = ref([]);
+const hasNextPage = ref(false);
+const currentPage = ref(1);
 const selectedBook = ref(null)
 const isBookModalOpen = ref(false)
 const showBookDetails = ref(false)
@@ -35,12 +40,16 @@ const handleRequestBook = (book) => {
   
 }
 
-const fetchBooks = async () => {
+const fetchBooks = async (genre = '', search = '', page = 1) => {
   try {
-    const response = await axios.get(`${apiBaseUrl}/getAllBooks`, { withCredentials: true });
+    const response = await axios.get(`${apiBaseUrl}/getAllBooks?genre=${encodeURIComponent(genre)}&search=${encodeURIComponent(search)}&page=${page}`, { withCredentials: true });
 
     if (response.data?.success && Array.isArray(response.data.books)) {
       books.value = response.data.books;
+      console.log('Has next page:', response.data.hasNextPage);
+      console.log('Current page:', response.data.currentPage);
+      currentPage.value = response.data.currentPage || 1;
+      hasNextPage.value = response.data.hasNextPage || false;
     } else {
       books.value = [sampleBook];
     }
@@ -51,6 +60,14 @@ const fetchBooks = async () => {
     books.value = [sampleBook];
   }
 };
+
+const handlePageChange = watch(() => route.query, (newQuery) => {
+  const genre = newQuery.genre || '';
+  const search = newQuery.search || '';
+  const page = parseInt(newQuery.page) || 1;
+  fetchBooks(genre, search, page);
+  currentPage.value = page;
+}, { immediate: true });
 
 onMounted(() => {
   fetchBooks();
@@ -93,4 +110,9 @@ onMounted(() => {
       />
     </div>
   </section>
+  <Pagination
+    :has-next-page="hasNextPage"
+    :current-page="currentPage"
+    @page-change="handlePageChange"
+  />
 </template>

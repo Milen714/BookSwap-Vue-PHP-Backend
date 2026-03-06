@@ -51,9 +51,10 @@ class BookRepository extends Repository implements IBookRepository {
             //$book->condition = $data['book_condition'] ?? '';
         return $book;
     }
-    public function getAllBooks(?string $genreFilter, ?string $generalFilter): array {
+    public function getAllBooks(?string $genreFilter, ?string $generalFilter, ?int $limit = null, ?int $offset = null): array {
         $genre = '';
         $general = '';
+        $pagination = '';
        
         try {
             $pdo = $this->connect();
@@ -64,10 +65,13 @@ class BookRepository extends Repository implements IBookRepository {
             if ($generalFilter !== null && trim($generalFilter) !== '') {
                 $general = ' AND (B.title LIKE :general OR B.author LIKE :general OR B.isbn LIKE :general)';
             }
+            if ($limit !== null && $offset !== null) {
+                $pagination .= ' LIMIT :limit OFFSET :offset';
+            }
             
             $query = 'SELECT U.id as user_id, U.fname, U.lname, U.email, U.state, B.*  
             FROM users U JOIN books B ON U.id = B.shared_by 
-            WHERE B.is_active = 1' . $genre . $general;   
+            WHERE B.is_active = 1' . $genre . $general . $pagination;   
             $stmt = $pdo->prepare($query);
             
             if ($genreFilter !== null && trim($genreFilter) !== '') {
@@ -75,6 +79,10 @@ class BookRepository extends Repository implements IBookRepository {
             }
             if ($generalFilter !== null && trim($generalFilter) !== '') {
                 $stmt->bindValue(':general', '%' . trim($generalFilter) . '%');
+            }
+            if ($limit !== null && $offset !== null) {
+                $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+                $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             }
             $stmt->execute();
             $booksData = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -1,0 +1,473 @@
+{
+  "info": {
+    "_postman_id": "bookswap-api-collection",
+    "name": "BookSwap API",
+    "description": "API collection for BookSwap application - Book exchange and management system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "Login with email and password. Returns user data."
+          },
+          "response": []
+        },
+        {
+          "name": "Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"password123\",\n    \"fname\": \"John\",\n    \"lname\": \"Doe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/signUp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "signUp"
+              ]
+            },
+            "description": "Register a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Logged In User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getLoggedInUser",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getLoggedInUser"
+              ]
+            },
+            "description": "Get the currently authenticated user information"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "Get All Books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getAllBooks?genre=&search=",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getAllBooks"
+              ],
+              "query": [
+                {
+                  "key": "genre",
+                  "value": "",
+                  "description": "Filter books by genre (optional)"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search books by title, author, or ISBN (optional)"
+                }
+              ]
+            },
+            "description": "Get all available books with optional filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Book Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getBookDetails?id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getBookDetails"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Book ID"
+                }
+              ]
+            },
+            "description": "Get details of a specific book by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Fetch Book Preview",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"isbn\": \"9780060930357\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/fetchBookPreview",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "fetchBookPreview"
+              ]
+            },
+            "description": "Get book preview/details from Google Books API using ISBN"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get Profile Address",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getProfileAddress/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getProfileAddress",
+                "1"
+              ]
+            },
+            "description": "Get user's address information. Requires authentication and matching user ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Swap Tokens",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getUserTokens",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getUserTokens"
+              ]
+            },
+            "description": "Get the currently logged-in user's swap token balance. Requires authentication."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Book Requests",
+      "item": [
+        {
+          "name": "Create Book Swap Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookId\": 1,\n    \"ownerId\": 2,\n    \"requesterId\": 3,\n    \"street\": \"123 Main St\",\n    \"zip\": \"12345\",\n    \"state\": \"CA\",\n    \"country\": \"USA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/createBookRequest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "createBookRequest"
+              ]
+            },
+            "description": "Create a new book swap request. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Book Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getMyBookRequests?id=1&status=all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getMyBookRequests"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "User ID"
+                },
+                {
+                  "key": "status",
+                  "value": "all",
+                  "description": "Filter by status: all, inProgress, completed"
+                }
+              ]
+            },
+            "description": "Get all book requests for the logged-in user. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Book Listings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getMyBookListings?id=1&status=all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getMyBookListings"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "User ID"
+                },
+                {
+                  "key": "status",
+                  "value": "all",
+                  "description": "Filter by status: all, listed, completed, takenDown"
+                }
+              ]
+            },
+            "description": "Get all book listings posted by the user. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Request Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"requestId\": 1,\n    \"status\": \"completed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/updateRequest",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateRequest"
+              ]
+            },
+            "description": "Update the status of a book swap request. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Book Swap Statuses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/getBookSwapStatusses",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getBookSwapStatusses"
+              ]
+            },
+            "description": "Get all available book swap status options"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "item": [
+        {
+          "name": "Create Checkout Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/create-checkout-session",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "create-checkout-session"
+              ]
+            },
+            "description": "Create a Stripe checkout session for book swap payment. Requires authentication and valid book request in session."
+          },
+          "response": []
+        },
+        {
+          "name": "Check Checkout Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"session_id\": \"cs_live_xxx\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/checkoutStatus",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "checkoutStatus"
+              ]
+            },
+            "description": "Check the status of a Stripe checkout session"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost",
+      "type": "string",
+      "description": "Base URL for the BookSwap API"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string",
+      "description": "Logged-in user ID. Update this after authentication."
+    },
+    {
+      "key": "book_id",
+      "value": "1",
+      "type": "string",
+      "description": "ID of a book to reference in requests"
+    },
+    {
+      "key": "request_id",
+      "value": "1",
+      "type": "string",
+      "description": "ID of a book swap request"
+    }
+  ]
+}

@@ -172,10 +172,19 @@ class BookController extends Controller
         header('Content-Type: application/json');
         $genreFilter = $_GET['genre'] ?? null;
         $generalFilter = $_GET['search'] ?? null;
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : null;
 
         try {
-            $books = $this->bookService->getAllBooks($genreFilter, $generalFilter);
-            echo json_encode(['success' => true, 'books' => $books]);
+            $books = $this->bookService->getAllBooks($genreFilter, $generalFilter, $page);
+            $hasNextPage = count($books) > BookService::ITEMS_PER_PAGE - 1;
+
+            // Remove the extra book used to check for next page
+            if ($hasNextPage) {
+                array_pop($books); 
+            }
+            
+            echo json_encode(['success' => true, 'books' => $books, 'hasNextPage' => $hasNextPage, 'currentPage' => $page]);
+            
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => 'Error fetching books: ' . $e->getMessage()]);

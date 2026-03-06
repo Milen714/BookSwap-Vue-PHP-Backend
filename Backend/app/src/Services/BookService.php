@@ -5,18 +5,33 @@ use App\Repositories\Interfaces\IBookRepository;
 use App\Models\Book;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->safeLoad();
+
 class BookService implements IBookService {
     private IBookRepository $bookRepository;
     private Client $httpClient;
     private string $apiBaseUrl = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
+    public const ITEMS_PER_PAGE = 10 + 1; // +1 to check if there's a next page
 
     public function __construct(IBookRepository $bookRepository) {
         $this->bookRepository = $bookRepository;
         $this->httpClient = new Client();
     }
 
-    public function getAllBooks(?string $genreFilter, ?string $generalFilter): array {
-        return $this->bookRepository->getAllBooks($genreFilter, $generalFilter);
+    public function getAllBooks(?string $genreFilter, ?string $generalFilter, ?int $page = null): array {
+        // If page is null return all books
+        if($page === null){
+            return $this->bookRepository->getAllBooks($genreFilter, $generalFilter);
+        }
+        // Page number valideation
+        if($page < 1){
+            $page = 1;
+        }
+
+        $offset = $page !== null ? ($page - 1) * (self::ITEMS_PER_PAGE - 1) : null;
+
+        return $this->bookRepository->getAllBooks($genreFilter, $generalFilter, self::ITEMS_PER_PAGE, $offset);
     }
 
     public function getBookById(int $id): ?Book {
