@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth.js'
 import BookDetailsHeader from '@/components/BookDetailsHeader.vue'
 import ModalManual from '@/components/organisms/ModalManual.vue'
@@ -13,10 +13,11 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['close', 'request-book'])
+const emit = defineEmits(['close', 'request-book', 'open-chat'])
 
 const { authState } = useAuth()
 const route = useRoute()
+const router = useRouter()
 
 const isRequesteeDetailsView = computed(() => route.path.includes('/requesteeDetails'))
 const isLoggedIn = computed(() => !!authState.user)
@@ -35,6 +36,11 @@ const handleRequestBook = () => {
   emit('request-book', props.book)
 }
 
+const openChat = (sharedBy) => {
+  router.push(`/chat?recipientId=${sharedBy.id}`)
+  console.log('Open chat with owner', sharedBy)
+}
+
 const closeModal = () => {
   emit('close')
 }
@@ -44,7 +50,7 @@ const closeModal = () => {
   <div class="book-modal mx-auto mt-10 flex w-[90%] flex-col rounded-md bg-colors p-6 shadow-md md:w-3/4">
     <div id="bookOverview" class="StepTwo flex w-full flex-col rounded-md shadow-md">
       <div class="mt-6 flex flex-col gap-4 border-b-2 border-[#2C3233] p-6">
-        <BookDetailsHeader :book="book" :isLoggedIn="isLoggedIn" />
+        <BookDetailsHeader :book="book" :isLoggedIn="isLoggedIn" @open-chat="openChat" />
 
         <Description :bookDescription="bookDescription" title="Book overview" />
 

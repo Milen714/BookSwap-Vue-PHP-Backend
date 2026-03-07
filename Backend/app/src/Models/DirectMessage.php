@@ -14,9 +14,8 @@ class DirectMessage
 
     public static function fromArray(array $data , int $senderId): DirectMessage {
         $dm = new DirectMessage();
-        $dm->id = $data['id'] ?? null;
         $dm->senderId = $senderId;
-        $dm->recipientId = $data['recipient_id'] ?? null;
+        $dm->recipientId = $data['recipientId'] ?? null;
         $dm->message = $data['message'] ?? null;
         $dm->is_read = isset($data['is_read']) ? (bool)$data['is_read'] : false;
         $dm->created_at = !empty($data['created_at']) ? new \DateTime($data['created_at']) : new \DateTime();

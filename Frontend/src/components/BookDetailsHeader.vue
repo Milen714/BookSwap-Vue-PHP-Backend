@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-defineProps({
+const emit = defineEmits(['open-chat'])
+const props = defineProps({
     book: {
         type: Object,
         required: true
@@ -10,6 +11,11 @@ defineProps({
         required: true
     }
 })
+
+const openChat = () => {
+  emit('open-chat', props.book.shared_by)
+  console.log('from child component, open chat with owner', props.book.shared_by)
+}
 </script>
 
 <template>
@@ -35,7 +41,7 @@ defineProps({
                 {{ book?.author || 'Unknown author' }}
               </span>
 
-              <div class="flex flex-col items-center gap-4">
+              <div class="flex flex-col items-start gap-4">
                 <span class="text-md font-medium text-blue-600">
                   Shared by: {{ book?.shared_by?.fname || '' }} {{ book?.shared_by?.lname || '' }}
                 </span>
@@ -55,6 +61,12 @@ defineProps({
                 <li><strong>Page Count:</strong> {{ book?.page_count || '-' }}</li>
                 <li><strong>Owner's Location:</strong> {{ book?.shared_by?.state || '-' }}</li>
               </ul>
+              <button 
+              v-if="isLoggedIn"
+              class="button_primary mt-2" 
+              type="button"
+              @click="openChat" 
+              >Message Owner</button>
             </div>
           </div>
         </div>
