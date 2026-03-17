@@ -9,7 +9,6 @@ use App\Services\AuthService;
 class RoleMiddleware{
     public function __construct(public AuthService $authService){}
     public function check(object $controller, string $methodName){
-        header('Content-Type: application/json');
         try {
         $reflectionMethod = new ReflectionMethod($controller, $methodName);
 
@@ -22,6 +21,7 @@ class RoleMiddleware{
             if (!$user || !in_array($user->role, $requiredRoles)) {
                 //$this->authService->logout("You do not have permission to access this resource. You have been logged out.");
                 http_response_code(403);
+                header('Content-Type: application/json');
                 echo json_encode(['error' => 'You do not have permission to access this resource.']);
                 exit();
             }
@@ -30,6 +30,7 @@ class RoleMiddleware{
         catch (\ReflectionException $e) {
         // Handle the exception if the method does not exist
         http_response_code(500);
+        header('Content-Type: application/json');
         echo json_encode(['error' => 'Internal Server Error: ' . $e->getMessage()]);  
 
     }
