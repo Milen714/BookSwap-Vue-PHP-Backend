@@ -1,6 +1,5 @@
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 import { reactive, computed } from 'vue'
-import axios from 'axios'
+import axios from '../utils/axios.js'
 
 const authState = reactive({
   isLoggedIn: false,
@@ -51,11 +50,7 @@ async function fetchLoggedInUser() {
 
   authState.loading = true;
   try {
-    const response = await axios.get(`${apiBaseUrl}/getLoggedInUser`, {
-      headers: {
-        Authorization: `Bearer ${authState.token}`,
-      },
-    });
+    const response = await axios.get(`/getLoggedInUser`);
     
     if (response.data.success) {
       authState.isLoggedIn = true;

@@ -1,7 +1,5 @@
 import { ref } from 'vue'
-import axios from 'axios'
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
+import axios from '../utils/axios.js'
 
 const isDark = ref(false)
 let initialized = false
@@ -51,7 +49,7 @@ const toggleTheme = async () => {
   try {
     const theme = isDark.value ? 'dark' : 'light'
     console.log('Saving theme to backend:', theme)
-    await axios.post(`${apiBaseUrl}/setTheme`, 
+    await axios.post(`/setTheme`, 
       new URLSearchParams({ theme }).toString(),
       {
         headers: {

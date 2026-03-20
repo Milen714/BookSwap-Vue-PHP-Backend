@@ -25,7 +25,7 @@ class Secrets
 
     public static function init(): void
     {
-        self::$secretKey = getenv('SECRET_KEY') ?: $_ENV['SECRET_KEY'] ?? 'your-secret-key-change-this-in-production';
+        self::$secretKey = getenv('JWT_SECRET_KEY') ?: $_ENV['JWT_SECRET_KEY'] ?? 'default_secret_key';
         self::$domain = getenv('DOMAIN_URL') ?: $_ENV['DOMAIN_URL'] ?? 'http://localhost';
         self::$tokenExpirationHours = (int)(getenv('TOKEN_EXPIRATION_HOURS') ?: $_ENV['TOKEN_EXPIRATION_HOURS'] ?? 24);
         self::$stripeSecretKey = getenv('STRIPE_SECRET_KEY') ?: $_ENV['STRIPE_SECRET_KEY'] ?? '';

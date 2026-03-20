@@ -16,7 +16,7 @@ class UserController extends Controller
     
     public function __construct() {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
     }
 
     public function profile($vars = [])
@@ -34,12 +34,8 @@ class UserController extends Controller
     public function getProfileAddress($vars = [])
     {
         try{
-        $userId = $vars['id'] ?? null;
-        if (!$userId || $_SESSION['loggedInUser']->id != $userId) {
-            $this->sendErrorResponse(['error' => 'Nice try! Unauthorized access.'], 401);
-            
-            return;
-        }
+        $userId = JWTMiddleware::getUserIdFromToken();
+        
         $user = $this->userService->getUserById($userId);
         $address = [
             'address' => $user->address,
@@ -63,6 +59,38 @@ class UserController extends Controller
             $this->sendSuccessResponse(['success' => true, 'tokens' => $token], 200);
         } catch (\Exception $e) {
             $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching user tokens.'], 401);
+        }
+    }
+
+    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    public function getUserInfo($vars = [])
+    {
+        header('Content-Type: application/json');
+        try {
+            $userId = $_GET['userId'] ?? null;
+            if (!$userId) {
+                $this->sendErrorResponse(['error' => 'User ID is required'], 400);
+                return;
+            }
+
+            $user = $this->userService->getUserById((int)$userId);
+            if (!$user) {
+                $this->sendErrorResponse(['error' => 'User not found'], 404);
+                return;
+            }
+
+            $this->sendSuccessResponse([
+                'success' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'firstName' => $user->fname,
+                    'lastName' => $user->lname,
+                    'email' => $user->email,
+                    'profilePic' => $user->profilePic ?? null
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            $this->sendErrorResponse(['error' => 'An error occurred while fetching user info.'], 500);
         }
     }
 }

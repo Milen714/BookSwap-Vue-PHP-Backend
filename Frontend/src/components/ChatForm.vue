@@ -1,9 +1,9 @@
 <script setup>
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
-import axios from 'axios'
+import { useChatStore } from '@/stores/chat.js'
 
+const chatStore = useChatStore()
 const message = ref('')
 
 const props = defineProps({
@@ -17,16 +17,15 @@ const props = defineProps({
     },
 })
 
+const emit = defineEmits(['messageSent'])
+
 const sendMessage = async () => {
     if (!message.value.trim()) return;
 
     try {
-        await axios.post(`${apiBaseUrl}/sendDirectMessage`, {
-            recipientId: props.recipientId,
-            senderId: props.senderId,
-            message: message.value
-        }, { withCredentials: true });
-        message.value = '';
+        await chatStore.sendMessage(props.senderId, props.recipientId, message.value)
+        message.value = ''
+        emit('messageSent')
     } catch (error) {
         console.error('Error sending message:', error);
     }

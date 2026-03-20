@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const { createClient } = require('redis');
+const jwt = require('jsonwebtoken');
 const url = require('url');
 
 const PORT = process.env.WS_INTERNAL_PORT || 8080;
@@ -44,9 +45,27 @@ async function start() {
 
 start();
 
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'key_for_jwt_signing_should_be_secure_and_env_var';
+
 wss.on('connection', (ws, request) => {
     const parameters = url.parse(request.url, true).query;
-    
+    const token = parameters.token;
+
+    if (!token){
+        console.log('Connection rejected: No token');
+        ws.close(4001, 'Authentication token required');
+        return;
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        ws.userId = decoded.userId;
+    } catch (error) {
+        console.log('Connection rejected: Invalid token');
+        ws.close(4001, 'Invalid authentication token');
+        return;
+    }
+
     // 2. Tag this specific socket connection with their ID
     if (parameters.userId) {
         ws.userId = parseInt(parameters.userId);

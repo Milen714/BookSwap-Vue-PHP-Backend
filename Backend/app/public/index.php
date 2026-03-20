@@ -57,6 +57,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/bookPostConfirmation', ['App\Controllers\BookController', 'bookPostConfirmation']);
     $r->addRoute('GET', '/bookDetails/{id}', ['App\Controllers\BookController', 'viewBookDetails']);
     $r->addRoute('GET', '/getProfileAddress/{id}', ['App\Controllers\UserController', 'getProfileAddress']);
+    $r->addRoute('GET', '/getUserInfo', ['App\Controllers\UserController', 'getUserInfo']);
     $r->addRoute('POST', '/createBookRequest', ['App\Controllers\BookRequestController', 'requestBookSwap']);
     $r->addRoute('GET', '/myRequests/{id}', ['App\Controllers\BookRequestController', 'viewBookMyRequests']);
     $r->addRoute('GET', '/myListings/{id}', ['App\Controllers\BookRequestController', 'viewMyListings']);
@@ -84,6 +85,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
 
     // Chat routes
     $r->addRoute('GET', '/getChatMessages', ['App\Controllers\ChatController', 'getChatMessages']);
+    $r->addRoute('GET', '/getConversations', ['App\Controllers\ChatController', 'getConversations']);
     $r->addRoute('POST', '/sendDirectMessage', ['App\Controllers\ChatController', 'sendDirectMessage']);
 });
 

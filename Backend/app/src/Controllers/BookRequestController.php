@@ -151,7 +151,6 @@ class BookRequestController extends Controller{
     }
      #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyBookRequests($vars = []){
-        header('Content-Type: application/json');
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
             $filterStatus = $_GET['status'] ?? 'all';
@@ -182,75 +181,6 @@ class BookRequestController extends Controller{
         }
     }
 
-    public function viewRequesteeDetails($vars = [])
-    {
-        $requestId = $vars['requestId'] ?? null;
-        $user = $_SESSION['loggedInUser'];
-        if ($requestId === null) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'Request ID is required.'], 400);
-             return;
-        }
-        $request = $this->bookRequestService->getRequestByUserIdAndRequestId($user, (int)$requestId, true, false);
-        if ($request->requester->id !== $user->id) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to requestee details.'], 403);
-        }
-        $book = $request->book;
-        //require_once '/app/Views/BookRequest/RequesteeDetailsModal.php';
-        require_once '/app/Views/Book/BookDetailsModal.php';
-    }
-
-     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function viewMySwapRequests($vars = []){
-        $userId = $vars['id'] ?? null;
-        
-        
-        if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            $this->authService->logout('Unauthorized access to book requests.');
-        }
-        $user = $this->userService->getUserById($userId);
-        $bookRequests = $this->bookRequestService->getRequestsByUserId($user, false, true, null);
-        $this->view('BookRequest/MyRequests', ['message' => "My Book Requests", 'title' => 'My Requests Page', 'user' => $user, 'bookRequests' => $bookRequests] );
-    }
-     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function viewMyListings($vars = []){
-        $userId = $vars['id'] ?? null;
-        $filterStatus = $_GET['status'] ?? 'all';
-        switch($filterStatus){
-            case 'listed':
-                $includeClosed = false;
-                $statusFilter = BookSwapStatus::ALL;
-                break;
-            case 'completed':
-                $includeClosed = true;
-                $statusFilter = BookSwapStatus::COMPLETED;
-                break;
-            case 'takenDown':
-                $includeClosed = true;
-                $statusFilter = BookSwapStatus::TAKENDOWN;
-                break;
-            case 'all':
-                $includeClosed = true;
-                $statusFilter = null;
-            default:
-                $includeClosed = true;
-                $statusFilter = null;
-                break;
-        }
-        try{
-        
-        if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            $this->authService->logout('Unauthorized access to book requests.');
-        }
-        $user = $this->userService->getUserById($userId);
-        //throw new \Exception("Test exception for empty requests.". $user->id . "-" . $user->fname);
-        $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, true, $statusFilter);
-        $this->view('BookRequest/MyListings', ['message' => "My Book Listings", 'title' => 'My Listings Page', 'user' => $user, 'bookRequests' => $bookRequests] );
-        }catch(\Exception $e){
-            http_response_code(400);
-            echo "Error: " . $e->getMessage();
-
-        }
-    }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyListings($vars = []){
         header('Content-Type: application/json');
@@ -313,9 +243,11 @@ class BookRequestController extends Controller{
             $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
         }
     }
+    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function updateRequestStatus($vars = []){
 
         try {
+            $userId = JWTMiddleware::getUserIdFromToken();
             $data = $this->getPostData();
 
              if (!$data) {
@@ -337,10 +269,10 @@ class BookRequestController extends Controller{
             
 
             $bookRequest->status = $newStatus;
-            if ($bookRequest->status === BookSwapStatus::TAKENDOWN && $bookRequest->owner->id === $_SESSION['loggedInUser']->id) {
+            if ($bookRequest->status === BookSwapStatus::TAKENDOWN && $bookRequest->owner->id === $userId) {
                 $this->bookService->deactivateBookPost($bookRequest->book->id);
             }
-            elseif ($bookRequest->status === BookSwapStatus::TAKENDOWN &&$bookRequest->owner->id !== $_SESSION['loggedInUser']->id) {
+            elseif ($bookRequest->status === BookSwapStatus::TAKENDOWN &&$bookRequest->owner->id !== $userId) {
                 $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized to take down the book post.'], 403);
             }
             if ($bookRequest->status === BookSwapStatus::COMPLETED) {

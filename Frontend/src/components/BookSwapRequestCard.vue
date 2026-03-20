@@ -1,6 +1,8 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import axios from '@/utils/axios.js'
 import { useAuthStore } from '@/stores/auth.js'
+import { useBookRequestsStore } from '@/stores/bookRequests.js'
 import BookPostCard from '@/components/BookPostCard.vue'
 
 const props = defineProps({
@@ -14,9 +16,13 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['status-update', 'pay-shipping', 'cancel-request', 'report-issue', 'takedown-post'])
+const emit = defineEmits(['pay-shipping', 'cancel-request', 'report-issue'])
 
 const authStore = useAuthStore()
+const bookRequestsStore = useBookRequestsStore()
+const isUpdating = ref(false)
+const errorMessage = ref(null)
+const successMessage = ref(null)
 
 const isAlternate = computed(() => {
   return props.reverse
@@ -102,15 +108,33 @@ const statusDescription = computed(() => {
   return ''
 })
 
-const handleStatusUpdate = (newStatus) => {
-  emit('status-update', {
-    requestId: props.request.id,
-    newStatus,
-  })
+const handleStatusUpdate = async (newStatus) => {
+  errorMessage.value = null
+  successMessage.value = null
+  
+  // Authorization check for TAKENDOWN status
+  if (newStatus === 'TAKENDOWN' && !isOwner.value) {
+    errorMessage.value = 'Unauthorized to take down the book post.'
+    return
+  }
+
+  isUpdating.value = true
+  try {
+    await bookRequestsStore.updateRequestStatus(props.request.id, newStatus)
+    successMessage.value = 'Status updated successfully!'
+    setTimeout(() => {
+      successMessage.value = null
+    }, 3000)
+  } catch (err) {
+    console.error('Error updating status:', err)
+    errorMessage.value = err.response?.data?.error || err.message || 'Failed to update status'
+  } finally {
+    isUpdating.value = false
+  }
 }
 
-const handleTakedownPost = () => {
-  emit('takedown-post', props.request.id)
+const handleTakedownPost = async () => {
+  await handleStatusUpdate('TAKENDOWN')
 }
 
 const handlePayShipping = () => {
@@ -140,6 +164,16 @@ const handleReportIssue = () => {
     <!-- Request Details -->
     <div class="flex flex-col items-center w-full">
       <div class="w-full">
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-100 rounded">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Success Message -->
+        <div v-if="successMessage" class="mb-4 p-3 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-100 rounded">
+          {{ successMessage }}
+        </div>
+
         <!-- Title and Description -->
         <h2 class="mb-2 text-2xl font-bold text-colors">{{ statusTitle }}</h2>
         <p class="mb-4 text-[#555] dark:text-gray-400">{{ statusDescription }}</p>
@@ -175,10 +209,11 @@ const handleReportIssue = () => {
               <template v-if="isOwner">
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center rounded-lg border border-red-500/60 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
+                  :disabled="isUpdating"
+                  class="inline-flex items-center justify-center rounded-lg border border-red-500/60 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleTakedownPost"
                 >
-                  Take down post
+                  {{ isUpdating ? 'Updating...' : 'Take down post' }}
                 </button>
               </template>
               <template v-else>
@@ -210,10 +245,11 @@ const handleReportIssue = () => {
                 </a>
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
+                  :disabled="isUpdating"
+                  class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleStatusUpdate('SHIPPED')"
                 >
-                  Mark as shipped
+                  {{ isUpdating ? 'Updating...' : 'Mark as shipped' }}
                 </button>
               </template>
               <template v-else>
@@ -244,10 +280,11 @@ const handleReportIssue = () => {
               <template v-else>
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
+                  :disabled="isUpdating"
+                  class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleStatusUpdate('DELIVERED')"
                 >
-                  Confirm delivery
+                  {{ isUpdating ? 'Updating...' : 'Confirm delivery' }}
                 </button>
                 <button
                   type="button"
@@ -271,10 +308,11 @@ const handleReportIssue = () => {
               <template v-else>
                 <button
                   type="button"
-                  class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
+                  :disabled="isUpdating"
+                  class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleStatusUpdate('COMPLETED')"
                 >
-                  Mark as completed
+                  {{ isUpdating ? 'Updating...' : 'Mark as completed' }}
                 </button>
               </template>
             </template>

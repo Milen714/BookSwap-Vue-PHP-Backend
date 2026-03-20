@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from '@/utils/axios.js'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
-
 export const useBookRequestsStore = defineStore('bookRequests', () => {
   // State
   const myListings = ref([])
@@ -22,8 +20,7 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
 
     try {
       const response = await axios.get(
-        `${apiBaseUrl}/getMyBookListings?status=${status}`,
-        { withCredentials: true }
+        `/getMyBookListings?status=${status}`
       )
 
       if (response.data?.success) {
@@ -53,8 +50,7 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
 
     try {
       const response = await axios.get(
-        `${apiBaseUrl}/getMyBookRequests?id=${userId}&status=${status}`,
-        { withCredentials: true }
+        `/getMyBookRequests?id=${userId}&status=${status}`
       )
 
       if (response.data?.success) {
@@ -83,9 +79,8 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
 
     try {
       const response = await axios.post(
-        `${apiBaseUrl}/createBookRequest`,
-        requestData,
-        { withCredentials: true }
+        `/createBookRequest`,
+        requestData
       )
 
       if (response.data?.success) {
@@ -114,9 +109,8 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
 
     try {
       const response = await axios.post(
-        `${apiBaseUrl}/updateRequestStatus`,
-        { requestId, status },
-        { withCredentials: true }
+        `/updateRequest`,
+        { requestId, status }
       )
 
       if (response.data?.success) {

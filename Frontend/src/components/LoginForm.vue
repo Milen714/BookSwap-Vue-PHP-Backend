@@ -1,10 +1,9 @@
 <script setup>
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 import router from '@/Router';
 import { useRoute } from 'vue-router';
 import ErrorCard from '@/components/molecules/ErrorCard.vue';
 import SuccessCard from '@/components/molecules/SuccessCard.vue';
-import axios from 'axios';
+import axios from '@/utils/axios.js';
 import { onMounted, ref } from 'vue';
 import { useAuthStore } from '@/stores/auth.js'
 
@@ -32,7 +31,7 @@ onMounted(() => {
     const password = formData.get('password');
 
     try {
-      const response = await axios.post(`${apiBaseUrl}/login`, {
+      const response = await axios.post(`/login`, {
         email: email,
         password: password
       });

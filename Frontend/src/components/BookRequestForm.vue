@@ -2,8 +2,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import axios from '@/utils/axios.js'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -43,15 +43,9 @@ const formData = reactive({
 const toggleAddressForm = async () => {
   if (useProfileAddress.value && authStore.user?.id) {
     try {
-      const response = await fetch(`${apiBaseUrl}/getProfileAddress/${authStore.user.id}`, {
-        credentials: 'include',
-      })
+      const response = await axios.get(`/getProfileAddress/${authStore.user.id}`)
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
-      const data = await response.json()
+      const data = response.data
       
       formData.street = data.address || ''
       formData.zip = data.post_code || ''
@@ -112,27 +106,9 @@ const submitAddressForm = async () => {
   }
 
   try {
-    const response = await fetch(`${apiBaseUrl}/createBookRequest`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(requestData),
-    })
+    const response = await axios.post(`/createBookRequest`, requestData)
 
-    const text = await response.text()
-    console.log('Raw response:', text)
-
-    let data
-    try {
-      data = JSON.parse(text)
-    } catch (e) {
-      console.error('Server response was not JSON:', text)
-      throw new Error('Server error: ' + text.substring(0, 100))
-    }
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Request failed')
-    }
+    const data = response.data
 
     console.log(data.message)
     emit('close')
@@ -144,7 +120,7 @@ const submitAddressForm = async () => {
     }
   } catch (error) {
     console.error('Error submitting book request:', error)
-    alert('Error: ' + error.message)
+    alert('Error: ' + (error.response?.data?.message || error.message))
   } finally {
     isLoading.value = false
   }

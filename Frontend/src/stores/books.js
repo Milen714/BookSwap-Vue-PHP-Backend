@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from '@/utils/axios.js'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
-
 export const useBooksStore = defineStore('books', () => {
   // State
   const books = ref([])
@@ -12,6 +10,9 @@ export const useBooksStore = defineStore('books', () => {
   const hasNextPage = ref(false)
   const loading = ref(false)
   const error = ref(null)
+  const previewBook = ref(null)
+  const previewLoading = ref(false)
+  const previewError = ref(null)
 
   // Actions
   /**
@@ -26,10 +27,9 @@ export const useBooksStore = defineStore('books', () => {
 
     try {
       const response = await axios.get(
-        `${apiBaseUrl}/getAllBooks?genre=${encodeURIComponent(
+        `/getAllBooks?genre=${encodeURIComponent(
           genre
-        )}&search=${encodeURIComponent(search)}&page=${page}`,
-        { withCredentials: true }
+        )}&search=${encodeURIComponent(search)}&page=${page}`
       )
 
       if (response.data?.success && Array.isArray(response.data.books)) {
@@ -75,6 +75,44 @@ export const useBooksStore = defineStore('books', () => {
     error.value = null
   }
 
+  /**
+   * Fetch book preview by ISBN
+   * @param {string} isbn - The ISBN of the book to fetch
+   */
+  async function fetchBookPreview(isbn) {
+    previewLoading.value = true
+    previewError.value = null
+    previewBook.value = null
+
+    try {
+      const response = await axios.post(
+        `/fetchBookPreview`,
+        { isbn }
+      )
+
+      if (response.data?.success && response.data.book) {
+          previewBook.value = response.data.book
+          console.log('Fetched book preview:', previewBook.value)
+      } else {
+        previewError.value = response.data?.message || 'Failed to fetch book preview'
+      }
+    } catch (err) {
+      console.error('Error fetching book preview:', err)
+      previewError.value = err.message || 'Failed to fetch book preview'
+    } finally {
+      previewLoading.value = false
+    }
+  }
+
+  /**
+   * Clear preview book state
+   */
+  function clearPreview() {
+    previewBook.value = null
+    previewError.value = null
+    previewLoading.value = false
+  }
+
   return {
     // State
     books,
@@ -83,10 +121,15 @@ export const useBooksStore = defineStore('books', () => {
     hasNextPage,
     loading,
     error,
+    previewBook,
+    previewLoading,
+    previewError,
     // Actions
     fetchBooks,
     selectBook,
     clearSelectedBook,
     clearBooks,
+    fetchBookPreview,
+    clearPreview,
   }
 })

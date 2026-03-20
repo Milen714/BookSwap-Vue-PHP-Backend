@@ -2,14 +2,14 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from '@/utils/axios.js'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
-
 export const useChatStore = defineStore('chat', () => {
   // State
   const messages = ref([])
   const conversations = ref([])
   const activeConversationId = ref(null)
+  const currentUserId = ref(null)
   const currentRecipientId = ref(null)
+  const currentRecipientInfo = ref(null)
   const socket = ref(null)
   const loading = ref(false)
   const error = ref(null)
@@ -17,15 +17,33 @@ export const useChatStore = defineStore('chat', () => {
 
   // Computed
   const activeMessages = computed(() => {
-    if (!currentRecipientId.value) return []
+    if (!currentRecipientId.value || !currentUserId.value) return []
     return messages.value.filter(
       (msg) =>
-        msg.sender_id === currentRecipientId.value ||
-        msg.recipient_id === currentRecipientId.value
+        (msg.sender_id === currentUserId.value && msg.recipient_id === currentRecipientId.value) ||
+        (msg.sender_id === currentRecipientId.value && msg.recipient_id === currentUserId.value)
     )
   })
 
   // Actions
+  /**
+   * Fetch recipient user info
+   * @param {number|string} recipientId - Recipient user ID
+   */
+  async function fetchRecipientInfo(recipientId) {
+    try {
+      const response = await axios.get(`/getUserInfo?userId=${recipientId}`)
+      
+      if (response.data?.success && response.data.user) {
+        currentRecipientInfo.value = response.data.user
+        console.log('Fetched recipient info:', currentRecipientInfo.value)
+      }
+    } catch (err) {
+      console.error('Error fetching recipient info:', err)
+      currentRecipientInfo.value = null
+    }
+  }
+
   /**
    * Fetch chat messages for a conversation
    * @param {number|string} senderId - Current user ID
@@ -36,14 +54,16 @@ export const useChatStore = defineStore('chat', () => {
     error.value = null
 
     try {
+      currentUserId.value = senderId
       const response = await axios.get(
-        `${apiBaseUrl}/getChatMessages?senderId=${senderId}&recipientId=${recipientId}`,
-        { withCredentials: true }
+        `/getChatMessages?senderId=${senderId}&recipientId=${recipientId}`
       )
 
       if (response.data?.success && Array.isArray(response.data.messages)) {
         messages.value = response.data.messages
-        currentRecipientId.value = recipientId
+        currentRecipientId.value = parseInt(recipientId)
+        // Fetch recipient info
+        await fetchRecipientInfo(recipientId)
         console.log('Fetched messages:', messages.value)
       } else {
         error.value = 'Failed to fetch messages'
@@ -68,8 +88,7 @@ export const useChatStore = defineStore('chat', () => {
 
     try {
       const response = await axios.get(
-        `${apiBaseUrl}/getConversations?userId=${userId}`,
-        { withCredentials: true }
+        `/getConversations?userId=${userId}`
       )
 
       if (response.data?.success && Array.isArray(response.data.conversations)) {
@@ -91,14 +110,16 @@ export const useChatStore = defineStore('chat', () => {
    * Initialize WebSocket connection for real-time messaging
    * @param {number|string} userId - User ID
    */
-  function initWebSocket(userId) {
-    if (!userId) {
-      console.warn('Cannot initialize WebSocket without userId')
+  function initWebSocket() {
+    const token = localStorage.getItem('authToken')
+    if (!token) {
+      console.warn('No auth token found, cannot initialize WebSocket')
       return
     }
+    
 
     try {
-      socket.value = new WebSocket(`ws://localhost:6001/?userId=${userId}`)
+      socket.value = new WebSocket(`ws://localhost:6001/?token=${token}`)
 
       socket.value.onopen = () => {
         console.log('Connected to WebSocket chat server')
@@ -132,7 +153,17 @@ export const useChatStore = defineStore('chat', () => {
    * @param {Object} message - Message object
    */
   function addMessage(message) {
-    messages.value.push(message)
+    // Normalize message format from WebSocket (camelCase to snake_case)
+    const normalizedMessage = {
+      sender_id: message.sender_id || message.senderId,
+      recipient_id: message.recipient_id || message.recipientId,
+      message: message.message,
+      created_at: message.created_at || new Date().toISOString(),
+      id: message.id || `ws-${Date.now()}-${Math.random()}`
+    }
+    
+    console.log('Adding message to store:', normalizedMessage)
+    messages.value.push(normalizedMessage)
   }
 
   /**
@@ -149,9 +180,8 @@ export const useChatStore = defineStore('chat', () => {
 
     try {
       const response = await axios.post(
-        `${apiBaseUrl}/sendMessage`,
-        { senderId, recipientId, message: messageText },
-        { withCredentials: true }
+        `/sendDirectMessage`,
+        { senderId, recipientId, message: messageText }
       )
 
       if (response.data?.success) {
@@ -202,6 +232,7 @@ export const useChatStore = defineStore('chat', () => {
     messages.value = []
     conversations.value = []
     activeConversationId.value = null
+    currentUserId.value = null
     currentRecipientId.value = null
     unreadCounts.value = {}
     error.value = null
@@ -213,7 +244,9 @@ export const useChatStore = defineStore('chat', () => {
     messages,
     conversations,
     activeConversationId,
+    currentUserId,
     currentRecipientId,
+    currentRecipientInfo,
     socket,
     loading,
     error,
@@ -223,6 +256,7 @@ export const useChatStore = defineStore('chat', () => {
     // Actions
     fetchMessages,
     fetchConversations,
+    fetchRecipientInfo,
     initWebSocket,
     addMessage,
     sendMessage,

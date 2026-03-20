@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from '@/utils/axios.js'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
-
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref(null)
@@ -50,11 +48,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     loading.value = true
     try {
-      const response = await axios.get(`${apiBaseUrl}/getLoggedInUser`, {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      })
+      const response = await axios.get(`/getLoggedInUser`)
 
       if (response.data.success) {
         user.value = response.data.user

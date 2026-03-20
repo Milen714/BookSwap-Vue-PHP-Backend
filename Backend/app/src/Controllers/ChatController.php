@@ -23,7 +23,7 @@ class ChatController extends Controller
 
     public function __construct() {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
         $this->redisClient = new RedisClient([
             'scheme' => getenv('REDIS_SCHEME') ?: 'tcp',
             'host'   => getenv('REDIS_HOST') ?: 'redis',

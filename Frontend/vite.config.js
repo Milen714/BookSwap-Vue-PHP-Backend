@@ -16,6 +16,8 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ['bookswap.art']
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: ['bookswap.art', '192.168.1.168', 'localhost']
   }
 })

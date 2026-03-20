@@ -37,6 +37,8 @@ const startScanning = async () => {
       }
       console.log('Barcode found:', result.text);
       await stopScanning();
+      // Auto-submit when ISBN is scanned
+      await fetchBookPreview(result.text);
     }
   } catch (err) {
     console.error('Error scanning:', err);
@@ -61,39 +63,27 @@ onBeforeUnmount(() => {
   stopScanning();
 });
 
-const handleIsbnSubmit = async (event) => {
-  event.preventDefault();
-
+const fetchBookPreview = async (isbnValue) => {
   if (!authStore.user?.id) {
-    console.log('User ID not available yet')
+    error.value = 'Please log in to add books.'
     return
   }
-  if (!isbn.value.trim()) {
+  if (!isbnValue.trim()) {
     error.value = 'Please enter a valid ISBN.';
     return;
   }
   
-  try {
-    const response = await axios.post(`${config.apiDomain}/fetchBookPreview`,
-      {
-        isbn: isbn.value.trim()
-      },
-      {
-        withCredentials: true
-      }
-    )
-
-    if (response.data.success) {
-      // Handle successful book retrieval (e.g., show book details, allow listing)
-      console.log('Book data:', response.data.book);
-      error.value = null;
-    } else {
-      throw new Error(response.data.message || 'Book not found.');
-    }
-  } catch (err) {
-    console.error('Error fetching book:', err);
-    error.value = err.message || 'Failed to fetch book details. Please try again.';
+  error.value = null;
+  await booksStore.fetchBookPreview(isbnValue.trim());
+  
+  if (booksStore.previewError && booksStore.previewError.value) {
+    error.value = booksStore.previewError.value;
   }
+};
+
+const handleIsbnSubmit = async (event) => {
+  event.preventDefault();
+  await fetchBookPreview(isbn.value);
 };
 
 </script>

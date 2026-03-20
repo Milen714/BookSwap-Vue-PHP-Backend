@@ -1,11 +1,10 @@
 <script setup>
-import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import axios from '@/utils/axios.js'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 const router = useRouter()
 
 const showError = ref(false)
@@ -30,11 +29,10 @@ const handleSignup = async (event) => {
   }
 
   try {
-    const response = await axios.post(`${apiBaseUrl}/signUp`, data, {
+    const response = await axios.post(`/signUp`, data, {
       headers: {
         'Content-Type': 'application/json',
       },
-      withCredentials: true,
     });
     if (response.data?.success) {
       showSuccess.value = true

@@ -12,6 +12,7 @@ use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
 use App\Models\Enums\UserRole;
 use App\Repositories\BookAPI;
+use App\Middleware\JWTMiddleware;
 use Predis\Client as RedisClient;
 
 class BookController extends Controller
@@ -35,12 +36,6 @@ class BookController extends Controller
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function addBook($vars = [])
-    {
-        $error = isset($vars['error']) ? urldecode($vars['error']) : null;
-        
-        $this->view('Book/AddBook', ['message' => "Add a new book.", 'title' => 'Add Book Page', 'error' => $error] );
-    }
     public function fetchBookPreview($vars = [])
     {
         $data = $this->getPostData();
@@ -59,14 +54,28 @@ class BookController extends Controller
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function addBookPost($vars = [])
     {
         
         try{
-            $book = $this->bookService->getBookByISBNFromGoogleApi($_POST['isbn']);
-            $book->condition = BookCondition::from($_POST['condition'] ?? 'Unknown');
-            $book->owner_review = $_POST['userReview'] ?? null;
-            $sharedBy = $this->userService->getUserById($_SESSION['loggedInUser']->id);
+            // Get JSON data from request body
+            $data = $this->getPostData();
+            
+            $isbn = $data['isbn'] ?? null;
+            $condition = $data['condition'] ?? 'Unknown';
+            $userReview = $data['userReview'] ?? null;
+            $userId = JWTMiddleware::getUserIdFromToken();
+            
+            if (!$isbn) {
+                $this->sendErrorResponse(['error' => 'ISBN is required'], 400);
+                return;
+            }
+            
+            $book = $this->bookService->getBookByISBNFromGoogleApi($isbn);
+            $book->condition = BookCondition::from($condition);
+            $book->owner_review = $userReview;
+            $sharedBy = $this->userService->getUserById($userId);
             $book->shared_by = $sharedBy;
 
             $numberOfListings = $this->userService->numberOfListedBooks($sharedBy->id);
@@ -78,13 +87,10 @@ class BookController extends Controller
                 $this->userService->addSwapTokens($sharedBy->id, 1);
             }
 
-            header("Location: /");
-            exit();
+            $this->sendSuccessResponse(['success' => true, 'message' => 'Book added successfully'], 200);
         }
         catch(\Exception $e){
-            //echo "Error: " . htmlspecialchars($e->getMessage());
-            header("Location: /addBook/" . urlencode($e->getMessage()));
-            exit();
+            $this->sendErrorResponse(['error' => $e->getMessage()], 400);
         }
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
@@ -137,14 +143,7 @@ class BookController extends Controller
             $this->sendErrorResponse(['error' => $e->getMessage()], 400);
         }
     }
-    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function myListings($vars = [])
-    {
-        $loggedInUser = $this->userService->getUserById($_SESSION['loggedInUser']->id);
-        //$books = $this->bookService->getBooksByUser($loggedInUser);
-        
-        $this->view('Book/MyListings', ['message' => "My Book Listings.", 'title' => 'My Listings Page'] );
-    }
+    
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function bookPostConfirmation($vars = [])
     {

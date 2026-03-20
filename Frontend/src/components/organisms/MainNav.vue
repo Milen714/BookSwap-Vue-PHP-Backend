@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import axios from 'axios'
+import axios from '@/utils/axios.js'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useUIStore } from '@/stores/ui.js'
@@ -12,7 +12,6 @@ const { isDark, toggleTheme } = useTheme()
 
 const route = useRoute()
 const router = useRouter()
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 
 const isActive = (path) => route.path === path
 
@@ -27,7 +26,7 @@ const credits = computed(() => authStore.user?.swapTokens ?? 0)
 
 const logout = async () => {
     try {
-        await axios.post(`${apiBaseUrl}/logout`, {}, { withCredentials: true })
+        await axios.post(`/logout`, {})
     } catch (error) {
         console.error('Logout error:', error)
     } finally {
