@@ -7,7 +7,8 @@
     "phpmailer/phpmailer": "^7.0",
     "stripe/stripe-php": "^19.1",
     "vlucas/phpdotenv": "^5.6",
-    "predis/predis": "^3.4"
+    "predis/predis": "^3.4",
+    "firebase/php-jwt": "^7.0"
   },
   "autoload": {
     "psr-4": {

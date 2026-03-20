@@ -2,7 +2,7 @@
 namespace App\Middleware;
 
 use ReflectionMethod;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Models\User;
 use App\Services\AuthService;
 

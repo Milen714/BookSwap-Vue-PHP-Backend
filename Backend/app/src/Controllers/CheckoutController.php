@@ -1,6 +1,7 @@
 <?php 
 namespace App\Controllers;
 use Exception;
+use App\Framework\Controller;
 use App\Models\BookSwapRequest;
 use App\Models\Book;
 use App\Models\User;
@@ -9,15 +10,16 @@ use App\Repositories\UserRepository;
 use App\Services\BookService;
 use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Repositories\BookAPI;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 use App\Services\AuthService;
 use App\Repositories\BookSwapRequestRepository;
 use App\Services\BookRequestService;
 use App\Services\MailService;
 use App\Services\Interfaces\IPaymentService;
 use App\Services\PaymentService;
+use App\config\Secrets;
 
 class CheckoutController extends Controller{
 
@@ -103,8 +105,7 @@ class CheckoutController extends Controller{
         session_write_close();
 
         // Get Stripe session info for the view
-        require __DIR__ . '/../../config/secrets.php';
-        $stripe = new \Stripe\StripeClient($stripeSecretKey);
+        $stripe = new \Stripe\StripeClient(Secrets::$stripeSecretKey);
         
         $sessionId = $_GET['session_id'] ?? null;
         $session = $sessionId ? $stripe->checkout->sessions->retrieve($sessionId) : null;
@@ -121,7 +122,7 @@ class CheckoutController extends Controller{
     public function checkoutStatus($vars = []){
         require_once __DIR__ . '/../../config/secrets.php';
 
-        $stripe = new \Stripe\StripeClient($stripeSecretKey);
+        $stripe = new \Stripe\StripeClient(Secrets::$stripeSecretKey);
         header('Content-Type: application/json');
 
         try {

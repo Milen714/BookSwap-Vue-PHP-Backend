@@ -316,7 +316,7 @@ Only essential user data is collected (`app/src/Models/User.php`):
 
 ### User Rights Implementation
 
-**Password Reset**: Secure token-based reset (`app/src/Controllers/AccountController.php`):
+**Password Reset**: Secure token-based reset (`app/src/Controllers/AuthController.php`):
 
 ```php
 $token = $this->generateSecureToken();

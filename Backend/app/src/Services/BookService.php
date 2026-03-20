@@ -5,8 +5,8 @@ use App\Repositories\Interfaces\IBookRepository;
 use App\Models\Book;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->safeLoad();
+use App\config\Secrets;
+
 
 class BookService implements IBookService {
     private IBookRepository $bookRepository;
@@ -48,8 +48,7 @@ class BookService implements IBookService {
         try {
             $headers = ["Content-Type" => "application/json; charset=UTF-8"];
             
-            require_once '../config/secrets.php';
-            $response = $this->httpClient->request('GET', $this->apiBaseUrl . $isbn . '&key=' . $BOOKS_API_KEY, [
+            $response = $this->httpClient->request('GET', $this->apiBaseUrl . $isbn . '&key=' . Secrets::$booksApiKey, [
                 "headers" => $headers,
                 ]);
             $data = json_decode($response->getBody()->getContents(), true);

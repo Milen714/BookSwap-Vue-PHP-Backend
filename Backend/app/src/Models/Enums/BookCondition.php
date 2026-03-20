@@ -1,5 +1,5 @@
 <?php
-namespace App\Models;
+namespace App\Models\Enums;
 
 enum BookCondition: string {
     case New = 'New';

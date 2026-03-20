@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Controllers;
+use App\Framework\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
-use App\Models\BookCondition;
+use App\Models\Enums\BookCondition;
 use App\Models\Book;
 use App\Services\BookService;
 use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Repositories\BookAPI;
 use Predis\Client as RedisClient;
 
@@ -42,12 +43,10 @@ class BookController extends Controller
     }
     public function fetchBookPreview($vars = [])
     {
-        header('Content-Type: application/json');
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getPostData();
         $isbn = $data['isbn'] ?? null;
         if (!$isbn) {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'ISBN required']);
+            $this->sendErrorResponse(['error' => 'ISBN required'], 400);
             return;
         }
         
@@ -101,12 +100,9 @@ class BookController extends Controller
     
     try {
         $book = $this->bookService->getBookByISBNFromGoogleApi($isbn);
-        header('Content-Type: application/json');
-        echo json_encode($book);
+        $this->sendSuccessResponse($book, 200);
     } catch (\Exception $e) {
-        header('Content-Type: application/json');
-        http_response_code(400);
-        echo json_encode(['error' => $e->getMessage()]);
+        $this->sendErrorResponse(['error' => $e->getMessage()], 400);
     }
 }
     public function viewBookDetails($vars = [])
@@ -124,21 +120,22 @@ class BookController extends Controller
     }
     public function getBookDetails($vars = [])
     {
-        header('Content-Type: application/json');
         try {
         $bookId = $_GET['id'] ?? null;
         if ($bookId === null) {
-            die("Book ID is required.");
+            $this->sendErrorResponse(['error' => 'Book ID is required.'], 400);
+            return;
+
         }
         $book = $this->bookService->getBookById((int)$bookId);
         if ($book === null) {
-            die("Book not found.");
+            $this->sendErrorResponse(['error' => 'Book not found.'], 404);
+            return;
         }
         
-        echo json_encode($book);
+        $this->sendSuccessResponse($book, 200);
         } catch (\Exception $e) {
-            http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            $this->sendErrorResponse(['error' => $e->getMessage()], 400);
         }
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
@@ -176,7 +173,6 @@ class BookController extends Controller
     }
     public function getAllBooks($vars = [])
     {
-        header('Content-Type: application/json');
         $genreFilter = $_GET['genre'] ?? null;
         $generalFilter = $_GET['search'] ?? null;
         $page = isset($_GET['page']) ? (int)$_GET['page'] : null;
@@ -192,11 +188,9 @@ class BookController extends Controller
             
             $this->redisClient->publish('book-search', json_encode(['message' => 'Books searched', 'test' => getenv('REDIS_HOST')]));
             
-            echo json_encode(['success' => true, 'books' => $books, 'hasNextPage' => $hasNextPage, 'currentPage' => $page]);
-            
+            $this->sendSuccessResponse(['success' => true, 'books' => $books, 'hasNextPage' => $hasNextPage, 'currentPage' => $page], 200);
         } catch (\Exception $e) {
-            http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Error fetching books: ' . $e->getMessage()]);
+            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching books: ' . $e->getMessage()], 500);
         }
     }
 }

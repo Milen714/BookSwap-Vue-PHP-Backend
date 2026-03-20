@@ -5,7 +5,7 @@ use App\Models\Book;
 use App\Repositories\Interfaces\IBookSwapRequestRepository;
 use App\Services\Interfaces\IBookRequestService;
 use App\Models\User;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 class BookRequestService implements IBookRequestService {
     private IBookSwapRequestRepository $bookSwapRequestRepository;
 

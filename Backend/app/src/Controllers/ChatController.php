@@ -1,10 +1,11 @@
 <?php
 namespace App\Controllers;
+use App\Framework\Controller;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
 use App\Middleware\RequireRole;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use Predis\Client as RedisClient;
 use App\Repositories\Interfaces\IDirectMessageRepository;
 use App\Repositories\DirectMessageRepository;

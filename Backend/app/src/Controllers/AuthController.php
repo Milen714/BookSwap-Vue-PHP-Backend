@@ -1,14 +1,15 @@
 <?php
 namespace App\Controllers;
-use App\Controllers\Controller;
+use App\Framework\Controller;
+use App\Exceptions\UserAlreadyExistsException;
 use App\Models\Mailer;
 use App\Models\User;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
 use App\Services\MailService;
 
-class AccountController extends Controller {
+class AuthController extends Controller {
     private UserService $userService;
     private UserRepository $userRepository;
     private MailService $mailService;
@@ -17,15 +18,10 @@ class AccountController extends Controller {
         $this->userService = new UserService($this->userRepository);
         $this->mailService = new MailService();
     }
-    public function register() {
-        // Registration logic here
-    }
 
     public function login() {
-        header('Content-Type: application/json');
         try {
-            $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
+            $data = $this->getPostData();
             $email = $data['email'] ?? $_POST['email'] ?? '';
             $password = $data['password'] ?? $_POST['password'] ?? '';
             if (empty($email) || empty($password)) {
@@ -38,14 +34,16 @@ class AccountController extends Controller {
             $_SESSION['loggedInUserId'] = $user->id;
             session_write_close();
             
-            echo json_encode(['success' => true, 'message' => "Login successful. Welcome back, " . htmlspecialchars($user->fname) . "!"]);
+            $this->sendSuccessResponse(
+                ['success' => true, 'message' => "Login successful. Welcome back, " . htmlspecialchars($user->fname) . "!"]
+            , 200 );
         } else {
             // Failed login
-            throw new \Exception("Invalid email or password.");
-            // Set session or token for authenticated user
+            $this->sendErrorResponse(['success' => false, 'message' => "Invalid email or password. Please try again."], 401);
+             return;
         }
         } catch (\Exception $e) {
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            $this->sendErrorResponse($e->getMessage(), 500);
         }
     }
     public function logout() {
@@ -54,9 +52,8 @@ class AccountController extends Controller {
         exit;
     }
     public function getLoggedInUser() {
-        header('Content-Type: application/json');
         $user = $_SESSION['loggedInUser'] ?? null;
-
+        try{
         if (!$user && isset($_SESSION['loggedInUserId'])) {
             $user = $this->userService->getUserById((int) $_SESSION['loggedInUserId']);
             if ($user) {
@@ -65,7 +62,7 @@ class AccountController extends Controller {
         }
 
         if ($user) {
-            echo json_encode([
+            $this->sendSuccessResponse([
                 'success' => true,
                 'loggedIn' => true,
                 'user' => [
@@ -76,18 +73,23 @@ class AccountController extends Controller {
                     'role' => $user->role,
                     'swapTokens' => $user->swapTokens,
                 ],
-            ]);
+            ], 200);
             return;
         }
+        $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => 'No user logged in'], 401);
+        
+        } catch (\Exception $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => 'An error occurred while fetching user data.'], 500);
+            return;
+        }
+         
 
-        echo json_encode(['success' => false, 'loggedIn' => false, 'message' => 'No user logged in']);
     }
     public function signUp(){
-        header('Content-Type: application/json');
 
         try {
-            $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
+           
+            $data = $this->getPostData();
 
             if (!is_array($data)) {
                 $data = $_POST;
@@ -112,10 +114,9 @@ class AccountController extends Controller {
             }
 
             http_response_code(201);
-            echo json_encode(['success' => true, 'message' => 'Signup for ' . htmlspecialchars($user->email) . ' successful. Feel free to log in.']);
+            $this->sendSuccessResponse(['success' => true, 'message' => 'Signup for ' . htmlspecialchars($user->email) . ' successful. Feel free to log in.'], 201);
         } catch (\Throwable $e) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
     public function forgotPassword() {

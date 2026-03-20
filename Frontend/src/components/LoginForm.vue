@@ -44,16 +44,14 @@ onMounted(() => {
         showSuccess.value = true;
         message.value = response.data.message;
       } else {
-        showError.value = true;
-        message.value = response.data.message;
-        return;
+        throw new Error(response.data.message || 'Login failed. Please try again.');
       }
       await fetchLoggedInUser(); // Refresh auth state after login
       router.push('/'); // Redirect to home page after successful login
     } catch (error) {
       console.error('Login error:', error);
       showError.value = true;
-      message.value = "Login failed. Please try again.";
+      message.value = error.response?.data?.message || 'An error occurred during login. Please try again.';
     }
     finally {
       setTimeout(() => {

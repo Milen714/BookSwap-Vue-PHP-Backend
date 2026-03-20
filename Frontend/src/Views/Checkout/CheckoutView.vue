@@ -1,5 +1,6 @@
 <script setup>
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || '';
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
 import { useAuth } from '@/composables/useAuth.js'
@@ -11,7 +12,7 @@ onMounted(() => {
         return
     }
     try{
-        const stripe = Stripe('pk_test_51Sg6KdK2gTp4lSWgeXRs1IOOJnXABzgGD7OOQfiC90hmQPgLqI4XegSnvd2ykeu2LeJb6plpqMxL4ZmsH6vXvWf200YJ4JyDGd');
+        const stripe = Stripe(stripePublicKey);
 
         fetch(`${apiBaseUrl}/create-checkout-session`, {
             method: 'GET',

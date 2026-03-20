@@ -29,7 +29,7 @@ require_once __DIR__ . '/../config/config.php';
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
 use App\Controllers\HomeController;
-use App\Controllers\AccountController;
+use App\Controllers\AuthController;
 use App\Services\AuthService;
 use App\Middleware\RoleMiddleware;
 
@@ -45,17 +45,14 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
    // $r->addRoute('POST', '/login', ['App\Controllers\HomeController', 'loginPost']);
     $r->addRoute('POST', '/logout', ['App\Controllers\HomeController', 'logout']);
     $r->addRoute('POST', '/setTheme', ['App\Controllers\HomeController', 'setTheme']);
-    $r->addRoute('GET', '/test', ['App\Controllers\HomeController', 'dashboard']);
-    $r->addRoute('GET', '/signup', ['App\Controllers\HomeController', 'signup']);
-    $r->addRoute('POST', '/signup', ['App\Controllers\HomeController', 'signupPost']);
     $r->addRoute('POST', '/fetchBookPreview', ['App\Controllers\BookController', 'fetchBookPreview']);
     $r->addRoute('GET', '/addBook', ['App\Controllers\BookController', 'addBook']);
     $r->addRoute('GET', '/addBook/{error}', ['App\Controllers\BookController', 'addBook']);
     $r->addRoute('POST', '/addBook', ['App\Controllers\BookController', 'addBookPost']);
-    $r->addRoute('GET', '/forgot-password', ['App\Controllers\AccountController', 'forgotPassword']);
-    $r->addRoute('POST', '/forgot-password', ['App\Controllers\AccountController', 'forgotPasswordPost']);
-    $r->addRoute('GET', '/reset-password', ['App\Controllers\AccountController', 'resetPassword']);
-    $r->addRoute('POST', '/reset-password', ['App\Controllers\AccountController', 'resetPasswordPost']);
+    $r->addRoute('GET', '/forgot-password', ['App\Controllers\AuthController', 'forgotPassword']);
+    $r->addRoute('POST', '/forgot-password', ['App\Controllers\AuthController', 'forgotPasswordPost']);
+    $r->addRoute('GET', '/reset-password', ['App\Controllers\AuthController', 'resetPassword']);
+    $r->addRoute('POST', '/reset-password', ['App\Controllers\AuthController', 'resetPasswordPost']);
     $r->addRoute('GET', '/scanBook/{isbn}', ['App\Controllers\BookController', 'scanBook']);
     $r->addRoute('GET', '/bookPostConfirmation', ['App\Controllers\BookController', 'bookPostConfirmation']);
     $r->addRoute('GET', '/bookDetails/{id}', ['App\Controllers\BookController', 'viewBookDetails']);
@@ -74,11 +71,11 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
 
     // Routes for Vue.js frontend
     $r->addRoute('GET', '/api/books', ['App\Controllers\BookController', 'getBooksApi']);
-    $r->addRoute('POST', '/login', ['App\Controllers\AccountController', 'login']);
-    $r->addRoute('POST', '/api/logout', ['App\Controllers\AccountController', 'logout']);
-    $r->addRoute('GET', '/getLoggedInUser', ['App\Controllers\AccountController', 'getLoggedInUser']);
+    $r->addRoute('POST', '/login', ['App\Controllers\AuthController', 'login']);
+    $r->addRoute('POST', '/api/logout', ['App\Controllers\AuthController', 'logout']);
+    $r->addRoute('GET', '/getLoggedInUser', ['App\Controllers\AuthController', 'getLoggedInUser']);
     $r->addRoute('GET', '/getAllBooks', ['App\Controllers\BookController', 'getAllBooks']);
-    $r->addRoute('POST', '/signUp', ['App\Controllers\AccountController', 'signUp']);
+    $r->addRoute('POST', '/signUp', ['App\Controllers\AuthController', 'signUp']);
     $r->addRoute('GET', '/getBookDetails', ['App\Controllers\BookController', 'getBookDetails']);
     $r->addRoute('GET', '/getBookSwapStatusses', ['App\Controllers\BookRequestController', 'getBookSwapStatusses']);
     $r->addRoute('GET', '/getMyBookRequests', ['App\Controllers\BookRequestController', 'getMyBookRequests']);

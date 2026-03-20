@@ -3,7 +3,7 @@ namespace App\Repositories;
 use App\Framework\Repository;
 use App\Repositories\Interfaces\IBookRepository;
 use App\Models\Book;
-use App\Models\BookCondition;
+use App\Models\Enums\BookCondition;
 use App\Models\BookSwapRequest;
 use App\config\DatabaseConfig;
 use App\Models\User;

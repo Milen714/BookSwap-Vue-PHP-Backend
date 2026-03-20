@@ -1,7 +1,7 @@
 <?php
 namespace App\Repositories\Interfaces;
 use App\Models\BookSwapRequest;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 use App\Models\User;
 use App\Models\Book;
 

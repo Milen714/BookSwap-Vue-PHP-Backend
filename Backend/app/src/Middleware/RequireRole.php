@@ -1,6 +1,6 @@
 <?php 
 namespace App\Middleware;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Models\User;
 use Attribute;
 

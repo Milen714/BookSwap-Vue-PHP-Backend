@@ -3,7 +3,7 @@ namespace App\Services\Interfaces;
 use App\Models\BookSwapRequest;
 use App\Models\User;
 use App\Models\Book;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 interface IBookRequestService {
     public function createRequest(BookSwapRequest $request): int;
     public function getRequestById(int $id): ?BookSwapRequest;

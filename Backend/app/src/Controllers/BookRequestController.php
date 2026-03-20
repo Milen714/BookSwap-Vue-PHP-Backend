@@ -1,5 +1,6 @@
 <?
 namespace App\Controllers;
+use App\Framework\Controller;
 use App\Models\BookSwapRequest;
 use App\Models\Book;
 use App\Models\User;
@@ -8,9 +9,9 @@ use App\Repositories\UserRepository;
 use App\Services\BookService;
 use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Repositories\BookAPI;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 use App\Services\AuthService;
 use App\Repositories\BookSwapRequestRepository;
 use App\Services\BookRequestService;
@@ -39,15 +40,14 @@ class BookRequestController extends Controller{
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function requestBookSwap($vars = []){
-
-            header('Content-Type: application/json');
-
+    public function requestBookSwap($vars = []) 
+    {
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $this->getPostData();
 
             if (!$data) {
-                throw new \Exception('Invalid JSON payload');
+                $this->sendErrorResponse(['error' => 'Invalid JSON'], 400);
+                return;
             }
 
             $bookId      = $data['bookId'] ?? null;
@@ -59,7 +59,8 @@ class BookRequestController extends Controller{
             $country     = $data['country'] ?? null;
 
             if (!$bookId || !$ownerId || !$requesterId || !$street || !$post_code || !$state || !$country) {
-                throw new \Exception('All fields are required');
+                $this->sendErrorResponse(['error' => 'All fields are required'], 400);
+                return;
             }
 
             $owner = $this->userService->getUserById($ownerId);
@@ -67,11 +68,13 @@ class BookRequestController extends Controller{
             $book= $this->bookService->getBookById($bookId);
 
             if (!$owner || !$requester || !$book) {
-                throw new \Exception('Invalid book, owner, or requester');
+                $this->sendErrorResponse(['error' => 'Invalid book, owner, or requester'], 400);
+                return;
             }
 
             if ($book->shared_by->id !== $owner->id) {
-                throw new \Exception('Owner does not match the book owner');
+                $this->sendErrorResponse(['error' => 'Owner does not match the book owner'], 400);
+                return;
             }
 
             $ownerActionToken= $this->authService->generateActionToken();
@@ -97,22 +100,16 @@ class BookRequestController extends Controller{
             //$_SESSION['currentBookRequest'] = $bookSwapRequest;
             $_SESSION['currentBookRequestId'] = $bookSwapRequest->id;
 
-            header('Content-Type: application/json');
-            http_response_code(201);
-            echo json_encode([
+            $this->sendSuccessResponse([
                 'success' => true,
                 'message' => 'Book request created successfully'. $data['bookId'] . "-" . $data['ownerId'] . "-" . $data['requesterId'],
                 'redirectUrl' => '/checkout?requestId=' . $requestId
-        ]);
-
-        } catch (\Throwable $e) {
-            header('Content-Type: application/json');
-            http_response_code(400);
-
-            echo json_encode([
+            ], 201);
+            } catch (\Throwable $e) {
+            $this->sendErrorResponse([
                 'success' => false,
-                'message' => $e->getMessage()
-            ]);
+                'message' => 'An error occurred while creating the book request: ' . $e->getMessage()
+            ], 500);
         }
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
@@ -153,7 +150,6 @@ class BookRequestController extends Controller{
     }
      #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyBookRequests($vars = []){
-        header('Content-Type: application/json');
         $userId = $_GET['id'] ?? null;
         $filterStatus = $_GET['status'] ?? 'all';
         switch($filterStatus){
@@ -177,19 +173,15 @@ class BookRequestController extends Controller{
         
         try{
         if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Unauthorized access to book requests.'. $_SESSION['loggedInUser']->id . "-" . $userId]);
+            $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to book requests.'], 403);
             return;
         }
         $user = $this->userService->getUserById($userId);
         $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, false, $statusFilter);
-        echo json_encode([
-            'success' => true,
-            'bookRequests' => $bookRequests
-        ]);
+        $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
+        
         }catch(\Exception $e){
-            http_response_code(400);
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
         }
     }
 
@@ -198,11 +190,12 @@ class BookRequestController extends Controller{
         $requestId = $vars['requestId'] ?? null;
         $user = $_SESSION['loggedInUser'];
         if ($requestId === null) {
-            die("Request ID is required.");
+            $this->sendErrorResponse(['success' => false, 'error' => 'Request ID is required.'], 400);
+             return;
         }
         $request = $this->bookRequestService->getRequestByUserIdAndRequestId($user, (int)$requestId, true, false);
         if ($request->requester->id !== $user->id) {
-            $this->authService->logout('Unauthorized access to requestee details.');
+            $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to requestee details.'], 403);
         }
         $book = $request->book;
         //require_once '/app/Views/BookRequest/RequesteeDetailsModal.php';
@@ -263,7 +256,6 @@ class BookRequestController extends Controller{
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyListings($vars = []){
-        header('Content-Type: application/json');
         $userId = $_GET['id'] ?? null;
         $filterStatus = $_GET['status'] ?? 'all';
         switch($filterStatus){
@@ -290,18 +282,15 @@ class BookRequestController extends Controller{
         try{
         
         if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            http_response_code(403);
-            echo json_encode(['success' => false, 'error' => 'Unauthorized access to book listings.']);
+            $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to book requests.'], 403);
             return;
         }
         $user = $this->userService->getUserById($userId);
         
         $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, true, $statusFilter);
-        http_response_code(200);
-        echo json_encode(['message' => "My Book Listings", 'title' => 'My Listings Page', 'user' => $user, 'bookRequests' => $bookRequests]);
+        $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
         }catch(\Exception $e){
-            http_response_code(400);
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
         }
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
@@ -327,26 +316,23 @@ class BookRequestController extends Controller{
             $this->view('BookRequest/MyRequests', ['message' => "My Book Requests", 'title' => 'My Requests Page', 'bookRequests' => [$bookRequest]] );
 
         }catch(\Exception $e){
-            http_response_code(400);
-            echo "Error: " . $e->getMessage();
-
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
         }
     }
     public function updateRequestStatus($vars = []){
-        header('Content-Type: application/json');
 
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $this->getPostData();
 
-            if (!$data) {
-                throw new \Exception('Invalid JSON');
+             if (!$data) {
+                $this->sendErrorResponse(['success' => false, 'error' => 'Invalid JSON'], 400);
+                return;
             }
-
             $requestId = $data['requestId'] ?? null;
             $newStatus = BookSwapStatus::from($data['status'] ?? null) ?? null;
 
             if (!$requestId || !$newStatus) {
-                throw new \Exception('Request ID and new status are required');
+                $this->sendErrorResponse(['success' => false, 'error' => 'Request ID and valid status are required.'], 400);
             }
 
             $bookRequest = $this->bookRequestService->getRequestById((int)$requestId);
@@ -361,7 +347,7 @@ class BookRequestController extends Controller{
                 $this->bookService->deactivateBookPost($bookRequest->book->id);
             }
             elseif ($bookRequest->status === BookSwapStatus::TAKENDOWN &&$bookRequest->owner->id !== $_SESSION['loggedInUser']->id) {
-                throw new \Exception('Unauthorized to take down the book post.');
+                $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized to take down the book post.'], 403);
             }
             if ($bookRequest->status === BookSwapStatus::COMPLETED) {
                 $bookRequest->closed_at = new \DateTime();
@@ -369,34 +355,20 @@ class BookRequestController extends Controller{
 
             $this->bookRequestService->updateRequest($bookRequest);
 
-            http_response_code(200);
-            echo json_encode([
-                'success' => true,
-                'message' => 'Book request status updated successfully'
-            ]);
-
+            $this->sendSuccessResponse(['success' => true, 'message' => 'Book request status updated successfully'], 200);
         } catch (\Throwable $e) {
-            http_response_code(400);
-
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while updating the book request status: ' . $e->getMessage()], 500);
         }
     }
     public function getBookSwapStatusses($vars = []){
-        header('Content-Type: application/json');
         try {
             $statuses = array_map(fn($status) => $status->value, BookSwapStatus::cases());
-            echo json_encode($statuses);
+            $this->sendSuccessResponse(['success' => true, 'statuses' => $statuses], 200);
         } catch (\Throwable $e) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching book swap statuses: ' . $e->getMessage()], 500);
         }
     }
 
 
 }
+           

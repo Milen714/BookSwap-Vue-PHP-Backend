@@ -3,7 +3,7 @@ namespace App\Repositories;
 use App\Framework\Repository;
 use App\Repositories\Interfaces\IDirectMessageRepository;
 use App\Models\User;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Models\DirectMessage;
 use PDO;
 use PDOException;

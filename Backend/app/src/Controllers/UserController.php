@@ -1,11 +1,11 @@
 <?php
 namespace App\Controllers;
-
+use App\Framework\Controller;
 use App\Models\User;
 use App\Services\UserService;
 use App\Repositories\UserRepository;
 use App\Middleware\RequireRole;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use Stripe\Terminal\Location;
 
 class UserController extends Controller
@@ -32,12 +32,10 @@ class UserController extends Controller
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getProfileAddress($vars = [])
     {
-        header('Content-Type: application/json');
         try{
         $userId = $vars['id'] ?? null;
         if (!$userId || $_SESSION['loggedInUser']->id != $userId) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Nice try! Unauthorized access.']);
+            $this->sendErrorResponse(['error' => 'Nice try! Unauthorized access.'], 401);
             
             return;
         }
@@ -48,21 +46,22 @@ class UserController extends Controller
             'state' => $user->state,
             'country' => $user->country
         ];
-        http_response_code(200);
-        echo json_encode($address);
-        } catch (\Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'An error occurred while fetching the address.']);
-        }
+        $this->sendSuccessResponse($address, 200);
+         } catch (\Exception $e) {
+            $this->sendErrorResponse(['error' => 'An error occurred while fetching the address.'], 500);
+        } 
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getUserTokens($vars = []){
+        try {
         $userId = isset($_SESSION['loggedInUser']) ? $_SESSION['loggedInUser']->id : null;
         
         $user = $this->userService->getUserById($userId);
         $token = $user->swapTokens;
 
-        header('Content-Type: application/json');
-        echo json_encode(['tokens' => $token]);
+        $this->sendSuccessResponse(['success' => true, 'tokens' => $token], 200);
+        } catch (\Exception $e) {
+             $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching user tokens.'], 500);
+        }
     }
 }

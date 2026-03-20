@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 use DateTime;
-use App\Models\BookCondition;
+use App\Models\Enums\BookCondition;
 class Book{
     public int $id;
     public string $title;

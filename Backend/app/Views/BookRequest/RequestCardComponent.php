@@ -1,6 +1,6 @@
 <?php
 namespace App\Views\BookRequest;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 ?>
 
 <?php for ($i = 0; $i < count($bookRequests); $i++): ?>

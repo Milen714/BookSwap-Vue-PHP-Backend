@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use DateTime;
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 
 class User{
     public ?int $id = null;

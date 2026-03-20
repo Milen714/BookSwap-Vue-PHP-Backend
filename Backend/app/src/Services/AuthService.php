@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 //require_once __DIR__ . '/../../config/config.php';
-use App\Models\UserRole;
+use App\Models\Enums\UserRole;
 use App\Models\User;
 use App\Services\UserService;
 use App\Repositories\UserRepository;

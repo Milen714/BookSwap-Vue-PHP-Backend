@@ -1,5 +1,5 @@
 <?php
-namespace App\Models;
+namespace App\Models\Enums;
 enum UserRole: string{
     case ADMIN = 'ADMIN';
     case USER = 'USER';

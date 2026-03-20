@@ -1,7 +1,7 @@
 <?php
 namespace App\Repositories;
 use App\Models\BookSwapRequest;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 use App\Framework\Repository;
 use App\Repositories\Interfaces\IBookSwapRequestRepository;
 use App\Models\Book;
@@ -155,7 +155,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
         $request->book->description = $data['description'];
         $request->book->cover_image_url = $data['cover_image_url'];
         $request->book->thumbnail_image_url = $data['thumbnail_image_url'];
-        $request->book->condition = \App\Models\BookCondition::fromValue($data['book_condition']);
+        $request->book->condition = \App\Models\Enums\BookCondition::fromValue($data['book_condition']);
         $request->book->page_count = $data['page_count'] === null ? 0 : $data['page_count'];
         $request->book->shared_by = $owner;
         $request->book->owner_review = $data['owner_review'] === null ? null : $data['owner_review']; 

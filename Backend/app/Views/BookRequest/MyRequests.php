@@ -1,6 +1,6 @@
 <?php 
 namespace App\Views\BookRequest;
-use App\Models\BookSwapStatus;
+use App\Models\Enums\BookSwapStatus;
 $activeStyle = "bg-[#d5d5d5] dark:bg-[#0F0F0F] rounded-full";
 $loggedInId = isset($_SESSION['loggedInUser']) ? $_SESSION['loggedInUser']->id : null;
 ?>
