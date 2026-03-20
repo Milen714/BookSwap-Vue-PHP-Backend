@@ -70,6 +70,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
 
 
     // Routes for Vue.js frontend
+    $r->addRoute('GET', '/auth/me', ['App\Controllers\AuthController', 'currentUser']);
     $r->addRoute('GET', '/api/books', ['App\Controllers\BookController', 'getBooksApi']);
     $r->addRoute('POST', '/login', ['App\Controllers\AuthController', 'login']);
     $r->addRoute('POST', '/api/logout', ['App\Controllers\AuthController', 'logout']);

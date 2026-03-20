@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Services\Interfaces;
-use App\Repositories\Interfaces\IUserRepository;
 use App\Models\User;
 interface IUserService {
     public function getAllUsers(): array;

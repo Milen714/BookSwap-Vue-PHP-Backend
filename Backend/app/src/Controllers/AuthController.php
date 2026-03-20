@@ -2,21 +2,25 @@
 namespace App\Controllers;
 use App\Framework\Controller;
 use App\Exceptions\UserAlreadyExistsException;
-use App\Models\Mailer;
+use App\Models\DTOs\UserDTO;
 use App\Models\User;
 use App\Models\Enums\UserRole;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
 use App\Services\MailService;
+use App\Services\AuthService;
+use App\Services\Interfaces\IAuthService;
 
 class AuthController extends Controller {
     private UserService $userService;
     private UserRepository $userRepository;
     private MailService $mailService;
+    private IAuthService $authService;
     public function __construct() {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
         $this->mailService = new MailService();
+        $this->authService = new AuthService();
     }
 
     public function login() {
@@ -33,10 +37,13 @@ class AuthController extends Controller {
             $_SESSION['loggedInUser'] = $user;
             $_SESSION['loggedInUserId'] = $user->id;
             session_write_close();
+
+            $userDTO = new UserDTO($user);
+            $token = $this->authService->generateJWTToken($user);
             
             $this->sendSuccessResponse(
-                ['success' => true, 'message' => "Login successful. Welcome back, " . htmlspecialchars($user->fname) . "!"]
-            , 200 );
+                ['success' => true, 'message' => "Login successful. Welcome back, " . htmlspecialchars($user->fname) . "!", 'token' => $token, 'user' => $userDTO],
+                 200);
         } else {
             // Failed login
             $this->sendErrorResponse(['success' => false, 'message' => "Invalid email or password. Please try again."], 401);
@@ -207,5 +214,35 @@ class AuthController extends Controller {
             die("Error generating password reset token: " . $e->getMessage());
         }
 
+    }
+
+    public function currentUser()
+    {
+        try {
+
+            // Get token from Authorization header
+            if(!isset($_SERVER['HTTP_AUTHORIZATION'])) {
+                return $this->sendErrorResponse('Authorization header is required', 401);
+            }
+
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            $headerParts = explode(' ', $authHeader);
+            if (count($headerParts) !== 2 || strtolower($headerParts[0]) !== 'bearer') {
+                return $this->sendErrorResponse('Invalid authorization header format', 401);
+            }
+            $token = $headerParts[1];
+
+            $user = $this->authService->getUserFromToken($token);
+
+            if (!$user) {
+                return $this->sendErrorResponse('Invalid or expired token', 401);
+            }
+
+            // Return user DTO
+            $userDTO = new UserDTO($user);
+            return $this->sendSuccessResponse($userDTO);
+        } catch (\Exception $e) {
+            return $this->sendErrorResponse('Internal server error', 500);
+        }
     }
 }

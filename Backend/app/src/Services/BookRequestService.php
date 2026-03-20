@@ -3,14 +3,15 @@ namespace App\Services;
 use App\Models\BookSwapRequest;
 use App\Models\Book;
 use App\Repositories\Interfaces\IBookSwapRequestRepository;
+use App\Repositories\BookSwapRequestRepository;
 use App\Services\Interfaces\IBookRequestService;
 use App\Models\User;
 use App\Models\Enums\BookSwapStatus;
 class BookRequestService implements IBookRequestService {
     private IBookSwapRequestRepository $bookSwapRequestRepository;
 
-    public function __construct(IBookSwapRequestRepository $bookSwapRequestRepository) {
-        $this->bookSwapRequestRepository = $bookSwapRequestRepository;
+    public function __construct() {
+        $this->bookSwapRequestRepository = new BookSwapRequestRepository();
     }
 
     public function createRequest(BookSwapRequest $request): int {
