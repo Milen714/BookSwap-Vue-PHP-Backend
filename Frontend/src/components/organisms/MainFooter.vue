@@ -1,7 +1,11 @@
+<script setup>
+const thisYear = new Date().getFullYear()
+</script>
+
 <template>
-  <footer class="border-t border-gray-300 bg-white p-4 text-center text-gray-700">
+  <footer class=" p-5 border-t border-gray-300 bg-colorsp-4 text-center text-gray-700">
     <p class="flex items-center justify-center gap-2">
-      <span>© 2025 BookSwap</span>
+      <span>© {{ thisYear }} BookSwap</span>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
         <path
           stroke-linecap="round"

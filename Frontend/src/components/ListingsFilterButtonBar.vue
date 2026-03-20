@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink, useRoute } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 defineProps({
   basePath: {
@@ -17,7 +17,7 @@ defineProps({
   },
 })
 
-const { authState } = useAuth()
+const authStore = useAuthStore()
 const route = useRoute()
 
 const activeStyle = "bg-[#d5d5d5] dark:bg-[#0F0F0F] rounded-full";
@@ -33,7 +33,7 @@ const isActive = (status) => {
                 :key="filter.status"
                 :class="isActive(filter.status) ? activeStyle : ''" 
                 class="px-4 py-2">
-                <RouterLink :to="`${basePath}?id=${authState.user?.id}&status=${filter.status}`"
+                <RouterLink :to="`${basePath}?id=${authStore.user?.id}&status=${filter.status}`"
                     class="text-colors font-semibold hover:underline">{{ filter.label }}</RouterLink>
             </li>
         </ul>

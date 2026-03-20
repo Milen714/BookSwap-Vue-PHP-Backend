@@ -1,4 +1,4 @@
-<?
+<?php
 namespace App\Controllers;
 use App\Framework\Controller;
 use App\Models\BookSwapRequest;
@@ -9,6 +9,7 @@ use App\Repositories\UserRepository;
 use App\Services\BookService;
 use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
+use App\Middleware\JWTMiddleware;
 use App\Models\Enums\UserRole;
 use App\Repositories\BookAPI;
 use App\Models\Enums\BookSwapStatus;
@@ -30,12 +31,12 @@ class BookRequestController extends Controller{
     
     public function __construct() {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
         $this->bookRepository = new BookRepository();
         $this->bookService = new BookService($this->bookRepository);
         $this->authService = new AuthService();
         $this->bookSwapRequestRepository = new BookSwapRequestRepository();
-        $this->bookRequestService = new BookRequestService($this->bookSwapRequestRepository);
+        $this->bookRequestService = new BookRequestService();
         $this->mockPostNlService = new MockPostNlService();
     }
 
@@ -150,38 +151,34 @@ class BookRequestController extends Controller{
     }
      #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyBookRequests($vars = []){
-        $userId = $_GET['id'] ?? null;
-        $filterStatus = $_GET['status'] ?? 'all';
-        switch($filterStatus){
-            case 'inProgress':
-                $includeClosed = false;
-                $statusFilter = BookSwapStatus::ALL;
-                break;
-            case 'completed':
-                $includeClosed = true;
-                $statusFilter = BookSwapStatus::COMPLETED;
-                break;
-            case 'all':
-                $includeClosed = true;
-                $statusFilter = null;
-                break;
-            default:
-                $includeClosed = true;
-                $statusFilter = null;
-                break;
-        }
-        
-        try{
-        if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to book requests.'], 403);
-            return;
-        }
-        $user = $this->userService->getUserById($userId);
-        $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, false, $statusFilter);
-        $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
-        
-        }catch(\Exception $e){
-            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
+        header('Content-Type: application/json');
+        try {
+            $userId = JWTMiddleware::getUserIdFromToken();
+            $filterStatus = $_GET['status'] ?? 'all';
+            switch($filterStatus){
+                case 'inProgress':
+                    $includeClosed = false;
+                    $statusFilter = BookSwapStatus::ALL;
+                    break;
+                case 'completed':
+                    $includeClosed = true;
+                    $statusFilter = BookSwapStatus::COMPLETED;
+                    break;
+                case 'all':
+                    $includeClosed = true;
+                    $statusFilter = null;
+                    break;
+                default:
+                    $includeClosed = true;
+                    $statusFilter = null;
+                    break;
+            }
+            
+            $user = $this->userService->getUserById($userId);
+            $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, false, $statusFilter);
+            $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
+        } catch(\Exception $e){
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 401);
         }
     }
 
@@ -256,41 +253,38 @@ class BookRequestController extends Controller{
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyListings($vars = []){
-        $userId = $_GET['id'] ?? null;
-        $filterStatus = $_GET['status'] ?? 'all';
-        switch($filterStatus){
-            case 'listed':
-                $includeClosed = false;
-                $statusFilter = BookSwapStatus::ALL;
-                break;
-            case 'completed':
-                $includeClosed = true;
-                $statusFilter = BookSwapStatus::COMPLETED;
-                break;
-            case 'takenDown':
-                $includeClosed = true;
-                $statusFilter = BookSwapStatus::TAKENDOWN;
-                break;
-            case 'all':
-                $includeClosed = true;
-                $statusFilter = null;
-            default:
-                $includeClosed = true;
-                $statusFilter = null;
-                break;
-        }
-        try{
-        
-        if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to book requests.'], 403);
-            return;
-        }
-        $user = $this->userService->getUserById($userId);
-        
-        $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, true, $statusFilter);
-        $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
-        }catch(\Exception $e){
-            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
+        header('Content-Type: application/json');
+        try {
+            $userId = JWTMiddleware::getUserIdFromToken();
+            $filterStatus = $_GET['status'] ?? 'all';
+            switch($filterStatus){
+                case 'listed':
+                    $includeClosed = false;
+                    $statusFilter = BookSwapStatus::ALL;
+                    break;
+                case 'completed':
+                    $includeClosed = true;
+                    $statusFilter = BookSwapStatus::COMPLETED;
+                    break;
+                case 'takenDown':
+                    $includeClosed = true;
+                    $statusFilter = BookSwapStatus::TAKENDOWN;
+                    break;
+                case 'all':
+                    $includeClosed = true;
+                    $statusFilter = null;
+                default:
+                    $includeClosed = true;
+                    $statusFilter = null;
+                    break;
+            }
+            
+            $user = $this->userService->getUserById($userId);
+            
+            $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, true, $statusFilter);
+            $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
+        } catch(\Exception $e){
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 401);
         }
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]

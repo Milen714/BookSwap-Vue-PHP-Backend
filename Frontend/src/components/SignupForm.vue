@@ -59,47 +59,47 @@ const handleSignup = async (event) => {
 
 <template>
   <article class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-    <h1 class="text-center m-5 font-serif text-2xl">Signup Page</h1>
+    <h1 class="text-center m-5 text-gray-800 font-serif text-2xl">Signup Page</h1>
 
     <form @submit.prevent="handleSignup">
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="email" id="email" name="email" required>
+        <input class="form_input" type="email" id="email" name="email" required>
       </article>
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Password:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="password" id="password" name="password" required>
+        <input class="form_input" type="password" id="password" name="password" required>
       </article>
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="fname">First Name:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="fname" name="fname" required>
+        <input class="form_input" type="text" id="fname" name="fname" required>
       </article>
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="lname">Last Name:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="lname" name="lname" required>
+        <input class="form_input" type="text" id="lname" name="lname" required>
       </article>
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="country">Country:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="country" name="country" required>
+        <input class="form_input" type="text" id="country" name="country" required>
       </article>
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="address">Address:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="address" name="address" required>
+        <input class="form_input" type="text" id="address" name="address" required>
       </article>
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="state">State/Province:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="state" name="state" required>
+        <input class="form_input" type="text" id="state" name="state" required>
       </article>
 
       <article class="mb-5">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="post_code">PostCode:</label>
-        <input class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="post_code" name="post_code" required>
+        <input class="form_input" type="text" id="post_code" name="post_code" required>
       </article>
 
       <button class="w-full rounded-md bg-blue-600 text-white py-2 font-medium hover:bg-blue-700" type="submit">Signup</button>

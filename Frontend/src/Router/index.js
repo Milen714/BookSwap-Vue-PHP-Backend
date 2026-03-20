@@ -7,6 +7,7 @@ import MyRequestsView from '@/Views/BookRequest/MyRequestsView.vue';
 import MyListings from '@/Views/BookRequest/MyListings.vue';
 import CheckoutView from '@/Views/Checkout/CheckoutView.vue';
 import DirectMessageView from '@/Views/Chat/DirectMessageView.vue';
+import AddBook from '@/Views/Book/AddBooks.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +32,9 @@ const router = createRouter({
     },
     {
         path: '/chat', name: 'direct-message', component: DirectMessageView,
+    },
+    {
+        path: '/addBook', name: 'add-book', component: AddBook,
     }
 ]
 });

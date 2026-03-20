@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Services\UserService;
 use App\Repositories\UserRepository;
 use App\Middleware\RequireRole;
+use App\Middleware\JWTMiddleware;
 use App\Models\Enums\UserRole;
 use Stripe\Terminal\Location;
 
@@ -53,15 +54,15 @@ class UserController extends Controller
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getUserTokens($vars = []){
+        header('Content-Type: application/json');
         try {
-        $userId = isset($_SESSION['loggedInUser']) ? $_SESSION['loggedInUser']->id : null;
-        
-        $user = $this->userService->getUserById($userId);
-        $token = $user->swapTokens;
+            $userId = JWTMiddleware::getUserIdFromToken();
+            $user = $this->userService->getUserById($userId);
+            $token = $user->swapTokens;
 
-        $this->sendSuccessResponse(['success' => true, 'tokens' => $token], 200);
+            $this->sendSuccessResponse(['success' => true, 'tokens' => $token], 200);
         } catch (\Exception $e) {
-             $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching user tokens.'], 500);
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching user tokens.'], 401);
         }
     }
 }

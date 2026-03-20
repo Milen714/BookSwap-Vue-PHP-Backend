@@ -4,73 +4,42 @@ import BookPostCard from '@/components/BookPostCard.vue'
 import BookDetailsModal from '@/components/BookDetailsModal.vue'
 import BookRequestForm from '@/components/BookRequestForm.vue'
 import Pagination from '@/components/Pagination.vue'
-import { ref, onMounted, watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
+import { useBooksStore } from '@/stores/books.js'
+import { useUIStore } from '@/stores/ui.js'
 
 const route = useRoute();
-const { authState } = useAuth()
-const books = ref([]);
-const hasNextPage = ref(false);
-const currentPage = ref(1);
-const selectedBook = ref(null)
-const isBookModalOpen = ref(false)
-const showBookDetails = ref(false)
-const showRequestForm = ref(false)
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
+const authStore = useAuthStore()
+const booksStore = useBooksStore()
+const uiStore = useUIStore()
 
 const openBookDetails = (book) => {
-  selectedBook.value = book
-  isBookModalOpen.value = true
-  showBookDetails.value = true
+  booksStore.selectBook(book)
+  uiStore.openBookModal()
 }
 
 const closeBookDetails = () => {
-  isBookModalOpen.value = false
-  selectedBook.value = null
-  showBookDetails.value = false
-  showRequestForm.value = false
+  booksStore.clearSelectedBook()
+  uiStore.closeBookModal()
 }
 
 const handleRequestBook = (book) => {
   console.log('Request book clicked for book:', book)
-  showBookDetails.value = false
-  showRequestForm.value = true
+  uiStore.showBookRequestForm()
   
 }
-
-const fetchBooks = async (genre = '', search = '', page = 1) => {
-  try {
-    const response = await axios.get(`${apiBaseUrl}/getAllBooks?genre=${encodeURIComponent(genre)}&search=${encodeURIComponent(search)}&page=${page}`, { withCredentials: true });
-
-    if (response.data?.success && Array.isArray(response.data.books)) {
-      books.value = response.data.books;
-      console.log('Has next page:', response.data.hasNextPage);
-      console.log('Current page:', response.data.currentPage);
-      currentPage.value = response.data.currentPage || 1;
-      hasNextPage.value = response.data.hasNextPage || false;
-    } else {
-      books.value = [sampleBook];
-    }
-
-    console.log('Fetched books:', books.value);
-  } catch (error) {
-    console.error('Error fetching books:', error);
-    books.value = [sampleBook];
-  }
-};
 
 const handlePageChange = watch(() => route.query, (newQuery) => {
   const genre = newQuery.genre || '';
   const search = newQuery.search || '';
   const page = parseInt(newQuery.page) || 1;
-  fetchBooks(genre, search, page);
-  currentPage.value = page;
+  booksStore.fetchBooks(genre, search, page);
 }, { immediate: true });
 
 onMounted(() => {
-  fetchBooks();
+  booksStore.fetchBooks();
 });
 
 </script>
@@ -81,38 +50,38 @@ onMounted(() => {
     <h1 class="mb-6 text-center text-2xl font-bold text-colors">Welcome to BookSwap</h1>
     <div class="flex justify-center flex-wrap gap-6">
       <BookPostCard
-        v-for="book in books"
+        v-for="book in booksStore.books"
         :key="book.id"
         :book="book"
         @get-book="openBookDetails"
       />
     </div>
 
-    <div
-      v-if="isBookModalOpen && selectedBook"
+    <section
+      v-if="uiStore.isBookModalOpen && booksStore.selectedBook"
       class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 px-4 py-8"
       @click.self="closeBookDetails"
     >
       <BookDetailsModal
-      v-if="showBookDetails"
-        :book="selectedBook"
+      v-if="uiStore.isBookDetailsOpen"
+        :book="booksStore.selectedBook"
         @close="closeBookDetails"
         @request-book="handleRequestBook"
       />
       <BookRequestForm
-      v-if="showRequestForm"
-        :bookId="selectedBook.id"
-        :ownerId="selectedBook.shared_by.id"
-        :requesterId="authState.user.id"
+      v-if="uiStore.isBookRequestFormOpen"
+        :bookId="booksStore.selectedBook.id"
+        :ownerId="booksStore.selectedBook.shared_by.id"
+        :requesterId="authStore.user.id"
         @close="closeBookDetails"
 
         
       />
-    </div>
+    </section>
   </section>
   <Pagination
-    :has-next-page="hasNextPage"
-    :current-page="currentPage"
+    :has-next-page="booksStore.hasNextPage"
+    :current-page="booksStore.currentPage"
     @page-change="handlePageChange"
   />
 </template>

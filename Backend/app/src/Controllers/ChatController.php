@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
 use App\Middleware\RequireRole;
+use App\Middleware\JWTMiddleware;
 use App\Models\Enums\UserRole;
 use Predis\Client as RedisClient;
 use App\Repositories\Interfaces\IDirectMessageRepository;
@@ -35,17 +36,18 @@ class ChatController extends Controller
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getChatMessages($vars = [])
     {
-        $senderId= null;
-        // Security check to ensure users can only access their own messages
-         if ($_SESSION['loggedInUser']->id !== (int)$_GET['senderId']) {
-            http_response_code(403);
-            echo json_encode(['error' => 'You do not have permission to access this resource.']);
-            return;
-        }
-        $senderId = (int)$_GET['senderId'];
         header('Content-Type: application/json');
         try {
-        
+            $senderId = JWTMiddleware::getUserIdFromToken();
+            
+            // Security check to ensure users can only access their own messages
+            $requestSenderId = $_GET['senderId'] ?? null;
+            if ($senderId !== (int)$requestSenderId) {
+                http_response_code(403);
+                echo json_encode(['error' => 'You do not have permission to access this resource.']);
+                return;
+            }
+            
             $recipientId = $_GET['recipientId'] ?? null;
         
             $messages = $this->directMessageService->getDirectMessages($senderId, $recipientId);
@@ -89,11 +91,15 @@ class ChatController extends Controller
         }
     }
     private function validateSender(int $senderId): int {
-        if(!$_SESSION['loggedInUser'] || $_SESSION['loggedInUser']->id !== $senderId) {
-            throw new \Exception("You do not have permission to access this resource.");
-             http_response_code(403);
+        try {
+            $userId = JWTMiddleware::getUserIdFromToken();
+            if ($userId !== $senderId) {
+                throw new \Exception("You do not have permission to access this resource.");
+            }
+            return $userId;
+        } catch (\Exception $e) {
+            http_response_code(401);
             exit();
         }
-        return $_SESSION['loggedInUser']->id;
     }
 }

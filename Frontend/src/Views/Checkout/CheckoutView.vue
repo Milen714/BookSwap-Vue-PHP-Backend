@@ -3,11 +3,11 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || '';
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch } from 'vue'
-import { useAuth } from '@/composables/useAuth.js'
-const { authState } = useAuth()
+import { useAuthStore } from '@/stores/auth.js'
+const authStore = useAuthStore()
 const route = useRoute()
 onMounted(() => {
-    if (!authState.user?.id) {
+    if (!authStore.user?.id) {
         console.log('User ID not available yet')
         return
     }

@@ -10,6 +10,7 @@ use App\Services\UserService;
 use App\Services\MailService;
 use App\Services\AuthService;
 use App\Services\Interfaces\IAuthService;
+use App\Middleware\JWTMiddleware;
 
 class AuthController extends Controller {
     private UserService $userService;
@@ -32,18 +33,14 @@ class AuthController extends Controller {
                 throw new \Exception("Email and password are required.");
             }
             $user = $this->userService->authenticateUser($email, $password);
-             if ($user) {
-            // Successful login
-            $_SESSION['loggedInUser'] = $user;
-            $_SESSION['loggedInUserId'] = $user->id;
-            session_write_close();
-
+            if ($user) {
+            // Successful login - generate JWT token
             $userDTO = new UserDTO($user);
             $token = $this->authService->generateJWTToken($user);
             
             $this->sendSuccessResponse(
                 ['success' => true, 'message' => "Login successful. Welcome back, " . htmlspecialchars($user->fname) . "!", 'token' => $token, 'user' => $userDTO],
-                 200);
+                200);
         } else {
             // Failed login
             $this->sendErrorResponse(['success' => false, 'message' => "Invalid email or password. Please try again."], 401);
@@ -54,21 +51,21 @@ class AuthController extends Controller {
         }
     }
     public function logout() {
-        session_destroy();
-        header('Location: /');
-        exit;
+        header('Content-Type: application/json');
+        $this->sendSuccessResponse(['success' => true, 'message' => 'Logged out successfully'], 200);
     }
+    
     public function getLoggedInUser() {
-        $user = $_SESSION['loggedInUser'] ?? null;
+        header('Content-Type: application/json');
         try{
-        if (!$user && isset($_SESSION['loggedInUserId'])) {
-            $user = $this->userService->getUserById((int) $_SESSION['loggedInUserId']);
-            if ($user) {
-                $_SESSION['loggedInUser'] = $user;
+            // Validate JWT token from Authorization header
+            $userId = JWTMiddleware::getUserIdFromToken();
+            $user = $this->userService->getUserById($userId);
+            
+            if (!$user) {
+                throw new \Exception('User not found', 401);
             }
-        }
-
-        if ($user) {
+            
             $this->sendSuccessResponse([
                 'success' => true,
                 'loggedIn' => true,
@@ -81,16 +78,10 @@ class AuthController extends Controller {
                     'swapTokens' => $user->swapTokens,
                 ],
             ], 200);
-            return;
-        }
-        $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => 'No user logged in'], 401);
-        
         } catch (\Exception $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => 'An error occurred while fetching user data.'], 500);
-            return;
+            $code = $e->getCode() ?: 500;
+            $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => $e->getMessage()], $code);
         }
-         
-
     }
     public function signUp(){
 

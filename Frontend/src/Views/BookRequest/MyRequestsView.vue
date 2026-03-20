@@ -1,52 +1,34 @@
 <script setup>
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost';
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import ListingsFilterButtonBar from '@/components/ListingsFilterButtonBar.vue';
-import { ref, onMounted, watch } from 'vue'
-import { useAuth } from '@/composables/useAuth.js'
+import { onMounted, watch } from 'vue'
+import { useAuthStore } from '@/stores/auth.js'
+import { useBookRequestsStore } from '@/stores/bookRequests.js'
 import BookSwapRequestCard from '@/components/BookSwapRequestCard.vue'
 
-const { authState } = useAuth()
-const requests = ref([])
+const authStore = useAuthStore()
+const bookRequestsStore = useBookRequestsStore()
 const route = useRoute()
-
-const fetchRequests = async (status = null) => {
-  if (!authState.user?.id) {
-    console.log('User ID not available yet')
-    return
-  }
-  
-  try {
-    const response = await fetch(`${apiBaseUrl}/getMyBookRequests?id=${authState.user.id}&status=${status || route.query.status || 'all'}`, {
-      credentials: 'include'
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}  ${response.statusText}`);
-    }
-    const data = await response.json()
-    requests.value = data.bookRequests || []
-    console.log('Fetched requests:', requests.value)
-  } catch (error) {
-    console.log('Error fetching book requests:', error.message || error);
-  }
-}
 
 // Watch for filter changes
 watch(() => route.query.status, () => {
-  if (authState.user?.id) {
-    fetchRequests()
+  if (authStore.user?.id) {
+    const status = route.query.status || 'all'
+    bookRequestsStore.fetchMyRequests(authStore.user.id, status)
   }
 })
 
 onMounted(async () => {
-  if (authState.user?.id) {
-    await fetchRequests()
+  if (authStore.user?.id) {
+    const status = route.query.status || 'all'
+    await bookRequestsStore.fetchMyRequests(authStore.user.id, status)
   } else {
     // Wait for user to load (max 5 seconds)
     const checkUser = setInterval(() => {
-      if (authState.user?.id) {
+      if (authStore.user?.id) {
         clearInterval(checkUser)
-        fetchRequests()
+        const status = route.query.status || 'all'
+        bookRequestsStore.fetchMyRequests(authStore.user.id, status)
       }
     }, 100)
     setTimeout(() => clearInterval(checkUser), 5000)
@@ -62,7 +44,7 @@ onMounted(async () => {
     </header>
     <div class="flex flex-col gap-4">
       <BookSwapRequestCard
-        v-for="(request, index) in requests"
+        v-for="(request, index) in bookRequestsStore.myRequests"
         :key="request.id"
         :request="request"
         :reverse="index % 2 === 0"

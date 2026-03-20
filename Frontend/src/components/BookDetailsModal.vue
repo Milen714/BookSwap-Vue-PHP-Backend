@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
 import BookDetailsHeader from '@/components/BookDetailsHeader.vue'
 import ModalManual from '@/components/organisms/ModalManual.vue'
 import Description from '@/components/molecules/ModalBookDescription.vue'
@@ -15,18 +15,18 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'request-book', 'open-chat'])
 
-const { authState } = useAuth()
+const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 
 const isRequesteeDetailsView = computed(() => route.path.includes('/requesteeDetails'))
-const isLoggedIn = computed(() => !!authState.user)
-const userTokens = computed(() => authState.user?.swapTokens ?? 0)
+const isLoggedIn = computed(() => !!authStore.user)
+const userTokens = computed(() => authStore.user?.swapTokens ?? 0)
 const isOwnBook = computed(() => {
   if (!isLoggedIn.value) {
     return false
   }
-  return props.book?.shared_by?.id === authState.user?.id
+  return props.book?.shared_by?.id === authStore.user?.id
 })
 
 const bookDescription = computed(() => props.book?.description || 'No description available.')

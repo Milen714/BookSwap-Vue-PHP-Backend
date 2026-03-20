@@ -1,5 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.js'
+const authStore = useAuthStore()
 const emit = defineEmits(['open-chat'])
 const props = defineProps({
     book: {
@@ -62,7 +64,7 @@ const openChat = () => {
                 <li><strong>Owner's Location:</strong> {{ book?.shared_by?.state || '-' }}</li>
               </ul>
               <button 
-              v-if="isLoggedIn"
+              v-if="isLoggedIn && book?.shared_by.id !== authStore.user?.id"
               class="button_primary mt-2" 
               type="button"
               @click="openChat" 

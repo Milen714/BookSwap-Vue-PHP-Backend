@@ -1,9 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-@import 'tailwindcss';
 
-@theme {
-  --font-montserrat: 'Montserrat', sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   body {
@@ -20,6 +19,22 @@
   .bg-colors{
     @apply bg-[#F2F0EF] dark:bg-[#0F0F0F];
 }
+
+  /* Custom styles for forms */
+  .input_group{
+        @apply flex flex-col mb-4 text-colors;
+    }  
+    /* .input_label{
+        @apply font-semibold block mb-2 text-sm  text-black dark:text-black;
+    }  */
+    .input_label{
+        @apply block mb-2 text-sm font-medium ;
+    }
+    .form_input{
+        @apply w-full block min-w-0 grow bg-gray-200 py-1.5 pr-3 pl-1 rounded-md text-base
+         text-black placeholder:text-gray-500 sm:text-sm/6
+         focus:outline-none focus:ring-2 focus:ring-blue-500;
+    }
 
   /* Custom button styles */
   .button_primary{

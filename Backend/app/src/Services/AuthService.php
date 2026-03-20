@@ -10,7 +10,6 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\config\Secrets;
 class AuthService implements IAuthService{
-    private const JWT_ALGORITHM = 'HS256';
     private ?User $user = null;
     private UserService $userService;
     private UserRepository $userRepository;
@@ -64,12 +63,12 @@ class AuthService implements IAuthService{
             ],
         ];
         
-        return JWT::encode($payload, Secrets::$secretKey, self::JWT_ALGORITHM);
+        return JWT::encode($payload, Secrets::$secretKey, Secrets::JWT_ALGORITHM);
     }
     public function validateToken(string $token): bool
     {
         try {
-            $decoded = JWT::decode($token, new Key(Secrets::$secretKey, self::JWT_ALGORITHM));
+            $decoded = JWT::decode($token, new Key(Secrets::$secretKey, Secrets::JWT_ALGORITHM));
             
             // Validate required claims
             if (!isset($decoded->iss) || !isset($decoded->aud) || !isset($decoded->exp)) {
@@ -89,7 +88,7 @@ class AuthService implements IAuthService{
     public function getUserFromToken(string $token): ?User
     {
         try { 
-            $decoded = JWT::decode($token, new Key(Secrets::$secretKey, self::JWT_ALGORITHM));
+            $decoded = JWT::decode($token, new Key(Secrets::$secretKey, Secrets::JWT_ALGORITHM));
         } catch (\Exception $e) {
             return null; // Invalid token
         }

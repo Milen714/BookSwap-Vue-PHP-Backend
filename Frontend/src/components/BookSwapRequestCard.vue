@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
 import BookPostCard from '@/components/BookPostCard.vue'
 
 const props = defineProps({
@@ -16,7 +16,7 @@ const props = defineProps({
 
 const emit = defineEmits(['status-update', 'pay-shipping', 'cancel-request', 'report-issue', 'takedown-post'])
 
-const { authState } = useAuth()
+const authStore = useAuthStore()
 
 const isAlternate = computed(() => {
   return props.reverse
@@ -27,8 +27,8 @@ const flexReverse = computed(() => {
 })
 
 const isOwner = computed(() => {
-  if (!authState.user) return false
-  return authState.user.id === props.request?.owner?.id
+  if (!authStore.user) return false
+  return authStore.user.id === props.request?.owner?.id
 })
 
 const statusSteps = ['SHIPPINGPAID', 'SHIPPED', 'DELIVERED', 'COMPLETED']
@@ -133,7 +133,7 @@ const handleReportIssue = () => {
   >
     <!-- Book Display -->
     <div class="w-min">
-      <BookPostCard :book="request.book" :loggedInUserId="authState.user?.id" />
+      <BookPostCard :book="request.book" :loggedInUserId="authStore.user?.id" />
       
     </div>
 

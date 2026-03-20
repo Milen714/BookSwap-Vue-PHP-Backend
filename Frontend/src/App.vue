@@ -3,12 +3,12 @@ import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
 import MainNav from '@/components/organisms/MainNav.vue'
 import MainFooter from '@/components/organisms/MainFooter.vue'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
 
-const { fetchLoggedInUser } = useAuth()
+const authStore = useAuthStore()
 
 onMounted(() => {
-  fetchLoggedInUser()
+  authStore.fetchLoggedInUser()
 })
 </script>
 

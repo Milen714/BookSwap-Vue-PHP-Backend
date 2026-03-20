@@ -24,7 +24,7 @@ class BookController extends Controller
     
     public function __construct() {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
         $this->bookRepository = new BookRepository();
         $this->bookService = new BookService($this->bookRepository);
         $this->redisClient = new RedisClient([
@@ -52,8 +52,7 @@ class BookController extends Controller
         
         try {
             $book = $this->bookService->getBookByISBNFromGoogleApi($isbn);
-            header('Content-Type: application/json');
-            echo json_encode($book);
+            $this->sendSuccessResponse(['success' => true, 'book' => $book], 200);
         } catch (\Exception $e) {
             header('Content-Type: application/json');
             http_response_code(400);

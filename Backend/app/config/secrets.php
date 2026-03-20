@@ -12,6 +12,7 @@ $BOOKS_API_KEY = getenv('BOOKS_API_KEY') ?: '';
 
 class Secrets
 {
+    public const JWT_ALGORITHM = 'HS256';
     public static string $secretKey;
     public static string $domain;
     public static int $tokenExpirationHours;

@@ -1,13 +1,15 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import axios from 'axios'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
+import { useUIStore } from '@/stores/ui.js'
+import { useTheme } from '@/composables/useTheme.js'
 
-const { authState } = useAuth()
+const authStore = useAuthStore()
+const uiStore = useUIStore()
+const { isDark, toggleTheme } = useTheme()
 
-const isMenuOpen = ref(false)   
-const isUserMenuOpen = ref(false)
 const route = useRoute()
 const router = useRouter()
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
@@ -15,17 +17,13 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
 const isActive = (path) => route.path === path
 
 const userInitials = computed(() => {
-    const first = authState.user?.fname?.[0] ?? ''
-    const last = authState.user?.lname?.[0] ?? ''
+    const first = authStore.user?.fname?.[0] ?? ''
+    const last = authStore.user?.lname?.[0] ?? ''
     const initials = `${first}${last}`.toUpperCase()
     return initials || 'U'
 })
 
-const credits = computed(() => authState.user?.swapTokens ?? 0)
-
-const toggleUserMenu = () => {
-    isUserMenuOpen.value = !isUserMenuOpen.value
-}
+const credits = computed(() => authStore.user?.swapTokens ?? 0)
 
 const logout = async () => {
     try {
@@ -33,9 +31,8 @@ const logout = async () => {
     } catch (error) {
         console.error('Logout error:', error)
     } finally {
-        authState.isLoggedIn = false
-        authState.user = null
-        isUserMenuOpen.value = false
+        authStore.clearAuth()
+        uiStore.closeUserMenu()
         router.push('/login')
     }
 }
@@ -53,8 +50,8 @@ const logout = async () => {
                 type="button"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-700 md:hidden"
                 aria-controls="navbar-multi-level-dropdown"
-                :aria-expanded="isMenuOpen"
-                @click="isMenuOpen = !isMenuOpen"
+                :aria-expanded="uiStore.isNavMenuOpen"
+                @click="uiStore.toggleNavMenu"
             >
                 <span class="sr-only">Open main menu</span>
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -62,14 +59,14 @@ const logout = async () => {
                 </svg>
             </button>
 
-            <div id="navbar-multi-level-dropdown" class="w-full md:block md:w-auto " :class="isMenuOpen ? 'block' : 'hidden'">
-                <ul v-if="!authState.isLoggedIn" class="font-bold text-colors mt-4 flex flex-col items-center gap-2 rounded-lg border border-gray-300 bg-colors p-4 shadow-lg md:mt-0 md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none">
+            <div id="navbar-multi-level-dropdown" class="w-full md:block md:w-auto " :class="uiStore.isNavMenuOpen ? 'block' : 'hidden'">
+                <ul v-if="!authStore.isLoggedIn" class="font-bold text-colors mt-4 flex flex-col items-center gap-2 rounded-lg border border-gray-300 bg-colors p-4 shadow-lg md:mt-0 md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none">
                     <li>
                         <RouterLink
                             to="/"
                             class="block rounded px-3 py-2 font-bold"
                             :class="isActive('/') ? 'text-blue-600' : 'text-colors'"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                             Browse
                         </RouterLink>
@@ -79,7 +76,7 @@ const logout = async () => {
                             to="/login"
                             class="block rounded px-3 py-2"
                             :class="isActive('/login') ? 'text-blue-600' : 'text-colors'"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                             Login
                         </RouterLink>
@@ -88,7 +85,7 @@ const logout = async () => {
                         <RouterLink
                             to="/signup"
                             class="block rounded px-3 py-2 text-colors"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                             Signup
                         </RouterLink>
@@ -101,7 +98,7 @@ const logout = async () => {
                             to="/"
                             class="block rounded px-3 py-2"
                             :class="isActive('/') ? 'text-blue-600' : 'text-colors'"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                             Browse
                         </RouterLink>
@@ -111,27 +108,27 @@ const logout = async () => {
                             to="/addBook"
                             class="block rounded px-3 py-2"
                             :class="isActive('/addBook') ? 'text-blue-600' : 'text-colors'"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                            List a Book
                         </RouterLink>
                     </li>
                     <li>
                         <RouterLink
-                            :to="`/myListings/?id=${authState.user?.id}&status=all`"
+                            :to="`/myListings/?id=${authStore.user?.id}&status=all`"
                             class="block rounded px-3 py-2"
                             :class="route.path.includes('/myListings') ? 'text-blue-600' : 'text-colors'"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                             My Listings
                         </RouterLink>
                     </li>
                     <li>
                         <RouterLink
-                            :to="`/myRequests/?id=${authState.user?.id}&status=all`"
+                            :to="`/myRequests/?id=${authStore.user?.id}&status=all`"
                             class="block rounded px-3 py-2"
                             :class="route.path.includes('/myRequests') ? 'text-blue-600' : 'text-colors'"
-                            @click="isMenuOpen = false"
+                            @click="uiStore.closeNavMenu"
                         >
                             My Requests
                         </RouterLink>
@@ -140,13 +137,30 @@ const logout = async () => {
 
                 
             </div>
-            <div v-if="authState.isLoggedIn" class="relative mt-3 flex flex-row items-center justify-center gap-2 md:mt-0">
+            <div v-if="authStore.isLoggedIn" class="relative mt-3 flex flex-row items-center justify-center gap-2 md:mt-0">
+                    <!-- Theme toggle button -->
+                    <button
+                        id="themeToggle"
+                        type="button"
+                        class="inline-flex items-center rounded-full bg-[#CBCBCB] p-2 hover:bg-[#b5b5b5] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#222222] dark:hover:bg-[#3a3a3a]"
+                        @click="toggleTheme"
+                        :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                    >
+                        <svg v-if="isDark" class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <svg v-else class="h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                        <span class="sr-only">Toggle theme</span>
+                    </button>
+
                     <button
                         id="userMenuButton"
                         type="button"
-                        :aria-expanded="isUserMenuOpen"
+                        :aria-expanded="uiStore.isUserMenuOpen"
                         class="inline-flex items-center rounded-full bg-[#CBCBCB] p-2 font-semibold text-black hover:bg-[#b5b5b5] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#222222] dark:text-white dark:hover:bg-[#3a3a3a]"
-                        @click="toggleUserMenu"
+                        @click="uiStore.toggleUserMenu"
                     >
                         <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-black dark:bg-[#151819] dark:text-white">
                             {{ userInitials }}
@@ -155,13 +169,13 @@ const logout = async () => {
                     </button>
 
                     <div
-                        v-if="isUserMenuOpen"
+                        v-if="uiStore.isUserMenuOpen"
                         id="userMenuDropdown"
                         class="absolute right-0 top-full z-50 mt-2 w-44 rounded-lg border border-[#2C3233] bg-[#F2F0EF] shadow-lg dark:bg-[#0F0F0F]"
                     >
                         <ul class="py-1 text-sm text-colors" aria-labelledby="userMenuButton">
                             <li>
-                                <RouterLink to="/settings" class="block rounded-md px-4 py-2 hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="isUserMenuOpen = false">
+                                <RouterLink to="/settings" class="block rounded-md px-4 py-2 hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="uiStore.closeUserMenu">
                                     Settings
                                 </RouterLink>
                             </li>

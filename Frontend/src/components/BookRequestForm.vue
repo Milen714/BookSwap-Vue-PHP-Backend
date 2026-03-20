@@ -1,10 +1,10 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '@/composables/useAuth.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost'
-const { authState } = useAuth()
+const authStore = useAuthStore()
 const router = useRouter()
 
 // Props
@@ -41,9 +41,9 @@ const formData = reactive({
 
 // Toggle address form and load profile address if checked
 const toggleAddressForm = async () => {
-  if (useProfileAddress.value && authState.user?.id) {
+  if (useProfileAddress.value && authStore.user?.id) {
     try {
-      const response = await fetch(`${apiBaseUrl}/getProfileAddress/${authState.user.id}`, {
+      const response = await fetch(`${apiBaseUrl}/getProfileAddress/${authStore.user.id}`, {
         credentials: 'include',
       })
       
