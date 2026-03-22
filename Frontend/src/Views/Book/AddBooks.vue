@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import AddBook from '@/components/AddBookForm.vue'
+import AddBookForm from '@/components/AddBookForm.vue'
 import Spinner from '@/components/molecules/Spinner.vue'
 import BookPreview from '@/components/BookPreview.vue'
 import { useBooksStore } from '@/stores/books.js'
@@ -15,7 +15,7 @@ const hasPreview = computed(() => !!booksStore.previewBook)
         <header>
             <h1 class="text-center m-5 text-3xl font-semibold text-colors">List Your Book</h1>
         </header>
-        <AddBook />
+        <AddBookForm />
         <Spinner v-if="isLoading" />
         <BookPreview v-if="hasPreview" />
     </section>

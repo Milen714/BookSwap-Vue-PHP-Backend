@@ -35,7 +35,11 @@ const router = createRouter({
     },
     {
         path: '/addBook', name: 'add-book', component: AddBook,
-    }
+    },
+    {
+        path: '/:catchAll(.*)', name: 'not-found', component: AddBook,
+    },
+
 ]
 });
 

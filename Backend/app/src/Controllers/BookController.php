@@ -191,4 +191,16 @@ class BookController extends Controller
             $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching books: ' . $e->getMessage()], 500);
         }
     }
+
+    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    public function getAllGenres($vars = [])
+    {
+        header('Content-Type: application/json');
+        try {
+            $genres = $this->bookService->getBooksGenres();
+            $this->sendSuccessResponse(['success' => true, 'genres' => $genres], 200);
+        } catch (\Exception $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres: ' . $e->getMessage()], 500);
+        }
+    }
 }

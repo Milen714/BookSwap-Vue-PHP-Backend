@@ -77,6 +77,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/api/logout', ['App\Controllers\AuthController', 'logout']);
     $r->addRoute('GET', '/getLoggedInUser', ['App\Controllers\AuthController', 'getLoggedInUser']);
     $r->addRoute('GET', '/getAllBooks', ['App\Controllers\BookController', 'getAllBooks']);
+    $r->addRoute('GET', '/getAllGenres', ['App\Controllers\BookController', 'getAllGenres']);
     $r->addRoute('POST', '/signUp', ['App\Controllers\AuthController', 'signUp']);
     $r->addRoute('GET', '/getBookDetails', ['App\Controllers\BookController', 'getBookDetails']);
     $r->addRoute('GET', '/getBookSwapStatusses', ['App\Controllers\BookRequestController', 'getBookSwapStatusses']);

@@ -4,6 +4,7 @@ import BookPostCard from '@/components/BookPostCard.vue'
 import BookDetailsModal from '@/components/BookDetailsModal.vue'
 import BookRequestForm from '@/components/BookRequestForm.vue'
 import Pagination from '@/components/Pagination.vue'
+import Filter from '@/components/BookSearchFilter.vue'
 import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.js'
@@ -48,6 +49,7 @@ onMounted(() => {
   <HeroSection />
   <section class="mx-auto max-w-6xl">
     <h1 class="mb-6 text-center text-2xl font-bold text-colors">Welcome to BookSwap</h1>
+    <Filter />
     <div class="flex justify-center flex-wrap gap-6">
       <BookPostCard
         v-for="book in booksStore.books"
