@@ -5,7 +5,7 @@ import axios from '@/utils/axios.js'
 export const useChatStore = defineStore('chat', () => {
   // State
   const messages = ref([])
-  const conversations = ref([])
+  const partners = ref([])
   const activeConversationId = ref(null)
   const currentUserId = ref(null)
   const currentRecipientId = ref(null)
@@ -36,7 +36,7 @@ export const useChatStore = defineStore('chat', () => {
       
       if (response.data?.success && response.data.user) {
         currentRecipientInfo.value = response.data.user
-        console.log('Fetched recipient info:', currentRecipientInfo.value)
+        //console.log('Fetched recipient info:', currentRecipientInfo.value)
       }
     } catch (err) {
       console.error('Error fetching recipient info:', err)
@@ -82,25 +82,25 @@ export const useChatStore = defineStore('chat', () => {
    * Fetch all conversations for the user
    * @param {number|string} userId - User ID
    */
-  async function fetchConversations(userId) {
+  async function fetchChatPartners(userId) {
     loading.value = true
     error.value = null
 
     try {
       const response = await axios.get(
-        `/getConversations?userId=${userId}`
+        `/getChatPartners`
       )
 
-      if (response.data?.success && Array.isArray(response.data.conversations)) {
-        conversations.value = response.data.conversations
-        console.log('Fetched conversations:', conversations.value)
+      if (response.data?.success && Array.isArray(response.data.partners)) {
+        partners.value = response.data.partners
+        console.log('Fetched chat partners:', partners.value)
       } else {
-        conversations.value = []
+        partners.value = []
       }
     } catch (err) {
-      console.error('Error fetching conversations:', err)
-      error.value = err.message || 'Failed to fetch conversations'
-      conversations.value = []
+      console.error('Error fetching chat partners:', err)
+      error.value = err.message || 'Failed to fetch chat partners'
+      partners.value = []
     } finally {
       loading.value = false
     }
@@ -119,7 +119,7 @@ export const useChatStore = defineStore('chat', () => {
     
 
     try {
-      socket.value = new WebSocket(`ws://localhost:6001/?token=${token}`)
+      socket.value = new WebSocket(`ws://localhost:6001/?token=${encodeURIComponent(token)}`)
 
       socket.value.onopen = () => {
         console.log('Connected to WebSocket chat server')
@@ -242,7 +242,7 @@ export const useChatStore = defineStore('chat', () => {
   return {
     // State
     messages,
-    conversations,
+    partners,
     activeConversationId,
     currentUserId,
     currentRecipientId,
@@ -255,7 +255,7 @@ export const useChatStore = defineStore('chat', () => {
     activeMessages,
     // Actions
     fetchMessages,
-    fetchConversations,
+    fetchChatPartners,
     fetchRecipientInfo,
     initWebSocket,
     addMessage,

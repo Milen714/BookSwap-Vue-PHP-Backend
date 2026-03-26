@@ -77,11 +77,16 @@ class ChatController extends Controller
             
             // Save to database
             $this->directMessageService->saveDirectMessage($directMessage);
+            
+            // Get the current timestamp (same as what DB sets)
+            $createdAt = date('Y-m-d H:i:s');
+            
             // Publish to Redis for real-time delivery
             $this->redisClient->publish('chat-channel', json_encode([
                 'senderId' =>  $senderId,
                 'recipientId' => $recipientId,
                 'message' => $directMessage->message,
+                'created_at' => $createdAt,
             ]));
             // Return success response
             echo json_encode(['success' => true]);
@@ -100,6 +105,17 @@ class ChatController extends Controller
         } catch (\Exception $e) {
             http_response_code(401);
             exit();
+        }
+    }
+    public function getChatPartners($vars = []) {
+        header('Content-Type: application/json');
+        try {
+            $userId = JWTMiddleware::getUserIdFromToken();
+            $partners = $this->directMessageService->getMyChatPartners($userId);
+            echo json_encode(['success' => true, 'partners' => $partners]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to retrieve chat partners']);
         }
     }
 }

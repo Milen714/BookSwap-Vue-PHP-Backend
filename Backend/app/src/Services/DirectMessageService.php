@@ -16,7 +16,10 @@ class DirectMessageService implements IDirectMessageService
         return $this->directMessageRepository->saveDirectMessage($directMessage);
     }
 
-    public function getDirectMessages($userId1, $userId2) {
+    public function getDirectMessages($userId1, $userId2) : array {
         return $this->directMessageRepository->getDirectMessages($userId1, $userId2);
+    }
+    public function getMyChatPartners($userId): array {
+        return $this->directMessageRepository->getMyChatPartners($userId);
     }
 }

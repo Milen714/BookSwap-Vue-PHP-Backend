@@ -88,6 +88,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/getChatMessages', ['App\Controllers\ChatController', 'getChatMessages']);
     $r->addRoute('GET', '/getConversations', ['App\Controllers\ChatController', 'getConversations']);
     $r->addRoute('POST', '/sendDirectMessage', ['App\Controllers\ChatController', 'sendDirectMessage']);
+    $r->addRoute('GET', '/getChatPartners', ['App\Controllers\ChatController', 'getChatPartners']);
 });
 
 

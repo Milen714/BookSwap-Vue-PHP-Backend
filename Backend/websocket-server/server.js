@@ -45,7 +45,7 @@ async function start() {
 
 start();
 
-const JWT_SECRET = process.env.JWT_SECRET_KEY || 'key_for_jwt_signing_should_be_secure_and_env_var';
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'default_secret_key';
 
 wss.on('connection', (ws, request) => {
     const parameters = url.parse(request.url, true).query;
@@ -58,10 +58,15 @@ wss.on('connection', (ws, request) => {
     }
 
     try {
+        console.log('Attempting to verify token with secret:', JWT_SECRET);
+        console.log('Token received:', token.substring(0, 50) + '...');
+        
         const decoded = jwt.verify(token, JWT_SECRET);
-        ws.userId = decoded.userId;
+        console.log('Token verified successfully. User data:', decoded.data);
+        ws.userId = decoded.data.id;
     } catch (error) {
         console.log('Connection rejected: Invalid token');
+        console.log('Verification error:', error.message);
         ws.close(4001, 'Invalid authentication token');
         return;
     }

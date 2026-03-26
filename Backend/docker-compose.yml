@@ -51,6 +51,8 @@ services:
             - "${WS_PORT:-6001}:8080"
         depends_on:
             - redis
+        env_file:
+            - .env
         environment:
             # This tells Node.js how to find the Redis container
             - REDIS_URL=redis://redis:6379

@@ -5,5 +5,6 @@ use App\Models\DirectMessage;
 interface IDirectMessageRepository
 {
     public function saveDirectMessage(DirectMessage $directMessage);
-    public function getDirectMessages($userId1, $userId2);
+    public function getDirectMessages($userId1, $userId2) : array;
+    public function getMyChatPartners($userId): array;
 }

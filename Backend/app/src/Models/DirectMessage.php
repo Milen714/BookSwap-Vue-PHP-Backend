@@ -21,5 +21,15 @@ class DirectMessage
         $dm->created_at = !empty($data['created_at']) ? new \DateTime($data['created_at']) : new \DateTime();
         return $dm;
     }
+    public function fromPDOArray(array $data): DirectMessage {
+        $dm = new DirectMessage();
+        $dm->id = $data['id'] ?? null;
+        $dm->senderId = $data['sender_id'] ?? null;
+        $dm->recipientId = $data['recipient_id'] ?? null;
+        $dm->message = $data['message'] ?? null;
+        $dm->is_read = isset($data['is_read']) ? (bool)$data['is_read'] : false;
+        $dm->created_at = !empty($data['created_at']) ? new \DateTime($data['created_at']) : new \DateTime();
+        return $dm;
+    }
 
 }
