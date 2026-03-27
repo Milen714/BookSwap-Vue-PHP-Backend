@@ -61,6 +61,23 @@ const logout = async () => {
             <div id="navbar-multi-level-dropdown" class="w-full md:block md:w-auto " :class="uiStore.isNavMenuOpen ? 'block' : 'hidden'">
                 <ul v-if="!authStore.isLoggedIn" class="font-bold text-colors mt-4 flex flex-col items-center gap-2 rounded-lg border border-gray-300 bg-colors p-4 shadow-lg md:mt-0 md:flex-row md:gap-6 md:border-0 md:bg-transparent md:p-0 md:shadow-none">
                     <li>
+                        <button
+                        id="themeToggle"
+                        type="button"
+                        class="inline-flex items-center rounded-full bg-[#CBCBCB] p-2 hover:bg-[#b5b5b5] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#222222] dark:hover:bg-[#3a3a3a]"
+                        @click="toggleTheme"
+                        :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+                    >
+                        <svg v-if="isDark" class="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <svg v-else class="h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                        <span class="sr-only">Toggle theme</span>
+                    </button>
+                    </li>
+                    <li>
                         <RouterLink
                             to="/"
                             class="block rounded px-3 py-2 font-bold"
@@ -130,6 +147,16 @@ const logout = async () => {
                             @click="uiStore.closeNavMenu"
                         >
                             My Requests
+                        </RouterLink>
+                    </li>
+                    <li>
+                        <RouterLink
+                            :to="`/chat`"
+                            class="block rounded px-3 py-2"
+                            :class="route.path.includes('/chat') ? 'text-blue-600' : 'text-colors'"
+                            @click="uiStore.closeNavMenu"
+                        >
+                            My Chats
                         </RouterLink>
                     </li>
                 </ul>

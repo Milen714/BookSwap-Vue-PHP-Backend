@@ -153,10 +153,25 @@ export const useChatStore = defineStore('chat', () => {
    * @param {Object} message - Message object
    */
   function addMessage(message) {
-    // Normalize message format from WebSocket (camelCase to snake_case)
+    // Only add the message if it's for the current conversation
+    const senderId = message.sender_id || message.senderId
+    const recipientId = message.recipient_id || message.recipientId
+    
+    // Check if this message is for the current conversation
+    // It should be between the current user and the currently selected recipient
+    const isForCurrentConversation = 
+      (senderId === currentUserId.value && recipientId === currentRecipientId.value) ||
+      (senderId === currentRecipientId.value && recipientId === currentUserId.value)
+    
+    // Only add if it's for the current conversation, or if no specific conversation is selected
+    if (!isForCurrentConversation && currentRecipientId.value !== null) {
+      console.log('Message is not for current conversation, ignoring:', message)
+      return
+    }
+    
     const normalizedMessage = {
-      sender_id: message.sender_id || message.senderId,
-      recipient_id: message.recipient_id || message.recipientId,
+      sender_id: senderId,
+      recipient_id: recipientId,
       message: message.message,
       created_at: message.created_at || new Date().toISOString(),
       id: message.id || `ws-${Date.now()}-${Math.random()}`
