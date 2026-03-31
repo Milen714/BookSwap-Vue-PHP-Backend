@@ -163,7 +163,7 @@ const handleReportIssue = () => {
     </div>
 
     <!-- Request Details -->
-    <div class="flex flex-col items-center w-full">
+    <div class="flex flex-col items-center justify-center text-center w-full">
       <div class="w-full">
         <!-- Error Message -->
         <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-100 rounded">
@@ -181,7 +181,7 @@ const handleReportIssue = () => {
 
         <!-- Progress Bar -->
         <div class="request-progress-bar">
-          <div class="flex flex-row items-center justify-between gap-5">
+          <div class="flex flex-row items-center justify-center gap-5">
             <template v-if="request.status !== 'TAKENDOWN'">
               <div v-for="(step, idx) in statusSteps" :key="idx" :class="stepStyles[idx]">
                 <div class="step-number">
@@ -214,6 +214,7 @@ const handleReportIssue = () => {
                   class="inline-flex items-center justify-center rounded-lg border border-red-500/60 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleTakedownPost"
                 >
+                <i class="pi pi-times mr-1"></i>
                   {{ isUpdating ? 'Updating...' : 'Take down post' }}
                 </button>
               </template>
@@ -223,6 +224,7 @@ const handleReportIssue = () => {
                   class="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handlePayShipping"
                 >
+                <i class="pi pi-money-bill mr-1"></i>
                   Pay for Shipping
                 </button>
                 <button
@@ -230,6 +232,7 @@ const handleReportIssue = () => {
                   class="inline-flex items-center justify-center rounded-lg border border-red-500/60 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleCancelRequest"
                 >
+                  <i class="pi pi-times mr-1"></i>
                   Cancel request
                 </button>
               </template>
@@ -257,6 +260,7 @@ const handleReportIssue = () => {
                 <span
                   class="inline-flex items-center rounded-full border border-blue-500/40 bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-300"
                 >
+                <i class="pi pi-clock mr-1"></i>
                   Waiting for shipment...
                 </span>
                 <button
@@ -264,6 +268,7 @@ const handleReportIssue = () => {
                   class="inline-flex items-center justify-center rounded-lg border border-red-500/60 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleCancelRequest"
                 >
+                  <i class="pi pi-times mr-1"></i>
                   Cancel request
                 </button>
               </template>
@@ -275,6 +280,7 @@ const handleReportIssue = () => {
                 <span
                   class="inline-flex items-center rounded-full border border-blue-400 bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/20 dark:text-blue-300"
                 >
+                  <i class="pi pi-clock mr-1"></i>
                   In transit...
                 </span>
               </template>
@@ -292,6 +298,7 @@ const handleReportIssue = () => {
                   class="inline-flex items-center justify-center rounded-lg border border-red-500/60 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:ring-offset-[#0F0F0F]"
                   @click="handleReportIssue"
                 >
+                  <i class="pi pi-exclamation-triangle mr-1"></i>
                   Report issue
                 </button>
               </template>
@@ -303,6 +310,7 @@ const handleReportIssue = () => {
                 <span
                   class="inline-flex items-center rounded-full border border-emerald-400 bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/20 dark:text-emerald-300"
                 >
+                  <i class="pi pi-check-circle mr-1"></i>
                   Delivered successfully
                 </span>
               </template>
@@ -323,7 +331,8 @@ const handleReportIssue = () => {
               <span
                 class="inline-flex items-center rounded-full border border-emerald-400 bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/20 dark:text-emerald-300"
               >
-                ✓ Swap Completed
+                <i class="pi pi-check-circle mr-1"></i>
+                Swap Completed
               </span>
             </template>
           </div>

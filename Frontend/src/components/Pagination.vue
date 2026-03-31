@@ -43,7 +43,7 @@ const goToNextPage = () => {
                     <RouterLink :to="`/?genre=${encodeURIComponent(props.genre ?? '')}&search=${encodeURIComponent(props.search ?? '')}&page=${props.currentPage == 1 ? 1 : props.currentPage - 1}`"
                         >
                         <span>
-                            < </span>
+                            <i class="pi pi-chevron-left"></i> </span>
                     </RouterLink>
                 </li>
                
@@ -52,7 +52,7 @@ const goToNextPage = () => {
                     <RouterLink :to="`/?genre=${encodeURIComponent(props.genre ?? '')}&search=${encodeURIComponent(props.search ?? '')}&page=${props.currentPage == props.totalPages ? props.currentPage : props.currentPage + 1}`"
 >
                         <span>
-                            > </span>
+                            <i class="pi pi-chevron-right"></i> </span>
                     </RouterLink>
                 </li>
             </ul>

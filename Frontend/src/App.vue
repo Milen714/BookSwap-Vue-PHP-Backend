@@ -14,7 +14,7 @@ onMounted(() => {
 
 <template>
   <MainNav />
-  <main class="min-h-[75vh] bg-colors  pt-28 pb-8 font-sans">
+  <main class="min-h-[75vh] bg-colors  pt-20 pb-8 font-sans">
     <RouterView />
   </main>
   <MainFooter />

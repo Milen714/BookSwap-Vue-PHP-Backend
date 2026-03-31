@@ -53,9 +53,7 @@ const logout = async () => {
                 @click="uiStore.toggleNavMenu"
             >
                 <span class="sr-only">Open main menu</span>
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
-                </svg>
+                <i class="pi pi-bars text-colors"></i>
             </button>
 
             <div id="navbar-multi-level-dropdown" class="w-full md:block md:w-auto " :class="uiStore.isNavMenuOpen ? 'block' : 'hidden'">
@@ -64,7 +62,7 @@ const logout = async () => {
                         <button
                         id="themeToggle"
                         type="button"
-                        class="inline-flex items-center rounded-full bg-[#CBCBCB] p-2 hover:bg-[#b5b5b5] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#222222] dark:hover:bg-[#3a3a3a]"
+                        class="inline-flex items-center rounded-full bg-colors-secondary p-2  focus:outline-none focus:ring-2 focus:ring-blue-500 "
                         @click="toggleTheme"
                         :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
                     >
@@ -84,8 +82,8 @@ const logout = async () => {
                             :class="isActive('/') ? 'text-blue-600' : 'text-colors'"
                             @click="uiStore.closeNavMenu"
                         >
-                            Browse
-                        </RouterLink>
+                        Browse
+                    </RouterLink>
                     </li>
                     <li>
                         <RouterLink
@@ -116,6 +114,7 @@ const logout = async () => {
                             :class="isActive('/') ? 'text-blue-600' : 'text-colors'"
                             @click="uiStore.closeNavMenu"
                         >
+                        <i class="pi pi-search"></i> 
                             Browse
                         </RouterLink>
                     </li>
@@ -126,7 +125,8 @@ const logout = async () => {
                             :class="isActive('/addBook') ? 'text-blue-600' : 'text-colors'"
                             @click="uiStore.closeNavMenu"
                         >
-                           List a Book
+                           <i class="pi pi-plus"></i> 
+                            List a Book
                         </RouterLink>
                     </li>
                     <li>
@@ -136,6 +136,7 @@ const logout = async () => {
                             :class="route.path.includes('/myListings') ? 'text-blue-600' : 'text-colors'"
                             @click="uiStore.closeNavMenu"
                         >
+                            <i class="pi pi-list"></i>
                             My Listings
                         </RouterLink>
                     </li>
@@ -146,6 +147,7 @@ const logout = async () => {
                             :class="route.path.includes('/myRequests') ? 'text-blue-600' : 'text-colors'"
                             @click="uiStore.closeNavMenu"
                         >
+                            <i class="pi pi-bookmark"></i>
                             My Requests
                         </RouterLink>
                     </li>
@@ -156,6 +158,7 @@ const logout = async () => {
                             :class="route.path.includes('/chat') ? 'text-blue-600' : 'text-colors'"
                             @click="uiStore.closeNavMenu"
                         >
+                            <i class="pi pi-comments"></i>
                             My Chats
                         </RouterLink>
                     </li>
@@ -185,10 +188,10 @@ const logout = async () => {
                         id="userMenuButton"
                         type="button"
                         :aria-expanded="uiStore.isUserMenuOpen"
-                        class="inline-flex items-center rounded-full bg-[#CBCBCB] p-2 font-semibold text-black hover:bg-[#b5b5b5] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-[#222222] dark:text-white dark:hover:bg-[#3a3a3a]"
+                        class="inline-flex items-center rounded-full bg-colors-secondary p-2 font-semibold text-black focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-colors-secondary dark:text-white"
                         @click="uiStore.toggleUserMenu"
                     >
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300 text-black dark:bg-[#151819] dark:text-white">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full  dark:text-white">
                             {{ userInitials }}
                         </span>
                         <span class="sr-only">Toggle user menu</span>
@@ -201,12 +204,20 @@ const logout = async () => {
                     >
                         <ul class="py-1 text-sm text-colors" aria-labelledby="userMenuButton">
                             <li>
+                                <RouterLink to="/profile" class="block rounded-md px-4 py-2 hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="uiStore.closeUserMenu">
+                                    <i class="pi pi-user"></i>
+                                    Profile
+                                </RouterLink>
+                            </li>
+                            <li>
                                 <RouterLink to="/settings" class="block rounded-md px-4 py-2 hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="uiStore.closeUserMenu">
+                                    <i class="pi pi-cog"></i>
                                     Settings
                                 </RouterLink>
                             </li>
                             <li>
                                 <button type="button" class="w-full rounded-md px-4 py-2 text-left hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="logout">
+                                    <i class="pi pi-sign-out"></i>
                                     Logout
                                 </button>
                             </li>

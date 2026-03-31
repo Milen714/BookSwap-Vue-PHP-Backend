@@ -13,6 +13,8 @@ import NotFound from '@/Views/Error/NotFound.vue';
 import ReturnView from '@/Views/Checkout/ReturnView.vue';
 import ForgotPassword from '@/Views/Account/ForgotPasswordView.vue';
 import ResetPasswordView from '@/Views/Account/ResetPasswordView.vue';
+import AccountSettingsView from '@/Views/Account/AccountSettingsView.vue';
+import ProfileView from '@/Views/Profile/ProfileView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +33,18 @@ const router = createRouter({
     },
     {
         path: '/reset-password', name: 'reset-password', component: ResetPasswordView,
+    },
+    {
+        path: '/settings', name: 'account-settings', component: AccountSettingsView, meta: { requiresAuth: true }
+    },
+    {
+        path: '/settings/profile', name: 'profile-settings', component: AccountSettingsView, meta: { requiresAuth: true }
+    },
+    {
+        path: '/settings/security', name: 'security-settings', component: AccountSettingsView, meta: { requiresAuth: true }
+    },
+    {
+        path: '/settings/shipping', name: 'shipping-settings', component: AccountSettingsView, meta: { requiresAuth: true }
     },
     {
         path: '/myRequests', 
@@ -66,6 +80,18 @@ const router = createRouter({
         path: '/return', 
         name: 'return', 
         component: ReturnView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile', 
+        name: 'profile', 
+        component: ProfileView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/profile/:userId', 
+        name: 'user-profile', 
+        component: ProfileView,
         meta: { requiresAuth: true }
     },
     {

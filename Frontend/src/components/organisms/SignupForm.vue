@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import InputGroup from '@/components/organisms/InputGroup.vue'
 import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
 import axios from '@/utils/axios.js'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
@@ -12,11 +13,21 @@ const router = useRouter()
 const showError = ref(false)
 const showSuccess = ref(false)
 const message = ref('')
+const email = ref('')
 const password = ref('')
+const fname = ref('')
+const lname = ref('')
+const country = ref('')
+const address = ref('')
+const state = ref('')
+const post_code = ref('')
+const phone_number = ref('')
+
 const passwordFeedback = computed(() => getPasswordFeedback(password.value))
 const isPasswordValid = computed(() => isPasswordStrong(password.value))
 
 const handleSignup = async (event) => {
+  event.preventDefault()
   showError.value = false
   showSuccess.value = false
   message.value = ''
@@ -28,16 +39,16 @@ const handleSignup = async (event) => {
     return
   }
 
-  const formData = new FormData(event.target);
   const data = {
-    email: formData.get('email'),
-    password: formData.get('password'),
-    fname: formData.get('fname'),
-    lname: formData.get('lname'),
-    country: formData.get('country'),
-    address: formData.get('address'),
-    state: formData.get('state'),
-    post_code: formData.get('post_code'),
+    email: email.value,
+    password: password.value,
+    fname: fname.value,
+    lname: lname.value,
+    country: country.value,
+    address: address.value,
+    state: state.value,
+    post_code: post_code.value,
+    phone_number: phone_number.value,
   }
 
 
@@ -75,59 +86,104 @@ const handleSignup = async (event) => {
 </script>
 
 <template>
-  <article class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-    <h1 class="text-center m-5 text-gray-800 font-serif text-2xl">Signup Page</h1>
+  <article class="max-w-md mx-auto bg-colors-secondary-light text-colors p-6 rounded-md shadow-md">
+    <h1 class="text-center m-5 text-colors font-serif text-2xl">Signup Page</h1>
 
-    <form @submit.prevent="handleSignup">
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email:</label>
-        <input class="form_input" type="email" id="email" name="email" required>
-      </article>
+    <form @submit="handleSignup">
+      <InputGroup 
+        label="Email:"
+        type="email"
+        id="email"
+        name="email"
+        v-model="email"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
       <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Password:</label>
-        <input 
-          class="form_input" 
-          type="password" 
-          id="password" 
-          name="password" 
+        <InputGroup 
+          label="Password:"
+          type="password"
+          id="password"
+          name="password"
           v-model="password"
-          required
-        >
+          :required="true"
+          wrapper-class="mb-2"
+        />
         
         <!-- Password Strength Feedback Component -->
         <PasswordStrengthFeedback :feedback="passwordFeedback" />
       </article>
 
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="fname">First Name:</label>
-        <input class="form_input" type="text" id="fname" name="fname" required>
-      </article>
+      <InputGroup 
+        label="First Name:"
+        type="text"
+        id="fname"
+        name="fname"
+        v-model="fname"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="lname">Last Name:</label>
-        <input class="form_input" type="text" id="lname" name="lname" required>
-      </article>
+      <InputGroup 
+        label="Last Name:"
+        type="text"
+        id="lname"
+        name="lname"
+        v-model="lname"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="country">Country:</label>
-        <input class="form_input" type="text" id="country" name="country" required>
-      </article>
+      <InputGroup 
+        label="Country:"
+        type="text"
+        id="country"
+        name="country"
+        v-model="country"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="address">Address:</label>
-        <input class="form_input" type="text" id="address" name="address" required>
-      </article>
+      <InputGroup 
+        label="Address:"
+        type="text"
+        id="address"
+        name="address"
+        v-model="address"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="state">State/Province:</label>
-        <input class="form_input" type="text" id="state" name="state" required>
-      </article>
+      <InputGroup 
+        label="State/Province:"
+        type="text"
+        id="state"
+        name="state"
+        v-model="state"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
-      <article class="mb-5">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="post_code">PostCode:</label>
-        <input class="form_input" type="text" id="post_code" name="post_code" required>
-      </article>
+      <InputGroup 
+        label="PostCode:"
+        type="text"
+        id="post_code"
+        name="post_code"
+        v-model="post_code"
+        :required="true"
+        wrapper-class="mb-4"
+      />
+
+      <InputGroup 
+        label="Phone Number:"
+        type="tel"
+        id="phone_number"
+        name="phone_number"
+        v-model="phone_number"
+        placeholder="+1 (555) 123-4567"
+        wrapper-class="mb-5"
+      />
 
       <button 
         class="w-full rounded-md bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed" 
@@ -141,7 +197,7 @@ const handleSignup = async (event) => {
     <ErrorCard v-if="showError" :message="message" />
     <SuccessCard v-if="showSuccess" :message="message" />
 
-    <article class="mt-4 text-center text-gray-700 text-sm">
+    <article class="mt-4 text-center text-colors text-sm">
       <p>Already have an account? <RouterLink class="text-blue-600 hover:underline" to="/login">Log in here</RouterLink>.</p>
     </article>
   </article>

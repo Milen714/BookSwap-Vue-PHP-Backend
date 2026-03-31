@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import InputGroup from '@/components/organisms/InputGroup.vue'
 import axios from '@/utils/axios.js'
 
 const router = useRouter()
@@ -10,15 +11,16 @@ const router = useRouter()
 const showError = ref(false)
 const showSuccess = ref(false)
 const message = ref('')
+const email = ref('')
 
 const handlePasswordReset = async (event) => {
+  event.preventDefault()
   showError.value = false
   showSuccess.value = false
   message.value = ''
 
-  const formData = new FormData(event.target);
   const data = {
-    email: formData.get('email'),
+    email: email.value,
   }
 
   try {
@@ -54,18 +56,17 @@ const handlePasswordReset = async (event) => {
   <article class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
     <h1 class="text-center mb-6 text-gray-800 font-serif text-2xl">Forgot Password</h1>
 
-    <form @submit.prevent="handlePasswordReset">
-      <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email:</label>
-        <input 
-          class="form_input" 
-          type="email" 
-          id="email" 
-          name="email" 
-          placeholder="Enter your email address"
-          required
-        >
-      </article>
+    <form @submit="handlePasswordReset">
+      <InputGroup 
+        label="Email:"
+        type="email"
+        id="email"
+        name="email"
+        v-model="email"
+        placeholder="Enter your email address"
+        :required="true"
+        wrapper-class="mb-4"
+      />
 
       <button 
         class="w-full rounded-md bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 transition-colors" 

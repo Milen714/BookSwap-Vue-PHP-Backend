@@ -9,7 +9,14 @@ class UserDTO
     public string $fname;
     public string $lname;
     public string $email;
+    public ?string $phone_number;
+    public ?string $bio;
     public int $swapTokens;
+    public ?string $address;
+    public ?string $state;
+    public ?string $country;
+    public ?string $post_code;
+
 
     public function __construct(User $user)
     {
@@ -17,7 +24,13 @@ class UserDTO
         $this->fname = $user->fname;
         $this->lname = $user->lname;
         $this->email = $user->email;
+        $this->phone_number = $user->phone_number;
+        $this->bio = $user->bio;
         $this->swapTokens = $user->swapTokens;
+        $this->address = $user->address;
+        $this->state = $user->state;
+        $this->country = $user->country;
+        $this->post_code = $user->post_code;
     }
 
     public function toArray(): array
@@ -27,7 +40,14 @@ class UserDTO
             'fname' => $this->fname,
             'lname' => $this->lname,
             'email' => $this->email,
-            'swapTokens' => $this->swapTokens
+            'phone_number' => $this->phone_number,
+            'bio' => $this->bio,
+            'swapTokens' => $this->swapTokens,
+            'address' => $this->address,
+            'state' => $this->state,
+            'country' => $this->country,
+            'post_code' => $this->post_code
+
         ];
     }
 }

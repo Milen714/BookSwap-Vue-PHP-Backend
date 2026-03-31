@@ -1,4 +1,5 @@
 import './assets/main.css'
+import 'primeicons/primeicons.css' // Import PrimeIcons CSS
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -6,7 +7,6 @@ import App from './App.vue'
 import router from './Router/index.js'
 import { useTheme } from './composables/useTheme.js'
 import { useAuthStore } from './stores/auth.js'
-
 
 const { initializeTheme } = useTheme()
 initializeTheme()

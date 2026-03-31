@@ -27,12 +27,14 @@ class UserRepository extends Repository implements IUserRepository {
         $user->post_code = $data['post_code'];
         $user->state = $data['state'];
         $user->country = $data['country'];
+        $user->phone_number = $data['phone_number'] ?? null;
+        $user->bio = $data['bio'] ?? null;
         $user->resset_token = $data['resset_token'];
         if (isset($data['resset_token_expiry'])) {
-    $user->resset_token_expiry = new \DateTime($data['resset_token_expiry']);
-} else {
-    unset($user->resset_token_expiry);
-}
+            $user->resset_token_expiry = new \DateTime($data['resset_token_expiry']);
+        } else {
+            $user->resset_token_expiry = null;
+        }
         $user->joined_at = new \DateTime($data['joined_at']);
         $user->isActive = (bool)$data['isActive'];
         $user->isVerified = (bool)$data['isVerified'];
@@ -72,8 +74,8 @@ class UserRepository extends Repository implements IUserRepository {
     public function createUser(User $user): bool {
         try {
             $pdo = $this->connect();
-            $query = 'INSERT INTO users (fname, lname, role, email, password_hash, address, post_code,  state, country, isActive, isVerified) 
-                      VALUES (:fname, :lname, :role, :email, :password_hash, :address, :post_code, :state, :country, :isActive, :isVerified)';
+            $query = 'INSERT INTO users (fname, lname, role, email, password_hash, address, post_code,  state, country, phone_number, bio, isActive, isVerified) 
+                      VALUES (:fname, :lname, :role, :email, :password_hash, :address, :post_code, :state, :country, :phone_number, :bio, :isActive, :isVerified)';
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':fname', $user->fname);
             $stmt->bindParam(':lname', $user->lname);
@@ -85,6 +87,8 @@ class UserRepository extends Repository implements IUserRepository {
             $stmt->bindParam(':post_code', $user->post_code);
             $stmt->bindParam(':country', $user->country);
             $stmt->bindParam(':state', $user->state);
+            $stmt->bindParam(':phone_number', $user->phone_number);
+            $stmt->bindParam(':bio', $user->bio);
             $stmt->bindParam(':isActive', $user->isActive, PDO::PARAM_BOOL);
             $stmt->bindParam(':isVerified', $user->isVerified, PDO::PARAM_BOOL);
             return $stmt->execute();
@@ -98,7 +102,7 @@ class UserRepository extends Repository implements IUserRepository {
             $pdo = $this->connect();
             $query = 'UPDATE users SET fname = :fname, lname = :lname, role = :role, email = :email, 
                     password_hash = :password_hash, address = :address, post_code = :post_code, swap_tokens = :swap_tokens, 
-                    country = :country, isActive = :isActive, isVerified = :isVerified, 
+                    country = :country, state = :state, phone_number = :phone_number, bio = :bio, isActive = :isActive, isVerified = :isVerified, 
                     resset_token = :resset_token, resset_token_expiry = :resset_token_expiry
                     WHERE id = :id';
             $stmt = $pdo->prepare($query);
@@ -112,6 +116,9 @@ class UserRepository extends Repository implements IUserRepository {
             $stmt->bindParam(':post_code', $user->post_code); 
             $stmt->bindParam(':swap_tokens', $user->swapTokens, PDO::PARAM_INT);      
             $stmt->bindParam(':country', $user->country);
+            $stmt->bindParam(':state', $user->state);
+            $stmt->bindParam(':phone_number', $user->phone_number);
+            $stmt->bindParam(':bio', $user->bio);
             $stmt->bindParam(':isActive', $user->isActive, PDO::PARAM_BOOL);
             $stmt->bindParam(':isVerified', $user->isVerified, PDO::PARAM_BOOL);
             $stmt->bindParam(':id', $user->id, PDO::PARAM_INT); 

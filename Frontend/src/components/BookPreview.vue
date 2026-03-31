@@ -66,13 +66,13 @@ const handleFormSubmit = async (e) => {
 </script>
 
 <template>
-    <div v-if="book" class="StepTwo flex flex-col mt-10 w-3/4 mx-auto p-6 rounded-md shadow-md bg-[#F2F0EF] dark:bg-[#0F0F0F] text-black dark:text-white">
+    <div v-if="book" class="StepTwo flex flex-col mt-10 w-3/4 mx-auto p-6 rounded-md shadow-md bg-colors-secondary-light text-colors">
 
         <h2 class="text-xl font-bold text-black dark:text-white" id="preview_title">{{ book.title || 'Title' }}</h2>
 
         <div class="w-full mt-4 flex flex-col">
-            <div class="mb-1 text-base font-medium text-black dark:text-white">Rating</div>
-            <div class="w-2/4 bg-[#ccc] dark:bg-[#2C3233] rounded-full h-2.5">
+            <div class="mb-1 text-base font-medium text-colors">Rating</div>
+            <div class="w-2/4 bg-colors-secondary-light rounded-full h-2.5">
                 <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: (book.rating || 0) * 10 + '%' }"></div>
             </div>
         </div>

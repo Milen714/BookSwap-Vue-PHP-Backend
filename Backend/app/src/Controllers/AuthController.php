@@ -64,21 +64,17 @@ class AuthController extends Controller {
             $user = $this->userService->getUserById($userId);
             
             if (!$user) {
-                throw new \Exception('User not found', 401);
+                $this->sendErrorResponse(['success' => false, 'message' => 'User not found'], 404);
+                return;
             }
+            $dto = new UserDTO($user);
+             $this->sendSuccessResponse(['success' => true, 'user' => $dto], 200);
             
-            $this->sendSuccessResponse([
-                'success' => true,
-                'loggedIn' => true,
-                'user' => [
-                    'id' => $user->id,
-                    'fname' => $user->fname,
-                    'lname' => $user->lname,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'swapTokens' => $user->swapTokens,
-                ],
-            ], 200);
+            // $this->sendSuccessResponse([
+            //     'success' => true,
+            //     'loggedIn' => true,
+            //     'user' => $dto,
+            // ], 200);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 500;
             $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => $e->getMessage()], $code);
@@ -118,9 +114,7 @@ class AuthController extends Controller {
             $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
-    public function forgotPassword() {
-        $this->view('Account/ForgotPassword', ['title' => 'Forgot Password']);
-    }
+    
     public function forgotPasswordPost($vars = []) {
         $data = $this->getPostData();
         $email = $data['email'] ?? $_POST['email'] ?? '';
@@ -164,11 +158,16 @@ class AuthController extends Controller {
         $newPassword = $data['password'] ?? $_POST['password'] ?? '';
         $repeatPassword = $data['repeatPassword'] ?? $_POST['repeatPassword'] ?? '';
         try {
-            $this->authService->validatePassword($newPassword);
+            // Validate password strength
+            $passwordValidation = $this->authService->validatePassword($data['password']);
             if ($newPassword !== $repeatPassword) {
                 $this->sendErrorResponse(['success' => false, 'message' => "Passwords do not match."], 400);
                 return;
             }
+            if (!$passwordValidation['valid']) {
+                $errorMsg = "Password does not meet the following criteria: " . implode(", ", $passwordValidation['errors']);
+                throw new PasswordStrengthException($errorMsg);
+                }
 
             $user = $this->userService->getUserByEmail($email);
             if ($this->authService->validateResetToken($user, $token)) {

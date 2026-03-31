@@ -2,7 +2,7 @@
 import HeroSection from '@/components/HeroSection.vue';
 import BookPostCard from '@/components/BookPostCard.vue'
 import BookDetailsModal from '@/components/BookDetailsModal.vue'
-import BookRequestForm from '@/components/BookRequestForm.vue'
+import BookRequestForm from '@/components/organisms/BookRequestForm.vue'
 import Pagination from '@/components/Pagination.vue'
 import Filter from '@/components/BookSearchFilter.vue'
 import { onMounted, watch } from 'vue';

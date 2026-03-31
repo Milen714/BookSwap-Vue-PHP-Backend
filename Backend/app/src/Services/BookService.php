@@ -94,4 +94,7 @@ class BookService implements IBookService {
     public function getBooksGenres(): array {
         return $this->bookRepository->getBooksGenres();
     }
+    public function getBooksByUserId(int $userId): array {
+        return $this->bookRepository->getBooksByUserId($userId);
+    }
 }

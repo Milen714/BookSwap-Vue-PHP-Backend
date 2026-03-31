@@ -46,11 +46,12 @@ const formattedDate = computed(() => {
 </script>
 
 <template>
-  <div :class="[isCurrentUser ? 'text-right bg-green-900' : 'text-left bg-gray-800']" class="text-white p-3 rounded-lg mb-2 max-w-xs">
-    <p>{{ props.message.message }}</p>
-    <div class="flex justify-between space-x-2 mt-1">
-        <span class="text-xs text-gray-400">{{ props.message.sender_id || props.message.senderId }}</span>
+  <div :class="[isCurrentUser ? 'justify-end' : 'justify-start']" class="flex mb-4">
+    <div :class="[isCurrentUser ? 'bg-green-900 text-white' : 'bg-gray-800 text-white']" class="p-3 rounded-lg max-w-xs">
+      <p class="break-words">{{ props.message.message }}</p>
+      <div class="flex justify-between gap-2 mt-1">
         <span class="text-xs text-gray-400">{{ formattedDate }}</span>
+      </div>
     </div>
   </div>
 </template>

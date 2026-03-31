@@ -203,4 +203,22 @@ class BookController extends Controller
             $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres: ' . $e->getMessage()], 500);
         }
     }
+    public function getUserBooks($vars = [])
+    {
+        $userId = $vars['userId'] ?? null;
+        if ($userId === null) {
+            $this->sendErrorResponse(['error' => 'User ID is required.'], 400);
+            return;
+        }
+        try {
+            $books = $this->bookService->getBooksByUserId((int)$userId);
+            if ($books) {
+                $this->sendSuccessResponse(['success' => true, 'books' => $books], 200);
+            } else {
+                $this->sendErrorResponse(['error' => 'No books found for this user.'], 404);
+            }
+        } catch (\Exception $e) {
+            $this->sendErrorResponse(['error' => 'Error fetching user books: ' . $e->getMessage()], 500);
+        }
+    }
 }

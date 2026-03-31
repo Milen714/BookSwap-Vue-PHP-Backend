@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import InputGroup from '@/components/organisms/InputGroup.vue'
 import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
 import axios from '@/utils/axios.js'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
@@ -86,30 +87,32 @@ const handlePasswordReset = async () => {
 
     <form @submit.prevent="handlePasswordReset">
       <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="password">New Password:</label>
-        <input 
-          class="form_input" 
-          type="password" 
-          id="password" 
+        <InputGroup 
+          label="New Password:"
+          type="password"
+          id="password"
+          name="password"
           v-model="password"
           placeholder="Enter your new password"
-          required
-        >
+          :required="true"
+          wrapper-class="mb-2"
+        />
         
         <!-- Password Strength Feedback Component -->
         <PasswordStrengthFeedback :feedback="passwordFeedback" />
       </article>
 
       <article class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="repeatPassword">Repeat New Password:</label>
-        <input 
-          class="form_input" 
-          type="password" 
-          id="repeatPassword" 
+        <InputGroup 
+          label="Repeat New Password:"
+          type="password"
+          id="repeatPassword"
+          name="repeatPassword"
           v-model="repeatPassword"
           placeholder="Confirm your new password"
-          required
-        >
+          :required="true"
+          wrapper-class="mb-2"
+        />
         
         <!-- Password Match Indicator -->
         <div v-if="repeatPassword" class="mt-2">

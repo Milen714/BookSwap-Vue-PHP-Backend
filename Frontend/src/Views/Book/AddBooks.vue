@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import AddBookForm from '@/components/AddBookForm.vue'
+import AddBookForm from '@/components/organisms/AddBookForm.vue'
 import Spinner from '@/components/molecules/Spinner.vue'
 import BookPreview from '@/components/BookPreview.vue'
 import { useBooksStore } from '@/stores/books.js'

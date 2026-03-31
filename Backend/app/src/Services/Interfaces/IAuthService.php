@@ -6,8 +6,6 @@ use App\Models\User;
 
 interface IAuthService
 {
-    public function getLoggedInUser(): ?User;
-    
     public function hasRole(UserRole $roleToCheck): bool;
     
     public function logout(string $message): void;
@@ -18,4 +16,5 @@ interface IAuthService
     public function getUserFromToken(string $token): ?User;
     public function validatePassword(string $password): array;
     public function validateResetToken(User $user, string $token): bool;
+    public function validateUserId(int $idToValidate, int $userId): bool;
 }

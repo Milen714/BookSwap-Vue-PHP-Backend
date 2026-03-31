@@ -16,8 +16,10 @@ class User{
     public ?string $post_code;
     public ?string $country;
     public ?string $state;
+    public ?string $phone_number;
+    public ?string $bio;
     public ?string $resset_token;
-    public ?DateTime $resset_token_expiry;
+    public ?DateTime $resset_token_expiry = null;
     public ?DateTime $joined_at;
     public ?bool $isActive;
     public ?bool $isVerified;
@@ -43,6 +45,9 @@ class User{
         $user->address = $data['address'] ?? null;
         $user->post_code = $data['post_code'] ?? null;
         $user->country = $data['country'] ?? null;
+        $user->state = $data['state'] ?? null;
+        $user->phone_number = $data['phone_number'] ?? null;
+        $user->bio = $data['bio'] ?? null;
         $user->resset_token = $data['resset_token'] ?? null;
         $user->resset_token_expiry = !empty($data['resset_token_expiry']) ? new DateTime($data['resset_token_expiry']) : null;
         $user->isActive = array_key_exists('isActive', $data) ? (bool)$data['isActive'] : true;
@@ -62,6 +67,8 @@ class User{
         $user->post_code = $_POST['post_code'] ?? null;
         $user->country = $_POST['country'] ?? null;
         $user->state = $_POST['state'] ?? null;
+        $user->phone_number = $_POST['phone_number'] ?? null;
+        $user->bio = $_POST['bio'] ?? null;
         $user->isActive = true;
         $user->isVerified = false;
         $user->swapTokens = 0;
@@ -70,5 +77,15 @@ class User{
     public function fromJson(string $json): User {
         $data = json_decode($json, true);
         return self::fromArray($data);
+    }
+    public function updateProfile(array $data): void {
+        $this->phone_number = $data['phone_number'] ?? $this->phone_number;
+        $this->bio = $data['bio'] ?? $this->bio;
+    }
+    public function updateAddress(array $data): void {
+        $this->address = $data['address'] ?? $this->address;
+        $this->post_code = $data['post_code'] ?? $this->post_code;
+        $this->state = $data['state'] ?? $this->state;
+        $this->country = $data['country'] ?? $this->country;
     }
 }

@@ -2,6 +2,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import InputGroup from '@/components/organisms/InputGroup.vue'
 import axios from '@/utils/axios.js'
 
 const authStore = useAuthStore()
@@ -152,66 +153,56 @@ onMounted(() => {
       </label>
     </div>
     <form class="flex flex-col gap-4" @submit.prevent="submitAddressForm">
-      <div class="flex flex-col items-start">
-        <label for="street" class="mb-1 text-sm font-medium text-colors">Street Address</label>
-        <input
-          v-model="formData.street"
-          type="text"
-          id="street"
-          name="street"
-          class="p-2 rounded-md bg-[#e5e5e5] dark:bg-[#2C3233] border border-[#ccc] dark:border-[#2C3233] text-colors focus:ring-blue-500 focus:border-blue-500"
-          placeholder="123 Main St"
-          required
-        />
-      </div>
-      <div class="flex flex-col items-start">
-        <label for="city" class="mb-1 text-sm font-medium text-colors">City</label>
-        <input
-          v-model="formData.city"
-          type="text"
-          id="city"
-          name="city"
-          class="p-2 rounded-md bg-[#e5e5e5] dark:bg-[#2C3233] border border-[#ccc] dark:border-[#2C3233] text-colors focus:ring-blue-500 focus:border-blue-500"
-          placeholder="City"
-          required
-        />
-      </div>
-      <div class="flex flex-col items-start">
-        <label for="state" class="mb-1 text-sm font-medium text-colors">State/Province</label>
-        <input
-          v-model="formData.state"
-          type="text"
-          id="state"
-          name="state"
-          class="p-2 rounded-md bg-[#e5e5e5] dark:bg-[#2C3233] border border-[#ccc] dark:border-[#2C3233] text-colors focus:ring-blue-500 focus:border-blue-500"
-          placeholder="State/Province"
-          required
-        />
-      </div>
-      <div class="flex flex-col items-start">
-        <label for="zip" class="mb-1 text-sm font-medium text-colors">ZIP/Postal Code</label>
-        <input
-          v-model="formData.zip"
-          type="text"
-          id="zip"
-          name="zip"
-          class="p-2 rounded-md bg-[#e5e5e5] dark:bg-[#2C3233] border border-[#ccc] dark:border-[#2C3233] text-colors focus:ring-blue-500 focus:border-blue-500"
-          placeholder="ZIP/Postal Code"
-          required
-        />
-      </div>
-      <div class="flex flex-col items-start">
-        <label for="country" class="mb-1 text-sm font-medium text-colors">Country</label>
-        <input
-          v-model="formData.country"
-          type="text"
-          id="country"
-          name="country"
-          class="p-2 rounded-md bg-[#e5e5e5] dark:bg-[#2C3233] border border-[#ccc] dark:border-[#2C3233] text-colors focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Country"
-          required
-        />
-      </div>
+      <InputGroup 
+        label="Street Address"
+        type="text"
+        id="street"
+        name="street"
+        v-model="formData.street"
+        placeholder="123 Main St"
+        :required="true"
+        wrapper-class="flex flex-col items-start"
+      />
+      <InputGroup 
+        label="City"
+        type="text"
+        id="city"
+        name="city"
+        v-model="formData.city"
+        placeholder="City"
+        :required="true"
+        wrapper-class="flex flex-col items-start"
+      />
+      <InputGroup 
+        label="State/Province"
+        type="text"
+        id="state"
+        name="state"
+        v-model="formData.state"
+        placeholder="State/Province"
+        :required="true"
+        wrapper-class="flex flex-col items-start"
+      />
+      <InputGroup 
+        label="ZIP/Postal Code"
+        type="text"
+        id="zip"
+        name="zip"
+        v-model="formData.zip"
+        placeholder="ZIP/Postal Code"
+        :required="true"
+        wrapper-class="flex flex-col items-start"
+      />
+      <InputGroup 
+        label="Country"
+        type="text"
+        id="country"
+        name="country"
+        v-model="formData.country"
+        placeholder="Country"
+        :required="true"
+        wrapper-class="flex flex-col items-start"
+      />
       <div class="flex flex-row gap-4 mt-4">
         <button
           type="button"

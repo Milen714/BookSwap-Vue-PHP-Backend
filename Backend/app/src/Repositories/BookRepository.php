@@ -168,4 +168,21 @@ class BookRepository extends Repository implements IBookRepository {
             die("Error fetching book genres: " . $e->getMessage());
         }
     }
+    public function getBooksByUserId(int $userId): array {
+        try {
+            $pdo = $this->connect();
+            $query = 'SELECT  U.id as user_id, U.fname, U.lname, U.email, U.state, B.*  FROM users U JOIN books B ON U.id = B.shared_by WHERE B.shared_by = :userId AND B.is_active = 1'; 
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':userId', $userId);
+            $stmt->execute();
+            $booksData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $books = [];
+            foreach ($booksData as $data) {
+                $books[] = $this->mapBook($data);
+            }
+            return $books;
+        } catch (PDOException $e) {
+            die("Error fetching books by user ID: " . $e->getMessage());
+        }
+    }
 }

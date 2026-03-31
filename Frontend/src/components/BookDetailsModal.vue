@@ -66,7 +66,7 @@ const steps = [
           <ModalManual Title="How it works" :steps="steps" />
 
           <div class="mt-4 flex flex-col gap-4 md:flex-row">
-            <button class="button_neutral" type="button" @click="closeModal">Close</button>
+            <button class="button_neutral" type="button" @click="closeModal"><i class="pi pi-times mr-1"></i> Close</button>
 
             <button
               v-if="isOwnBook"
@@ -74,7 +74,7 @@ const steps = [
               class="button_disabled"
               title="You cannot request your own book."
             >
-              <span class="text-red-500">You cannot request your own book</span>
+              <span class="text-red-500"><i class="pi pi-exclamation-triangle mr-1"></i> You cannot request your own book</span>
             </button>
 
             <button
@@ -83,6 +83,7 @@ const steps = [
               type="button"
               @click="handleRequestBook"
             >
+            <i class="pi pi-shopping-cart mr-1"></i>
               Request Book
             </button>
 
@@ -92,7 +93,7 @@ const steps = [
               class="button_disabled"
               title="You need to be logged in to request a book."
             >
-              <span class="text-red-500">Login to request</span>
+              <span class="text-red-500"><i class="pi pi-user mr-1"></i> Login to request</span>
             </RouterLink>
 
             <button
@@ -101,13 +102,13 @@ const steps = [
               disabled
               title="You need at least 1 swap token to request a book."
             >
-              <span class="text-red-500">Insufficient swap tokens</span>
+              <span class="text-red-500"><i class="pi pi-exclamation-triangle mr-1"></i> Insufficient swap tokens</span>
             </button>
           </div>
         </div>
 
         <div v-else class="mt-4 flex flex-col gap-4 md:flex-row">
-          <button class="button_neutral" type="button" @click="closeModal">Close</button>
+          <button class="button_neutral" type="button" @click="closeModal"><i class="pi pi-times mr-1"></i> Close</button>
         </div>
       </div>
     </div>

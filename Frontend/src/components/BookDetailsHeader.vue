@@ -44,9 +44,21 @@ const openChat = () => {
               </span>
 
               <div class="flex flex-col items-start gap-4">
-                <span class="text-md font-medium text-blue-600">
-                  Shared by: {{ book?.shared_by?.fname || '' }} {{ book?.shared_by?.lname || '' }}
-                </span>
+                <RouterLink
+                  :to="`/profile/${book?.shared_by?.id}`"
+                  class="inline-flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900 transition duration-200 group"
+                >
+                  <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="pi pi-user text-white text-sm"></i>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-xs text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wide">Shared by</span>
+                    <span class="text-md font-semibold text-blue-700 dark:text-blue-300 group-hover:text-blue-900 dark:group-hover:text-blue-200">
+                      {{ book?.shared_by?.fname || '' }} {{ book?.shared_by?.lname || '' }}
+                    </span>
+                  </div>
+                  <i class="pi pi-arrow-right text-blue-600 dark:text-blue-400 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </RouterLink>
                 <span class="rounded-full border border-[#ccc] bg-[#e5e5e5] px-2 py-1 text-sm font-semibold text-colors dark:border-[#2C3233] dark:bg-[#151819]">
                   CONDITION: {{ book?.condition?.label || book?.condition || 'Unknown' }}
                 </span>

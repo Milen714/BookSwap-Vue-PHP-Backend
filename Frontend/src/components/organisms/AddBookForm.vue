@@ -8,9 +8,9 @@ import { useBooksStore } from '@/stores/books.js'
 import config from '@/config.js'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import InputGroup from '@/components/organisms/InputGroup.vue'
 
 const videoRef = ref(null);
-const isbnRef = ref(null);
 const codeReader = ref(null);
 const isScanning = ref(false);
 const error = ref(null);
@@ -32,9 +32,6 @@ const startScanning = async () => {
     
     if (result) {
       isbn.value = result.text;
-      if (isbnRef.value) {
-        isbnRef.value.value = result.text;
-      }
       console.log('Barcode found:', result.text);
       await stopScanning();
       // Auto-submit when ISBN is scanned
@@ -92,23 +89,21 @@ const handleIsbnSubmit = async (event) => {
 <template>
     
     <article
-        class="StepOne max-w-md mx-auto bg-colors border border-[#ccc] dark:border-[#2C3233] text-colors p-6 rounded-md shadow-md">
+        class="StepOne max-w-md mx-auto bg-colors-secondary-light border border-[#ccc] dark:border-[#2C3233] text-colors p-6 rounded-md shadow-md">
         <form id="ISBN-form" method='POST' @submit="handleIsbnSubmit">
              <article class="input_group">
                 <h2 class="text-xl font-semibold mb-4 text-colors">Step 1: Enter ISBN</h2>
                 <p class="mb-4 text-sm text-colors">You can either enter the ISBN manually or scan the barcode using your camera.</p>
              </article>
-            <article class="input_group">
-                <label class="input_label text-colors" for="ISBN">ISBN:</label>
-                <input 
-                  ref="isbnRef"
-                  v-model="isbn"
-                  class="form_input bg-[#e5e5e5] dark:bg-[#2C3233] text-colors" 
-                  type="text" 
-                  id="ISBN" 
-                  name="isbn"
-                  required>
-            </article>
+            <InputGroup 
+              label="ISBN:"
+              type="text"
+              id="ISBN"
+              name="isbn"
+              v-model="isbn"
+              :required="true"
+              wrapper-class="input_group"
+            />
             <ErrorCard v-if="error" :message="error" />
 
             <button id="addBookButton" class="button_primary" type="submit">Add Book</button>
@@ -142,13 +137,7 @@ const handleIsbnSubmit = async (event) => {
               type="button"
               class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#ccc] dark:border-[#2C3233] rounded-lg cursor-pointer bg-[#e5e5e5] dark:bg-[#1a1a1a] hover:bg-[#d5d5d5] dark:hover:bg-[#222222] transition-colors">
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <svg class="w-8 h-8 mb-3 text-[#555] dark:text-gray-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <i class="pi pi-camera text-4xl text-[#555] dark:text-gray-400"></i>
                 <p class="text-sm text-[#555] dark:text-gray-400"><span
                         class="font-semibold text-blue-500">Click to scan</span>
                     barcode with camera</p>
@@ -158,4 +147,3 @@ const handleIsbnSubmit = async (event) => {
         </div>
     </article>
 </template>
-

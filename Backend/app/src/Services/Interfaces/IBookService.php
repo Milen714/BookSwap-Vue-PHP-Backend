@@ -9,4 +9,5 @@ interface IBookService {
     public function deactivateBookPost(int $bookId): void;
     public function getBookByISBNFromGoogleApi(string $isbn): ?Book;
     public function getBooksGenres(): array;
+    public function getBooksByUserId(int $userId): array;
 }

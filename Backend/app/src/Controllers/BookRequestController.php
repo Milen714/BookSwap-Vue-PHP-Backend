@@ -113,42 +113,7 @@ class BookRequestController extends Controller{
             ], 500);
         }
     }
-    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function viewBookMyRequests($vars = []){
-        $userId = $vars['id'] ?? null;
-        $filterStatus = $_GET['status'] ?? 'all';
-        switch($filterStatus){
-            case 'inProgress':
-                $includeClosed = false;
-                $statusFilter = BookSwapStatus::ALL;
-                break;
-            case 'completed':
-                $includeClosed = true;
-                $statusFilter = BookSwapStatus::COMPLETED;
-                break;
-            case 'all':
-                $includeClosed = true;
-                $statusFilter = null;
-                break;
-            default:
-                $includeClosed = true;
-                $statusFilter = null;
-                break;
-        }
-        
-        try{
-        if ((int)$userId !== $_SESSION['loggedInUser']->id) {
-            $this->authService->logout('Unauthorized access to book requests.');
-        }
-        $user = $this->userService->getUserById($userId);
-        $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, false, $statusFilter);
-        $this->view('BookRequest/MyRequests', ['message' => "My Book Requests", 'title' => 'My Requests Page', 'user' => $user, 'bookRequests' => $bookRequests] );
-        }catch(\Exception $e){
-            http_response_code(400);
-            echo "Error: " . $e->getMessage();
-
-        }
-    }
+    
      #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyBookRequests($vars = []){
         try {
@@ -217,32 +182,7 @@ class BookRequestController extends Controller{
             $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 401);
         }
     }
-    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function viewMyRequest($vars = []){
-        try{
-            $requestId = $_GET['requestId'] ?? null;
-            $requesterId = $_GET['requesterId'] ?? null;
-            $requesterToken = $_GET['requesterToken'] ?? null;
-
-            if (!$requestId || !$requesterId || !$requesterToken) {
-                throw new \Exception('Invalid request parameters.');
-            }
     
-            $bookRequest = $this->bookRequestService->getRequestById((int)$requestId);
-
-            if (!$bookRequest) {
-                throw new \Exception('Book request not found.');
-            }
-
-            if ($bookRequest->requester->id !== (int)$requesterId || $bookRequest->requester_action_token !== $requesterToken) {
-                throw new \Exception('Unauthorized access to the book request.');
-            }
-            $this->view('BookRequest/MyRequests', ['message' => "My Book Requests", 'title' => 'My Requests Page', 'bookRequests' => [$bookRequest]] );
-
-        }catch(\Exception $e){
-            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 400);
-        }
-    }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function updateRequestStatus($vars = []){
 

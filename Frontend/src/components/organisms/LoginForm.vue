@@ -3,18 +3,19 @@ import router from '@/Router';
 import { useRoute } from 'vue-router';
 import ErrorCard from '@/components/molecules/ErrorCard.vue';
 import SuccessCard from '@/components/molecules/SuccessCard.vue';
+import InputGroup from '@/components/organisms/InputGroup.vue';
 import axios from '@/utils/axios.js';
 import { onMounted, ref } from 'vue';
 import { useAuthStore } from '@/stores/auth.js'
 
 const authStore = useAuthStore()
 
-
-
 const showError = ref(false);
 const showSuccess = ref(false);
 const message = ref('');
 const route = useRoute();
+const email = ref('');
+const password = ref('');
 
 onMounted(() => {
   const signupMessage = route.query.signupMessage;
@@ -32,14 +33,12 @@ onMounted(() => {
 });
   
   const handleLogin = async (event) => {
-    const formData = new FormData(event.target);
-    const email = formData.get('email');
-    const password = formData.get('password');
+    event.preventDefault();
 
     try {
       const response = await axios.post(`/login`, {
-        email: email,
-        password: password
+        email: email.value,
+        password: password.value
       });
       console.log(response.data);
       if (response.data.success) {
@@ -76,23 +75,31 @@ onMounted(() => {
 
 
 <template>
-    <article class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-    <form @submit.prevent="handleLogin">
-        <article class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email:</label>
-            <input class="form_input" type="email" id="email" name="email" required>
-
-        </article>
-        <article class="input_group">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Password:</label>
-            <input class="form_input" type="password" id="password" name="password" required>
-
-        </article>
+    <article class="max-w-md mx-auto bg-colors-secondary-light text-colors p-6 rounded-md shadow-md">
+    <form @submit="handleLogin">
+        <InputGroup 
+          label="Email:"
+          type="email"
+          id="email"
+          name="email"
+          v-model="email"
+          :required="true"
+          wrapper-class="input_group-4"
+        />
+        <InputGroup 
+          label="Password:"
+          type="password"
+          id="password"
+          name="password"
+          v-model="password"
+          :required="true"
+          wrapper-class="input_group"
+        />
         <button class="w-full rounded-md bg-blue-600 text-white py-2 font-medium hover:bg-blue-700" type="submit">Login</button>
     </form>
     <ErrorCard v-if="showError" :message="message" />
     <SuccessCard v-if="showSuccess" :message="message" />
-    <article class="mt-4 text-center text-gray-700 text-sm">
+    <article class="mt-4 text-center text-colors text-sm">
       <p>Don't have an account? <RouterLink class="text-blue-600 hover:underline" to="/signup">Sign up here</RouterLink>.</p>
         <p>Forgot your password? <a class="text-blue-600 hover:underline" href="/forgot-password">Reset it here</a>.</p>
     </article>

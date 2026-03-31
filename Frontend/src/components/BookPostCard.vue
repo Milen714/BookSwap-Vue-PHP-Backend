@@ -82,7 +82,7 @@ const onRequestActions = () => {
         >
           <div class="h-full flex flex-col justify-end">
             <div class="bg-[#ffffffcc] dark:bg-[#000000cc] w-full p-4 text-center rounded-bl-md rounded-br-md">
-              <h4 class="text-md font-semibold text-colors">{{ book.title }}</h4>
+              <h4 class="text-md font-semibold text-colors line-clamp-2">{{ book.title }}</h4>
               <div class="flex flex-row justify-end mt-2 gap-1">
                 <button
                   class="rounded-xl bg-[#e5e5e5] dark:bg-[#151819] hover:bg-[#d0d0d0] dark:hover:bg-[#2C3233] border border-[#ccc] dark:border-[#2C3233] px-2 py-1 text-sm font-semibold text-colors"
@@ -120,10 +120,10 @@ const onRequestActions = () => {
         >
           <div class="bg-[#f2f0efe6] dark:bg-[#191b1de6] h-full flex flex-col justify-start rounded-md">
             <div class="w-full p-4 text-center rounded-bl-md rounded-br-md overflow-hidden h-full">
-              <h4 class="text-md font-semibold text-colors">{{ book.title }}</h4>
+              <h4 class="text-md font-semibold text-colors line-clamp-2">{{ book.title }}</h4>
 
               <div class="flex flex-row justify-between gap-1 mt-3">
-                <span class="text-sm font-medium text-colors">{{ book.author }}</span>
+                <span class="text-sm font-medium text-colors line-clamp-1">{{ book.author }}</span>
                 <span class="text-sm font-medium text-colors">{{ book.published_year }}</span>
                 <span class="text-sm font-medium text-colors">{{ book.page_count }}</span>
               </div>
@@ -139,9 +139,9 @@ const onRequestActions = () => {
                   <p class="text-sm font-regular text-colors">{{ book.description }}</p>
                 </div>
 
-                <div class="flex flex-row justify-between items-center mt-4">
-                  <span class="text-sm font-medium text-colors">{{ conditionLabel }}</span>
-                  <span class="text-sm font-medium text-colors">{{ sharedByLabel }}</span>
+                <div class="flex flex-row gap-1 justify-between items-center mt-4">
+                  <span class="text-sm font-medium text-colors"><i class="pi pi-star-fill"></i> {{ conditionLabel }}</span>
+                  <RouterLink :to="`/profile/${book.shared_by.id}`" class="text-sm font-medium text-colors"><i class="pi pi-user"></i> {{ sharedByLabel }}</RouterLink>
                   <button
                     class="rounded-xl bg-[#e5e5e5] dark:bg-[#151819] border border-[#ccc] dark:border-[#2C3233] px-2 py-1 text-sm font-semibold text-colors"
                     type="button"

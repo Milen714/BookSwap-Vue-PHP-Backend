@@ -19,13 +19,7 @@ class AuthService implements IAuthService{
         $this->userService = new UserService();
         
     }
-    public function getLoggedInUser(): ?User {
-        if ($this->user === null && isset($_SESSION['loggedInUser'])) {
-            $this->user = $this->userService->getUserById($_SESSION['loggedInUser']->id);
-            return $this->user;
-        }
-        throw new \Exception("No user logged in");
-    }
+   
     public function hasRole(UserRole $roleToCheck): bool {
         return $this->user !== null && $this->user->role === $roleToCheck;
     }
@@ -58,6 +52,12 @@ class AuthService implements IAuthService{
                 'id' => $user->id,
                 'email' => $user->email,
                 'username' => $user->fname,
+                'phone_number' => $user->phone_number,
+                'bio' => $user->bio,
+                'address' => $user->address,
+                'state' => $user->state,
+                'country' => $user->country,
+                'post_code' => $user->post_code,
                 'role' => $user->role,
                 'swapTokens' => $user->swapTokens
             ],
@@ -148,5 +148,13 @@ class AuthService implements IAuthService{
 
         return true;
 
+    }
+    public function validateUserId(int $idToValidate, int $userId): bool
+    {
+        try {
+            return $idToValidate === $userId;
+        } catch (\Exception $e) {
+            return false; // Invalid token
+        }
     }
 }

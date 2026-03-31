@@ -7,4 +7,5 @@ interface IBookRepository {
     public function saveBook(Book $book): void;
     public function deactivateBookPost(int $bookId): void;
     public function getBooksGenres(): array;
+    public function getBooksByUserId(int $userId): array;
 }
