@@ -15,11 +15,20 @@ use App\Services\Interfaces\IAuthService;
 use App\Middleware\JWTMiddleware;
 use App\config\Secrets;
 
+/**
+ * AuthController
+ * 
+ * Handles all authentication operations including login, signup,
+ * password reset, and JWT token management.
+ */
 class AuthController extends Controller {
     private UserService $userService;
     private UserRepository $userRepository;
     private MailService $mailService;
     private IAuthService $authService;
+    /**
+     * Initialize all authentication services
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -27,6 +36,12 @@ class AuthController extends Controller {
         $this->authService = new AuthService();
     }
 
+    /**
+     * Authenticate user with email and password, return JWT token
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function login($vars = []) {
         try {
             $data = $this->getPostData();
@@ -53,10 +68,22 @@ class AuthController extends Controller {
             $this->sendErrorResponse($e->getMessage(), 500);
         }
     }
+    /**
+     * Log out user and close session
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function logout($vars = []) {
         $this->sendSuccessResponse(['success' => true, 'message' => 'Logged out successfully'], 200);
     }
     
+    /**
+     * Retrieve currently logged-in user information from JWT token
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getLoggedInUser($vars = []) {
         try{
             // Validate JWT token from Authorization header
@@ -80,6 +107,12 @@ class AuthController extends Controller {
             $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => $e->getMessage()], $code);
         }
     }
+    /**
+     * Create new user account with validation and signup email
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function signUp($vars = []){
         try {
             $data = $this->getPostData();
@@ -115,6 +148,12 @@ class AuthController extends Controller {
         }
     }
     
+    /**
+     * Initiate password reset by sending reset link to user email
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function forgotPasswordPost($vars = []) {
         $data = $this->getPostData();
         $email = $data['email'] ?? $_POST['email'] ?? '';
@@ -123,8 +162,8 @@ class AuthController extends Controller {
             if (!$user) {
                 throw new \Exception("No user found with that email address.");
             }
-            $token = $this->generatePasswordResetToken($user);
-            $resetLink = Secrets::$domain . "/reset-password?token=" . urlencode($token) . "&email=" . urlencode($user->email);
+            $token = $this->authService->generatePasswordResetToken($user);
+            $resetLink = Secrets::$frontendUrl . "/reset-password?token=" . urlencode($token) . "&email=" . urlencode($user->email);
             // Send reset email
             $this->mailService->resetPasswordMail($user->email, $resetLink);
             $this->sendSuccessResponse(['success' => true, 'message' => 'Password reset link has been sent to your email address.']);
@@ -134,6 +173,12 @@ class AuthController extends Controller {
             $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
+    /**
+     * Validate password reset token and display reset form
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function resetPassword() {
         try {
             $token = $_GET['token'] ?? '';
@@ -151,6 +196,12 @@ class AuthController extends Controller {
         }
         // Reset password logic here
     }
+    /**
+     * Process password reset form submission and update password
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function resetPasswordPost($vars = []) {
         $data = $this->getPostData();
         $token = $data['token'] ?? $_POST['token'] ?? '';
@@ -187,51 +238,6 @@ class AuthController extends Controller {
             $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
         }
     }
-    
-    private function generateSecureToken(int $length = 32): string {
-        $str = bin2hex(random_bytes($length));
-        return base64_encode($str);
-    }
-    private function generatePasswordResetToken(User $user): string {
-        try {
-        $token = $this->generateSecureToken();
-        $user->resset_token = $token;
-        $user->resset_token_expiry = new \DateTime('+1 hour'); // Token valid for 1 hour
-        $this->userService->updateUser($user);
-        return $token;
-        } catch (\Throwable $e) {
-            die("Error generating password reset token: " . $e->getMessage());
-        }
 
-    }
-
-    public function currentUser()
-    {
-        try {
-
-            // Get token from Authorization header
-            if(!isset($_SERVER['HTTP_AUTHORIZATION'])) {
-                return $this->sendErrorResponse('Authorization header is required', 401);
-            }
-
-            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
-            $headerParts = explode(' ', $authHeader);
-            if (count($headerParts) !== 2 || strtolower($headerParts[0]) !== 'bearer') {
-                return $this->sendErrorResponse('Invalid authorization header format', 401);
-            }
-            $token = $headerParts[1];
-
-            $user = $this->authService->getUserFromToken($token);
-
-            if (!$user) {
-                return $this->sendErrorResponse('Invalid or expired token', 401);
-            }
-
-            // Return user DTO
-            $userDTO = new UserDTO($user);
-            return $this->sendSuccessResponse($userDTO);
-        } catch (\Exception $e) {
-            return $this->sendErrorResponse('Internal server error', 500);
-        }
-    }
+   
 }

@@ -3,6 +3,7 @@ const { createClient } = require('redis');
 const jwt = require('jsonwebtoken');
 const url = require('url');
 
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'default_secret_key';
 const PORT = process.env.WS_INTERNAL_PORT || 8080;
 const wss = new WebSocket.Server({ port: PORT });
 
@@ -31,21 +32,10 @@ async function start() {
         });
     });
 
-    // Also subscribe to book-search channel
-    await subscriber.subscribe('book-search', (message) => {
-        console.log("Broadcasting message from PHP (book-search):", message);
-        
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(message);
-            }
-        });
-    });
+    // Optionally subscribe to other channels (e.g., notifications)
 }
 
 start();
-
-const JWT_SECRET = process.env.JWT_SECRET_KEY || 'default_secret_key';
 
 wss.on('connection', (ws, request) => {
     const parameters = url.parse(request.url, true).query;

@@ -157,4 +157,33 @@ class AuthService implements IAuthService{
             return false; // Invalid token
         }
     }
+
+    /**
+     * Generate a secure random token for password reset
+     * 
+     * @param int $length Token length in bytes
+     * @return string Base64 encoded secure token
+     */
+    public function generateSecureToken(int $length = 32): string {
+        $str = bin2hex(random_bytes($length));
+        return base64_encode($str);
+    }
+
+    /**
+     * Generate password reset token and update user with expiry
+     * 
+     * @param User $user User to generate token for
+     * @return string Generated reset token
+     */
+    public function generatePasswordResetToken(User $user): string {
+        try {
+            $token = $this->generateSecureToken();
+            $user->resset_token = $token;
+            $user->resset_token_expiry = new \DateTime('+1 hour'); // Token valid for 1 hour
+            $this->userService->updateUser($user);
+            return $token;
+        } catch (\Throwable $e) {
+            die("Error generating password reset token: " . $e->getMessage());
+        }
+    }
 }

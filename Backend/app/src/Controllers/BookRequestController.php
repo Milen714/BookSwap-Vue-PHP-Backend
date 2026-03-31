@@ -18,6 +18,12 @@ use App\Repositories\BookSwapRequestRepository;
 use App\Services\BookRequestService;
 use App\Services\MockPostNlService;
 
+/**
+ * BookRequestController
+ * 
+ * Handles all book swap request operations including creation, 
+ * status updates, and retrieval of requests and listings.
+ */
 class BookRequestController extends Controller{
 
      private UserService $userService;
@@ -29,6 +35,9 @@ class BookRequestController extends Controller{
     private BookSwapRequestRepository $bookSwapRequestRepository;
     private MockPostNlService $mockPostNlService;
     
+    /**
+     * Initialize all required services and repositories
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -40,6 +49,12 @@ class BookRequestController extends Controller{
         $this->mockPostNlService = new MockPostNlService();
     }
 
+    /**
+     * Create a new book swap request between a requester and book owner
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function requestBookSwap($vars = []) 
     {
@@ -114,7 +129,14 @@ class BookRequestController extends Controller{
         }
     }
     
-     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Retrieve book swap requests where the user is the requester
+     * Supports filtering by status: inProgress, completed, all
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
+    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyBookRequests($vars = []){
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
@@ -146,6 +168,13 @@ class BookRequestController extends Controller{
         }
     }
 
+    /**
+     * Retrieve book listings where the user is the owner
+     * Supports filtering by status: listed, completed, takenDown, all
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getMyListings($vars = []){
         header('Content-Type: application/json');
@@ -183,6 +212,13 @@ class BookRequestController extends Controller{
         }
     }
     
+    /**
+     * Update the status of a book swap request
+     * Awards owner 1 swap token upon completion
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function updateRequestStatus($vars = []){
 
@@ -217,6 +253,7 @@ class BookRequestController extends Controller{
             }
             if ($bookRequest->status === BookSwapStatus::COMPLETED) {
                 $bookRequest->closed_at = new \DateTime();
+                $this->userService->addSwapTokens($bookRequest->owner->id, 1);
             }
 
             $this->bookRequestService->updateRequest($bookRequest);
@@ -226,7 +263,13 @@ class BookRequestController extends Controller{
             $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while updating the book request status: ' . $e->getMessage()], 500);
         }
     }
-    public function getBookSwapStatusses($vars = []){
+    /**
+     * Get all available book swap statuses
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
+    public function getBookSwapStatusses($vars = []) {
         try {
             $statuses = array_map(fn($status) => $status->value, BookSwapStatus::cases());
             $this->sendSuccessResponse(['success' => true, 'statuses' => $statuses], 200);
@@ -234,6 +277,13 @@ class BookRequestController extends Controller{
             $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching book swap statuses: ' . $e->getMessage()], 500);
         }
     }
+    /**
+     * Retrieve a specific book request by ID
+     * Only accessible by the requester
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getRequestById($vars = []){
         try {

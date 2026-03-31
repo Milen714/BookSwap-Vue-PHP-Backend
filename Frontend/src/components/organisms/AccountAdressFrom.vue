@@ -5,6 +5,7 @@ import { useProfileSettingsStore } from '@/stores/profileSettings.js'
 import InputGroup from '@/components/organisms/InputGroup.vue'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import FormHeader from '@/components/organisms/FormHeader.vue'
 
 const authStore = useAuthStore()
 const settingsStore = useProfileSettingsStore()
@@ -64,8 +65,11 @@ const handleSaveAddress = async (event) => {
 
 <template>
     <div class="p-6 bg-colors-secondary-light text-colors ">
-        <h2 class="text-xl font-semibold mb-4">Address Information</h2>
-        <p class="mb-6 text-sm text-colors-secondary">Update your address information.</p>
+        <FormHeader
+          title="Address Information"
+          icon="pi-map-marker"
+          description="Update your address information."
+        />
         
         <form @submit="handleSaveAddress" class="space-y-6">
             <InputGroup 

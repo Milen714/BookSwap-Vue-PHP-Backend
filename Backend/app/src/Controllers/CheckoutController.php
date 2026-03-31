@@ -22,6 +22,12 @@ use App\Services\PaymentService;
 use App\config\Secrets;
 use App\Middleware\JWTMiddleware;
 
+/**
+ * CheckoutController
+ * 
+ * Manages payment processing and checkout flows for book swap finalization,
+ * including Stripe session creation and payment verification.
+ */
 class CheckoutController extends Controller{
 
      private UserService $userService;
@@ -35,6 +41,9 @@ class CheckoutController extends Controller{
     private IPaymentService $paymentService;
 
     
+    /**
+     * Initialize checkout services including payment processor
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -48,6 +57,12 @@ class CheckoutController extends Controller{
     }
 
 
+    /**
+     * Create Stripe checkout session for book swap payment
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function createCheckoutSession($vars = []){
         try {
             // Get requestId from query parameter or session
@@ -74,6 +89,12 @@ class CheckoutController extends Controller{
         }
     } 
     
+    /**
+     * Verify Stripe payment and finalize book swap after successful payment
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function checkoutStatus($vars = []){
         try {
           $data = $this->getPostData();

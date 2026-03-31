@@ -28,8 +28,6 @@ require_once __DIR__ . '/../config/config.php';
 
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
-use App\Controllers\HomeController;
-use App\Controllers\AuthController;
 use App\Services\AuthService;
 use App\Middleware\RoleMiddleware;
 
@@ -71,7 +69,6 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
 
 
     // Routes for Vue.js frontend
-    $r->addRoute('GET', '/auth/me', ['App\Controllers\AuthController', 'currentUser']);
     $r->addRoute('GET', '/api/books', ['App\Controllers\BookController', 'getBooksApi']);
     $r->addRoute('POST', '/login', ['App\Controllers\AuthController', 'login']);
     $r->addRoute('POST', '/api/logout', ['App\Controllers\AuthController', 'logout']);
@@ -113,13 +110,15 @@ $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
     // Handle not found routes
     case FastRoute\Dispatcher::NOT_FOUND:
+        header('Content-Type: application/json');
         http_response_code(404);
-        (new HomeController())->notFound();
+        echo json_encode(['error' => 'Endpoint not found']);
         break;
     // Handle routes that were invoked with the wrong HTTP method
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        header('Content-Type: application/json');
         http_response_code(405);
-        echo 'Method Not Allowed';
+        echo json_encode(['error' => 'Method Not Allowed']);
         break;
     // Handle found routes
     case FastRoute\Dispatcher::FOUND:

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
 import InputGroup from '@/components/organisms/InputGroup.vue'
+import FormHeader from '@/components/organisms/FormHeader.vue'
 import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
 import axios from '@/utils/axios.js'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
@@ -87,7 +88,11 @@ const handleSignup = async (event) => {
 
 <template>
   <article class="max-w-md mx-auto bg-colors-secondary-light text-colors p-6 rounded-md shadow-md">
-    <h1 class="text-center m-5 text-colors font-serif text-2xl">Signup Page</h1>
+    <FormHeader
+      title="Signup Page"
+      icon="pi-user"
+      description=""
+    />
 
     <form @submit="handleSignup">
       <InputGroup 

@@ -13,12 +13,21 @@ use App\Services\Interfaces\IAuthService;
 use App\Exceptions\PasswordStrengthException;
 use App\Models\DTOs\UserDTO;
 
+/**
+ * UserController
+ * 
+ * Manages user profile operations including retrieving user info,
+ * updating profile/address, managing passwords, and viewing swap tokens.
+ */
 class UserController extends Controller
 {
     private UserService $userService;
     private UserRepository $userRepository;
     private IAuthService $authService;
 
+    /**
+     * Initialize all user-related services
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -26,6 +35,12 @@ class UserController extends Controller
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Retrieve shipping address of currently logged-in user
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getProfileAddress($vars = [])
     {
         try{
@@ -44,6 +59,12 @@ class UserController extends Controller
         } 
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Get swap tokens balance for currently logged-in user
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getUserTokens($vars = []){
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
@@ -57,6 +78,12 @@ class UserController extends Controller
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Retrieve profile information for currently logged-in user
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getUserInfo($vars = [])
     {
         try {
@@ -88,6 +115,12 @@ class UserController extends Controller
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Update profile information (phone, bio) for current user
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function updateProfile($vars = [])
     {
         $data = $this->getPostData();
@@ -134,6 +167,12 @@ class UserController extends Controller
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Update shipping address for current user
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function updateAddress($vars = [])
     {
         $data = $this->getPostData();
@@ -189,6 +228,12 @@ class UserController extends Controller
     }
 
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    /**
+     * Change password for currently logged-in user
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function changePassword($vars = [])
     {
         $data = $this->getPostData();
@@ -248,6 +293,12 @@ class UserController extends Controller
             $this->sendErrorResponse(['error' => $e->getMessage()], 500);
         }
     }
+    /**
+     * Retrieve public profile information for a specific user by ID
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getUserInfoById($vars = [])
     {
         $userId = $vars['userId'] ?? null;

@@ -7,6 +7,7 @@ import InputGroup from '@/components/organisms/InputGroup.vue'
 import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
 import axios from '@/utils/axios.js'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
+import FormHeader from '@/components/organisms/FormHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -82,8 +83,12 @@ const handlePasswordReset = async () => {
 </script>
 
 <template>
-  <article class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-    <h1 class="text-center mb-6 text-gray-800 font-serif text-2xl">Reset Password</h1>
+  <article class="max-w-md mx-auto bg-colors-secondary-light text-colors p-6 rounded-md shadow-md">
+    <FormHeader
+      title="Reset Password"
+      icon="pi-lock"
+      description="Enter your new password below."
+    />
 
     <form @submit.prevent="handlePasswordReset">
       <article class="mb-4">
@@ -156,7 +161,7 @@ const handlePasswordReset = async () => {
     <ErrorCard v-if="showError" :message="message" />
     <SuccessCard v-if="showSuccess" :message="message" />
 
-    <article class="mt-4 text-center text-gray-700 text-sm">
+    <article class="mt-4 text-center text-colors-secondary text-sm">
       <p>Remember your password? <RouterLink class="text-blue-600 hover:underline" to="/login">Log in here</RouterLink>.</p>
     </article>
   </article>

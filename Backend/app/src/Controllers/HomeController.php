@@ -13,6 +13,11 @@ use App\Middleware\RequireRole;
 use App\Models\Enums\UserRole;
 use App\Models\PaginatedList;
 
+/**
+ * HomeController
+ * 
+ * Manages home page and general site operations including theme preference management.
+ */
 class HomeController extends Controller
 {
     private UserService $userService;
@@ -20,6 +25,9 @@ class HomeController extends Controller
     private BookService $bookService;
     private BookRepository $bookRepository;
     
+    /**
+     * Initialize home controller services
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -27,23 +35,13 @@ class HomeController extends Controller
         $this->bookService = new BookService($this->bookRepository);
     }
 
-    public function home($vars = [])
-    {
-        $search = $_GET['search'] ?? null;
-        $genre = $_GET['genre'] ?? null;
-        
-
-        $param = $vars['id'] ?? null;  // Gets 'value'
-        $books = $this->bookService->getAllBooks($genre,$search);
-        $genres = $this->bookService->getBooksGenres();
-        $paginatedBooks = new PaginatedList($books, 1, 5, count($books));
-        $paginatedBooks = $paginatedBooks->createPaginatedList($books, $_GET['page'] ?? 1, 10);
-        
-
-        $this->view('Home/Landing', ['message' => "Please log in. now :)", 'title' => 'Login Page', 
-        'param' => $param ?? 'noParam', 'paginatedBooks' => $paginatedBooks, 'genres' => $genres] );
-    }
-    
+   
+    /**
+     * Set user theme preference with 30-day cookie persistence
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function setTheme($vars = [])
     {
         if (isset($_POST['theme'])) {
@@ -58,10 +56,4 @@ class HomeController extends Controller
         }
     }
     
-    public function notFound() {
-        $this->view('Shared/NotFound', ['title' => 'Page Not Found']);
-    }
-    public function notAuthorized() {
-        $this->view('Shared/NotAuthorized', ['title' => 'Not Authorized']);
-    }
 }

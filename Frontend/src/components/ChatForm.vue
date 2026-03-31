@@ -48,7 +48,7 @@ const handleKeyDown = (event) => {
                 v-model="message" 
                 placeholder="Aa" 
                 @keydown="handleKeyDown"
-                class="flex-1 resize-none rounded-full px-4 py-3 bg-colors-secondary-light text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500  transition max-h-24"
+                class="flex-1 resize-none rounded-full px-4 py-3 bg-colors-secondary-light text-colors placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500  transition max-h-24"
                 rows="1"
             ></textarea>
             <button 

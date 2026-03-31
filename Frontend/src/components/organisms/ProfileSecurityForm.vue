@@ -5,6 +5,7 @@ import { useProfileSettingsStore } from '@/stores/profileSettings.js'
 import InputGroup from '@/components/organisms/InputGroup.vue'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import FormHeader from '@/components/organisms/FormHeader.vue'
 import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
 
@@ -67,8 +68,11 @@ const handleChangePassword = async (event) => {
 
 <template>
     <div class="p-6 bg-colors-secondary-light text-colors ">
-        <h2 class="text-xl font-semibold mb-4">Security Settings</h2>
-        <p class="mb-6 text-sm text-colors-secondary">Change your password to keep your account secure.</p>
+        <FormHeader
+          title="Security Settings"
+          icon="pi-lock"
+          description="Change your password to keep your account secure."
+        />
         
         <form @submit="handleChangePassword" class="space-y-6">
             <InputGroup 

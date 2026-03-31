@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import ErrorCard from '@/components/molecules/ErrorCard.vue';
 import SuccessCard from '@/components/molecules/SuccessCard.vue';
 import InputGroup from '@/components/organisms/InputGroup.vue';
+import FormHeader from '@/components/organisms/FormHeader.vue';
 import axios from '@/utils/axios.js';
 import { onMounted, ref } from 'vue';
 import { useAuthStore } from '@/stores/auth.js'
@@ -76,6 +77,11 @@ onMounted(() => {
 
 <template>
     <article class="max-w-md mx-auto bg-colors-secondary-light text-colors p-6 rounded-md shadow-md">
+    <FormHeader
+      title="Login"
+      icon="pi-sign-in"
+      description=""
+    />
     <form @submit="handleLogin">
         <InputGroup 
           label="Email:"

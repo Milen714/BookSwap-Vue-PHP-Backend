@@ -15,6 +15,12 @@ use App\Repositories\BookAPI;
 use App\Middleware\JWTMiddleware;
 use Predis\Client as RedisClient;
 
+/**
+ * BookController
+ * 
+ * Manages book catalog operations including listing, searching, previewing books,
+ * posting new books for swap, and retrieving user book collections.
+ */
 class BookController extends Controller
 {
     private UserService $userService;
@@ -23,6 +29,9 @@ class BookController extends Controller
     private BookRepository $bookRepository;
     private RedisClient $redisClient;
     
+    /**
+     * Initialize book services and repository dependencies
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -35,6 +44,12 @@ class BookController extends Controller
         ]);
     }
 
+    /**
+     * Fetch book preview data from Google Books API using ISBN
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function fetchBookPreview($vars = [])
     {
@@ -54,6 +69,12 @@ class BookController extends Controller
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+    /**
+     * Add a book post to the platform for swap. Awards first listing token to user.
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function addBookPost($vars = [])
     {
@@ -93,6 +114,12 @@ class BookController extends Controller
             $this->sendErrorResponse(['error' => $e->getMessage()], 400);
         }
     }
+    /**
+     * Scan book ISBN via barcode and retrieve book data
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function scanBook($vars = [])
 {
@@ -110,6 +137,12 @@ class BookController extends Controller
         $this->sendErrorResponse(['error' => $e->getMessage()], 400);
     }
 }
+    /**
+     * Retrieve and render book details page for a specific book
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function viewBookDetails($vars = [])
     {
         $bookId = $vars['id'] ?? null;
@@ -123,6 +156,12 @@ class BookController extends Controller
         
         echo require_once '/app/Views/Book/BookDetailsModal.php';
     }
+    /**
+     * Get book details via JSON API response
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getBookDetails($vars = [])
     {
         try {
@@ -144,11 +183,23 @@ class BookController extends Controller
         }
     }
     
+    /**
+     * Display book post confirmation page
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function bookPostConfirmation($vars = [])
     {
         echo require_once '/app/Views/Book/BookPostConfimation.php';
     }
+    /**
+     * Deactivate and remove a book post from listings
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function takeDownBookPost($vars = [])
     {
@@ -160,6 +211,12 @@ class BookController extends Controller
         header("Location: /myListings/" . $_SESSION['loggedInUser']->id);
         exit();
     }
+    /**
+     * Search and display books with optional genre and general search filters
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function searchBooks($vars = [])
     {
         $genreFilter = $_GET['genre'] ?? null;
@@ -169,6 +226,12 @@ class BookController extends Controller
 
         require_once '/app/Views/Book/BooksSection.php';
     }
+    /**
+     * Retrieve paginated list of all books with filtering options
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getAllBooks($vars = [])
     {
         $genreFilter = $_GET['genre'] ?? null;
@@ -192,6 +255,12 @@ class BookController extends Controller
         }
     }
 
+    /**
+     * Retrieve list of all book genres in the catalog
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getAllGenres($vars = [])
     {
@@ -203,6 +272,12 @@ class BookController extends Controller
             $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres: ' . $e->getMessage()], 500);
         }
     }
+    /**
+     * Get all books posted by a specific user for swap
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getUserBooks($vars = [])
     {
         $userId = $vars['userId'] ?? null;

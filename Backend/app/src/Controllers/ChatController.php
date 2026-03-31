@@ -13,6 +13,12 @@ use App\Repositories\DirectMessageRepository;
 use App\Services\DirectMessageService;
 use App\Models\DirectMessage;
 
+/**
+ * ChatController
+ * 
+ * Manages direct messaging between users including retrieving chat history,
+ * sending messages, and managing chat partner lists via Redis pub/sub.
+ */
 class ChatController extends Controller
 {
     private UserService $userService;
@@ -21,6 +27,9 @@ class ChatController extends Controller
     private IDirectMessageRepository $directMessageRepository;
     private DirectMessageService $directMessageService;
 
+    /**
+     * Initialize chat services and Redis client for real-time messaging
+     */
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
@@ -33,6 +42,12 @@ class ChatController extends Controller
         $this->directMessageService = new DirectMessageService($this->directMessageRepository);
     }
 
+    /**
+     * Retrieve chat message history between two users
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getChatMessages($vars = [])
     {
@@ -59,6 +74,12 @@ class ChatController extends Controller
         }
     }
     
+    /**
+     * Send a direct message to another user via Redis pub/sub
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function sendDirectMessage($vars = [])
     {
@@ -93,6 +114,12 @@ class ChatController extends Controller
             $this->sendErrorResponse('Failed to send message: ' . $e->getMessage(), 500);
         }
     }
+    /**
+     * Validate that the sender matches the authenticated user
+     * 
+     * @param int $senderId The sender ID to validate
+     * @return int The validated sender ID
+     */
     private function validateSender(int $senderId): int {
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
@@ -105,6 +132,12 @@ class ChatController extends Controller
             exit();
         }
     }
+    /**
+     * Get list of all users the current user has messaged with
+     * 
+     * @param array $vars URL parameters
+     * @return void
+     */
     public function getChatPartners($vars = []) {
         try {
             $userId = JWTMiddleware::getUserIdFromToken();

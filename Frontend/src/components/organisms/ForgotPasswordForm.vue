@@ -5,6 +5,7 @@ import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
 import InputGroup from '@/components/organisms/InputGroup.vue'
 import axios from '@/utils/axios.js'
+import FormHeader from '@/components/organisms/FormHeader.vue'
 
 const router = useRouter()
 
@@ -53,8 +54,12 @@ const handlePasswordReset = async (event) => {
 </script>
 
 <template>
-  <article class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
-    <h1 class="text-center mb-6 text-gray-800 font-serif text-2xl">Forgot Password</h1>
+  <article class="max-w-md mx-auto bg-colors-secondary-light text-colors p-6 rounded-md shadow-md">
+    <FormHeader
+      title="Forgot Password"
+      icon="pi-envelope"
+      description="Enter your email address to reset your password."
+    />
 
     <form @submit="handlePasswordReset">
       <InputGroup 
@@ -79,7 +84,7 @@ const handlePasswordReset = async (event) => {
     <ErrorCard v-if="showError" :message="message" />
     <SuccessCard v-if="showSuccess" :message="message" />
 
-    <article class="mt-4 text-center text-gray-700 text-sm">
+    <article class="mt-4 text-center text-colors-secondary text-sm">
       <p>Remember your password? <RouterLink class="text-blue-600 hover:underline" to="/login">Log in here</RouterLink>.</p>
     </article>
   </article>
