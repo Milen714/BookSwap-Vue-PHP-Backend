@@ -43,6 +43,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
                 owner.id              AS owner_id,
                 owner.fname           AS owner_fname,
                 owner.lname           AS owner_lname,
+                owner.email           AS owner_email,
                 owner.address         AS owner_address,
                 owner.post_code       AS owner_post_code,
                 owner.country         AS owner_country,
@@ -51,6 +52,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
                 requester.id          AS requester_id,
                 requester.fname       AS requester_fname,
                 requester.lname       AS requester_lname,
+                requester.email       AS requester_email,
                 requester.address     AS requester_address,
                 requester.post_code   AS requester_post_code,
                 requester.country     AS requester_country,
@@ -139,6 +141,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             $owner->id = isset($data['owner_id']) && $data['owner_id'] !== null ? (int)$data['owner_id'] : null;
             $owner->fname = $data['owner_fname'] ?? '';
             $owner->lname = $data['owner_lname'] ?? '';
+            $owner->email = $data['owner_email'] ?? '';
             $owner->address = $data['owner_address'];
             $owner->post_code = $data['owner_post_code'];
             $owner->country = $data['owner_country'];
@@ -168,6 +171,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             $request->requester->id = isset($data['requester_id']) && $data['requester_id'] !== null ? (int)$data['requester_id'] : null;
             $request->requester->fname = $data['requester_fname'] ?? '';
             $request->requester->lname = $data['requester_lname'] ?? '';
+            $request->requester->email = $data['requester_email'] ?? '';
             $request->requester->address = $data['requester_address'] ? : null;
             $request->requester->post_code = $data['requester_post_code'] ? : null;
             $request->requester->country = $data['requester_country'] ? : null;

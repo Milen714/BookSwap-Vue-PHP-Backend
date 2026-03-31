@@ -100,4 +100,53 @@ class AuthService implements IAuthService{
 
         return null;        
     }
+    public function validatePassword(string $password): array
+{
+    $result = [
+        'valid' => true,
+        'errors' => []
+    ];
+
+    if (strlen($password) < 8) {
+        $result['valid'] = false;
+        $result['errors'][] = 'At least 8 characters.';
+    }
+
+    if (!preg_match('/[a-z]/', $password)) {
+        $result['valid'] = false;
+        $result['errors'][] = 'At least one lowercase letter.';
+    }
+
+    if (!preg_match('/[A-Z]/', $password)) {
+        $result['valid'] = false;
+        $result['errors'][] = 'At least one uppercase letter.';
+    }
+
+    if (!preg_match('/\d/', $password)) {
+        $result['valid'] = false;
+        $result['errors'][] = 'At least one number.';
+    }
+
+    if (!preg_match('/[\W_]/', $password)) {
+        $result['valid'] = false;
+        $result['errors'][] = 'At least one special character.';
+    }
+
+    return $result;
+}
+    public function validateResetToken(User $user, string $token): bool
+    {
+        if (!$user || $user->resset_token !== $token) {
+            throw new \Exception("Invalid or expired password reset Link.");
+        }
+        
+        $now = new \DateTime();
+
+        if ($user->resset_token_expiry < $now) {
+            throw new \Exception("Password reset token has expired.");
+        }
+
+        return true;
+
+    }
 }

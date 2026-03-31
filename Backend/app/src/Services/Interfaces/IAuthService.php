@@ -16,4 +16,6 @@ interface IAuthService
     public function validateToken(string $token): bool;
     public function generateJWTToken(User $user): string;
     public function getUserFromToken(string $token): ?User;
+    public function validatePassword(string $password): array;
+    public function validateResetToken(User $user, string $token): bool;
 }

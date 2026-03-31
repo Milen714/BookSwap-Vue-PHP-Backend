@@ -3,6 +3,8 @@ namespace App\Services;
 use App\Services\Interfaces\IMailService;
 use App\Models\Mailer;
 use App\Models\BookSwapRequest;
+use App\config\Secrets;
+
 class MailService implements IMailService {
     public function sendEmail(string $to, string $subject, string $body): void {
         $mailConfig = require __DIR__ . '/../../config/mailConfig.php';
@@ -10,9 +12,8 @@ class MailService implements IMailService {
         $mailer->send($to, $body, $subject);
     }
     public function notifyRequester(string $to, BookSwapRequest $request): void {
-        require_once '../config/secrets.php';
         $subject = "BookSwap Notification";
-        $link = $DOMAIN_URL . "/myRequest?requestId=" . urlencode($request->id). "&requesterId=" . urlencode($request->requester->id). "&requesterToken=" . urlencode($request->requester_action_token);
+        $link = Secrets::$domain . "/myRequest?requestId=" . urlencode($request->id). "&requesterId=" . urlencode($request->requester->id). "&requesterToken=" . urlencode($request->requester_action_token);
         $message = "<h1>Your book request  for " . htmlspecialchars($request->book->title) . " has been processed successfully.</h1>
                     <p>We are pleased to inform you that your request is now being processed.</p>
                     <p>The owner will ship the book to you shortly.</p>
@@ -21,9 +22,8 @@ class MailService implements IMailService {
         $this->sendEmail($to, $subject, $message);
     }
     public function notifyOwner(string $to, BookSwapRequest $request): void {
-            require_once '../config/secrets.php';
         $subject = "Shipping For Your BookSwap Listing Has Been paid";
-        $link = $DOMAIN_URL . "/myListings?id=" . urlencode($request->owner->id);
+        $link = Secrets::$domain . "/myListings?id=" . urlencode($request->owner->id);
         $message = "<h1>Your book " . htmlspecialchars($request->book->title) . " has been requested.</h1>
                     <p>We are pleased to inform you that your book has been requested by " . htmlspecialchars($request->requester->fname) . " " . htmlspecialchars($request->requester->lname) . ".</p>
                     <p>Please prepare the book for shipping.</p>

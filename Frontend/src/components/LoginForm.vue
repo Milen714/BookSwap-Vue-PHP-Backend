@@ -18,9 +18,15 @@ const route = useRoute();
 
 onMounted(() => {
   const signupMessage = route.query.signupMessage;
+  const errorMessage = route.query.errorMessage;
   if (typeof signupMessage === 'string' && signupMessage.trim() !== '') {
     showSuccess.value = true;
     message.value = signupMessage;
+    router.replace({ path: '/login', query: {} });
+  }
+  if (typeof errorMessage === 'string' && errorMessage.trim() !== '') {
+    showError.value = true;
+    message.value = errorMessage;
     router.replace({ path: '/login', query: {} });
   }
 });

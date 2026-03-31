@@ -22,7 +22,7 @@ class HomeController extends Controller
     
     public function __construct() {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
         $this->bookRepository = new BookRepository();
         $this->bookService = new BookService($this->bookRepository);
     }

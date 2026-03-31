@@ -22,11 +22,13 @@ class Secrets
     public static string $reCapchaSiteKey;
     public static string $reCapchaSecretKey;
     public static string $booksApiKey;
+    public static string $frontendUrl;
 
     public static function init(): void
     {
         self::$secretKey = getenv('JWT_SECRET_KEY') ?: $_ENV['JWT_SECRET_KEY'] ?? 'default_secret_key';
         self::$domain = getenv('DOMAIN_URL') ?: $_ENV['DOMAIN_URL'] ?? 'http://localhost';
+        self::$frontendUrl = getenv('FRONTEND_URL') ?: $_ENV['FRONTEND_URL'] ?? 'http://localhost:5173';
         self::$tokenExpirationHours = (int)(getenv('TOKEN_EXPIRATION_HOURS') ?: $_ENV['TOKEN_EXPIRATION_HOURS'] ?? 24);
         self::$stripeSecretKey = getenv('STRIPE_SECRET_KEY') ?: $_ENV['STRIPE_SECRET_KEY'] ?? '';
         self::$stripePublicKey = getenv('STRIPE_PUBLISHABLE_KEY') ?: $_ENV['STRIPE_PUBLISHABLE_KEY'] ?? '';

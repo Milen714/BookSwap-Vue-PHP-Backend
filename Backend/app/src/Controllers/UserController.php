@@ -19,17 +19,6 @@ class UserController extends Controller
         $this->userService = new UserService();
     }
 
-    public function profile($vars = [])
-    {
-        $userId = $_SESSION['loggedInUser']->id ?? null;
-        if (!$userId) {
-            header("Location: /login");
-            exit();
-        }
-
-        $user = $this->userService->getUserById($userId);
-        $this->view('User/Profile', ['message' => "User Profile", 'title' => 'Profile Page', 'user' => $user] );
-    }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getProfileAddress($vars = [])
     {
@@ -50,7 +39,6 @@ class UserController extends Controller
     }
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getUserTokens($vars = []){
-        header('Content-Type: application/json');
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
             $user = $this->userService->getUserById($userId);
@@ -65,7 +53,6 @@ class UserController extends Controller
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getUserInfo($vars = [])
     {
-        header('Content-Type: application/json');
         try {
             $userId = $_GET['userId'] ?? null;
             if (!$userId) {

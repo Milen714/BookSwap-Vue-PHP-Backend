@@ -137,7 +137,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section v-show="isFormVisible" class="flex flex-col mt-6">
+  <section v-show="isFormVisible" class="mx-auto mt-10 flex w-[90%] flex-col justify-center items-center rounded-md bg-colors p-6 shadow-md md:w-3/4">
     <h2 class="text-xl font-bold mb-4 text-colors">Shipping Address</h2>
     <div class="flex flex-col items-start">
       <label for="useProfileAddress" class="mb-2 text-sm font-medium text-colors">

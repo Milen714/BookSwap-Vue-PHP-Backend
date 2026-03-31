@@ -4,6 +4,7 @@ import axios from '@/utils/axios.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useBookRequestsStore } from '@/stores/bookRequests.js'
 import BookPostCard from '@/components/BookPostCard.vue'
+import router from '@/Router'
 
 const props = defineProps({
   request: {
@@ -138,7 +139,7 @@ const handleTakedownPost = async () => {
 }
 
 const handlePayShipping = () => {
-  emit('pay-shipping', props.request.book.id)
+  router.push(`/checkout?requestId=${props.request.id}`)
 }
 
 const handleCancelRequest = () => {

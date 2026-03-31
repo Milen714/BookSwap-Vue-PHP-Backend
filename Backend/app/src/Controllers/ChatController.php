@@ -62,14 +62,12 @@ class ChatController extends Controller
     #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function sendDirectMessage($vars = [])
     {
-        header('Content-Type: application/json');
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getPostData();
         $recipientId = $data['recipientId'] ?? null;
         $senderId = $this->validateSender((int)($data['senderId'] ?? 0));
         $message = $data['message'] ?? null;
         if (!$recipientId || !$message) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Recipient ID and message are required']);
+            $this->sendErrorResponse('Recipient ID and message are required', 400);
             return;
         }
         try {
@@ -92,7 +90,7 @@ class ChatController extends Controller
             echo json_encode(['success' => true]);
             exit;
         } catch (\Exception $e) {
-            echo json_encode(['error' => 'Failed to send message: ' . $e->getMessage()]);
+            $this->sendErrorResponse('Failed to send message: ' . $e->getMessage(), 500);
         }
     }
     private function validateSender(int $senderId): int {
@@ -103,19 +101,17 @@ class ChatController extends Controller
             }
             return $userId;
         } catch (\Exception $e) {
-            http_response_code(401);
+            $this->sendErrorResponse('Unauthorized', 401);
             exit();
         }
     }
     public function getChatPartners($vars = []) {
-        header('Content-Type: application/json');
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
             $partners = $this->directMessageService->getMyChatPartners($userId);
             echo json_encode(['success' => true, 'partners' => $partners]);
         } catch (\Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Failed to retrieve chat partners']);
+            $this->sendErrorResponse('Failed to retrieve chat partners', 500);
         }
     }
 }

@@ -6,6 +6,7 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
   // State
   const myListings = ref([])
   const myRequests = ref([])
+  const currentRequest = ref(null)  
   const loading = ref(false)
   const error = ref(null)
 
@@ -64,6 +65,29 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
       console.error('Error fetching requests:', err)
       error.value = err.message || 'Failed to fetch requests'
       myRequests.value = []
+    } finally {
+      loading.value = false
+    }
+  }
+  /**
+   * Fetch a specific book request by ID
+   * @param {number|string} requestId - Request ID
+   */
+  async function fetchRequestById(requestId) {
+    const request = myListings.value.find((r) => r.id === requestId)
+
+    if(request) {
+      console.log('Found request in listings:', request)
+      currentRequest.value = request
+      return request
+    }
+    try {
+      const response = await axios.get(`/getBookRequestById?requestId=${requestId}`)
+      currentRequest.value = response.data.bookRequest
+      return response.data.bookRequest
+    } catch (err) {
+      console.error('Error fetching request by ID:', err)
+      error.value = err.message || 'Failed to fetch request'
     } finally {
       loading.value = false
     }
@@ -137,6 +161,7 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
     myListings.value = []
     myRequests.value = []
     error.value = null
+    currentRequest.value = null
   }
 
   return {
@@ -145,9 +170,11 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
     myRequests,
     loading,
     error,
+    currentRequest,
     // Actions
     fetchMyListings,
     fetchMyRequests,
+    fetchRequestById,
     createBookRequest,
     updateRequestStatus,
     clearRequests,

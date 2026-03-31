@@ -64,7 +64,7 @@ export const useChatStore = defineStore('chat', () => {
         currentRecipientId.value = parseInt(recipientId)
         // Fetch recipient info
         await fetchRecipientInfo(recipientId)
-        console.log('Fetched messages:', messages.value)
+        //console.log('Fetched messages:', messages.value)
       } else {
         error.value = 'Failed to fetch messages'
         messages.value = []

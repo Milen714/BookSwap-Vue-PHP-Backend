@@ -44,6 +44,11 @@ const openChat = (sharedBy) => {
 const closeModal = () => {
   emit('close')
 }
+const steps = [
+  {'step' : '1.','title': 'Request the book', 'description': 'The current owner will be notified of your interest and can approve or decline your request.'},
+  {'step' : '2.','title': 'Owner Accepts', 'description': 'As soon as it\'s approved, pay the postage fee and track your shipment. If both sides agree, a physical meet can be arranged, instead of delivery.'},
+  {'step' : '3.','title': 'Track delivery', 'description': 'Follow the shipment status and estimated delivery date. Mark the book as received once it arrives.'}
+]
 </script>
 
 <template>
@@ -58,7 +63,7 @@ const closeModal = () => {
 
         <div v-if="!isRequesteeDetailsView">
 
-          <ModalManual Title="How it works" /> 
+          <ModalManual Title="How it works" :steps="steps" />
 
           <div class="mt-4 flex flex-col gap-4 md:flex-row">
             <button class="button_neutral" type="button" @click="closeModal">Close</button>

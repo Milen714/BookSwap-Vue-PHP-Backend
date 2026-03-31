@@ -294,6 +294,29 @@ class BookRequestController extends Controller{
             $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching book swap statuses: ' . $e->getMessage()], 500);
         }
     }
+    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
+    public function getRequestById($vars = []){
+        try {
+            $requestId = $_GET['requestId'] ?? null;
+            if (!$requestId) {
+                $this->sendErrorResponse(['success' => false, 'error' => 'Request ID is required'], 400);
+                return;
+            }
+            $bookRequest = $this->bookRequestService->getRequestById((int)$requestId);
+            if (!$bookRequest) {
+                $this->sendErrorResponse(['success' => false, 'error' => 'Book request not found'], 404);
+                return;
+            }
+
+            if ($bookRequest->requester->id !== JWTMiddleware::getUserIdFromToken()) {
+                $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized access to the book request.'], 403);
+                return;
+            }
+            $this->sendSuccessResponse(['success' => true, 'bookRequest' => $bookRequest], 200);
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching the book request: ' . $e->getMessage()], 500);
+        }
+    }
 
 
 }

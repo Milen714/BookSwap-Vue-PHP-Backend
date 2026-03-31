@@ -1,20 +1,32 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
+import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
 import axios from '@/utils/axios.js'
+import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
 
 const router = useRouter()
 
 const showError = ref(false)
 const showSuccess = ref(false)
 const message = ref('')
+const password = ref('')
+const passwordFeedback = computed(() => getPasswordFeedback(password.value))
+const isPasswordValid = computed(() => isPasswordStrong(password.value))
 
 const handleSignup = async (event) => {
   showError.value = false
   showSuccess.value = false
   message.value = ''
+
+  // Validate password strength
+  if (!isPasswordValid.value) {
+    showError.value = true
+    message.value = 'Password does not meet all requirements'
+    return
+  }
 
   const formData = new FormData(event.target);
   const data = {
@@ -28,15 +40,17 @@ const handleSignup = async (event) => {
     post_code: formData.get('post_code'),
   }
 
+
   try {
     const response = await axios.post(`/signUp`, data, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    if (response.data?.success) {
+    const responseData = response.data;
+    if (responseData?.success) {
       showSuccess.value = true
-      message.value = response.data.message || 'Signup successful! Please log in.'
+      message.value = responseData.message || 'Signup successful! Please log in.'
       setTimeout(() => {
         router.push({
           path: '/login',
@@ -45,12 +59,17 @@ const handleSignup = async (event) => {
       })
     } else {
       showError.value = true
-      console.error('Signup failed:', response.data);
-      message.value = response.data?.message || 'Signup failed. Please try again.'
+      console.error('Signup failed:', responseData);
+      message.value = responseData?.message 
     }
   } catch (error) {
     showError.value = true
-    message.value = error?.response?.data?.message || 'Signup failed. Please try again.'
+    console.error('Error during signup:', error)
+    console.error('Error response:', error?.response?.data)
+    
+    // Handle nested error structure: {error: {message: "..."}}
+    const errorData = error?.response?.data?.error || error?.response?.data
+    message.value = errorData?.message || error.message || 'An error occurred during signup'
   }
 }
 </script>
@@ -67,7 +86,17 @@ const handleSignup = async (event) => {
 
       <article class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Password:</label>
-        <input class="form_input" type="password" id="password" name="password" required>
+        <input 
+          class="form_input" 
+          type="password" 
+          id="password" 
+          name="password" 
+          v-model="password"
+          required
+        >
+        
+        <!-- Password Strength Feedback Component -->
+        <PasswordStrengthFeedback :feedback="passwordFeedback" />
       </article>
 
       <article class="mb-4">
@@ -100,7 +129,13 @@ const handleSignup = async (event) => {
         <input class="form_input" type="text" id="post_code" name="post_code" required>
       </article>
 
-      <button class="w-full rounded-md bg-blue-600 text-white py-2 font-medium hover:bg-blue-700" type="submit">Signup</button>
+      <button 
+        class="w-full rounded-md bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed" 
+        type="submit"
+        :disabled="password && !isPasswordValid"
+      >
+        Signup
+      </button>
     </form>
 
     <ErrorCard v-if="showError" :message="message" />
