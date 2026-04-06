@@ -7,6 +7,7 @@ use App\Models\Enums\UserRole;
 use App\Models\DirectMessage;
 use PDO;
 use PDOException;
+use App\Exceptions\RepositoryException;
 
 class DirectMessageRepository extends Repository implements IDirectMessageRepository {
     public function saveDirectMessage(DirectMessage $directMessage) {
@@ -19,7 +20,7 @@ class DirectMessageRepository extends Repository implements IDirectMessageReposi
             $stmt->bindParam(':message', $directMessage->message);
             return $stmt->execute();
         } catch (PDOException $e) {
-            die("Error saving direct message: " . $e->getMessage());
+            throw new RepositoryException("Error saving direct message.", $e);
         }
     }
 
@@ -40,7 +41,7 @@ class DirectMessageRepository extends Repository implements IDirectMessageReposi
             
 
         } catch (PDOException $e) {
-            die("Error fetching direct messages: " . $e->getMessage());
+            throw new RepositoryException("Error fetching direct messages.", $e);
         }
     }
     public function getMyChatPartners($userId): array {
@@ -67,7 +68,7 @@ class DirectMessageRepository extends Repository implements IDirectMessageReposi
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            die("Error fetching chat partners: " . $e->getMessage());
+            throw new RepositoryException("Error fetching chat partners.", $e);
         }
     }
 }

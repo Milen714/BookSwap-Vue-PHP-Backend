@@ -8,6 +8,8 @@ use App\Models\Book;
 use PDO;
 use PDOException;
 use App\Models\User;
+use App\Exceptions\RepositoryException;
+use App\Exceptions\NotFoundException;
 class BookSwapRequestRepository extends Repository implements IBookSwapRequestRepository {
 
     private string $SELECT_STATEMENT = 'SELECT
@@ -87,7 +89,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
 
         return (int) $pdo->lastInsertId();
     } catch (PDOException $e) {
-        throw new \Exception("Error creating book swap request: " . $e->getMessage());
+        throw new RepositoryException("Error creating book swap request.", $e);
     }
 }
     public function getRequestById(int $id): ?BookSwapRequest {
@@ -118,7 +120,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             
             return $this->mapBookSwapRequest($data);
         } catch (PDOException $e) {
-            throw new \Exception("Error fetching book swap request: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book swap request.", $e);
         }
     }
 
@@ -191,7 +193,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             $stmt->bindParam(':id', $id);
             $stmt->execute();
         } catch (PDOException $e) {
-            throw new \Exception("Error updating book swap request status: " . $e->getMessage());
+            throw new RepositoryException("Error updating book swap request status.", $e);
         }
     }
     public function updateRequestShippingCost(BookSwapRequest $request): void {
@@ -203,7 +205,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             $stmt->bindParam(':id', $request->id);
             $stmt->execute();
         } catch (PDOException $e) {
-            throw new \Exception("Error updating book swap request shipping cost: " . $e->getMessage());
+            throw new RepositoryException("Error updating book swap request shipping cost.", $e);
         }
     }
     public function getRequestsByUserId(User $user, bool $includeClosed, bool $isOwner, ?BookSwapStatus $statusFilter): array{
@@ -254,7 +256,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             
             return $results;
         } catch (PDOException $e) {
-            throw new \Exception("Error fetching book swap requests: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book swap requests.", $e);
         }
     }
     public function getRequestByUserIdAndRequestId(User $user, int $requestId, bool $includeClosed, bool $isOwner): ?BookSwapRequest{
@@ -282,11 +284,11 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$data) {
-                throw new \Exception("No book swap request found for the given user and request ID.");
+                throw new NotFoundException("No book swap request found for the given user and request ID.");
             }
             return $this->mapBookSwapRequest($data);
         } catch (PDOException $e) {
-            throw new \Exception("Error fetching book swap requests: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book swap requests.", $e);
         }
     }
 
@@ -314,7 +316,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             }
             return $this->mapBookSwapRequest($data);
         } catch (PDOException $e) {
-            throw new \Exception("Error fetching book swap request by book ID: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book swap request by book ID.", $e);
         }
     }
     public function updateRequest(BookSwapRequest $request): void{
@@ -350,7 +352,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             $stmt->bindParam(':requester_id', $request->requester->id); 
             $stmt->execute();
         } catch (PDOException $e) {
-            throw new \Exception("Error updating book swap request: " . $e->getMessage());
+            throw new RepositoryException("Error updating book swap request.", $e);
         }
     }
     public function getRequestIdByBookIdAndOwnerId(Book $book, User $user): ?int {
@@ -377,7 +379,7 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
             }
             return (int)$data['swap_id'];
         } catch (PDOException $e) {
-            throw new \Exception("Error fetching book swap request by book ID and user ID: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book swap request by book ID and user ID.", $e);
         }
     }
 }

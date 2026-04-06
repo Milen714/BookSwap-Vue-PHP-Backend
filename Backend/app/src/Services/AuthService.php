@@ -9,6 +9,10 @@ use App\Services\Interfaces\IAuthService;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use App\config\Secrets;
+use App\Exceptions\ValidationException;
+use App\Exceptions\ServiceException;
+use Dotenv\Parser\Value;
+
 class AuthService implements IAuthService{
     private ?User $user = null;
     private UserService $userService;
@@ -58,7 +62,7 @@ class AuthService implements IAuthService{
                 'state' => $user->state,
                 'country' => $user->country,
                 'post_code' => $user->post_code,
-                'role' => $user->role,
+                'role' => $user->role->value,
                 'swapTokens' => $user->swapTokens
             ],
         ];
@@ -134,16 +138,16 @@ class AuthService implements IAuthService{
 
     return $result;
 }
-    public function validateResetToken(User $user, string $token): bool
+    public function validateResetToken(?User $user, string $token): bool
     {
         if (!$user || $user->resset_token !== $token) {
-            throw new \Exception("Invalid or expired password reset Link.");
+            throw new ValidationException("Invalid or expired password reset link.");
         }
         
         $now = new \DateTime();
 
         if ($user->resset_token_expiry < $now) {
-            throw new \Exception("Password reset token has expired.");
+            throw new ValidationException("Password reset token has expired.");
         }
 
         return true;
@@ -183,7 +187,7 @@ class AuthService implements IAuthService{
             $this->userService->updateUser($user);
             return $token;
         } catch (\Throwable $e) {
-            die("Error generating password reset token: " . $e->getMessage());
+            throw new ServiceException("Error generating password reset token.", 500, $e);
         }
     }
 }

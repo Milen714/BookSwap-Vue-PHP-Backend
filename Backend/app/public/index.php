@@ -87,6 +87,9 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/changePassword', ['App\Controllers\UserController', 'changePassword']);
     $r->addRoute('POST', '/updateAddress', ['App\Controllers\UserController', 'updateAddress']);
     $r->addRoute('GET', '/getUser/{userId}', ['App\Controllers\UserController', 'getUserInfoById']);
+    $r->addRoute('GET', '/getAllUsers', ['App\Controllers\UserController', 'getAllUsers']);
+    $r->addRoute('GET', '/getAdminAnalytics', ['App\Controllers\UserController', 'getAdminAnalytics']);
+    $r->addRoute('POST', '/toggleUserStatus', ['App\Controllers\UserController', 'toggleUserStatus']);
 
 
     // Chat routes

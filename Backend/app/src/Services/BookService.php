@@ -6,6 +6,8 @@ use App\Models\Book;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use App\config\Secrets;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\ExternalServiceException;
 
 
 class BookService implements IBookService {
@@ -62,10 +64,9 @@ class BookService implements IBookService {
                 }
                 return new Book()->mapBookFromApi($data['items'][0]);
             }
-            throw new \Exception("Error fetching book data: No book found for ISBN " . $isbn);
+            throw new NotFoundException("No book found for ISBN " . $isbn);
         } catch (RequestException $e) {
-            // Log error or handle it as needed
-            throw new \Exception("Error fetching book data: FromCatch " . $e->getMessage());
+            throw new ExternalServiceException("Error fetching book data from Google Books API.", $e);
         }
 
     }

@@ -17,6 +17,9 @@ use App\Services\AuthService;
 use App\Repositories\BookSwapRequestRepository;
 use App\Services\BookRequestService;
 use App\Services\MockPostNlService;
+use App\Exceptions\ApplicationException;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\ValidationException;
 
 /**
  * BookRequestController
@@ -121,10 +124,15 @@ class BookRequestController extends Controller{
                 'message' => 'Book request created successfully'. $data['bookId'] . "-" . $data['ownerId'] . "-" . $data['requesterId'],
                 'redirectUrl' => '/checkout?requestId=' . $requestId
             ], 201);
-            } catch (\Throwable $e) {
+            } catch (ApplicationException $e) {
             $this->sendErrorResponse([
                 'success' => false,
-                'message' => 'An error occurred while creating the book request: ' . $e->getMessage()
+                'message' => $e->getMessage()
+            ], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse([
+                'success' => false,
+                'message' => 'An error occurred while creating the book request.'
             ], 500);
         }
     }
@@ -163,8 +171,10 @@ class BookRequestController extends Controller{
             $user = $this->userService->getUserById($userId);
             $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, false, $statusFilter);
             $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
-        } catch(\Exception $e){
-            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 401);
+        } catch(ApplicationException $e){
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch(\Throwable $e){
+            $this->sendErrorResponse(['success' => false, 'error' => 'Failed to fetch your book requests.'], 500);
         }
     }
 
@@ -207,8 +217,10 @@ class BookRequestController extends Controller{
             
             $bookRequests = $this->bookRequestService->getRequestsByUserId($user, $includeClosed, true, $statusFilter);
             $this->sendSuccessResponse(['success' => true, 'bookRequests' => $bookRequests], 200);
-        } catch(\Exception $e){
-            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], 401);
+        } catch(ApplicationException $e){
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch(\Throwable $e){
+            $this->sendErrorResponse(['success' => false, 'error' => 'Failed to fetch your listings.'], 500);
         }
     }
     
@@ -231,16 +243,23 @@ class BookRequestController extends Controller{
                 return;
             }
             $requestId = $data['requestId'] ?? null;
-            $newStatus = BookSwapStatus::from($data['status'] ?? null) ?? null;
+            $newStatusRaw = $data['status'] ?? null;
+
+            try {
+                $newStatus = $newStatusRaw ? BookSwapStatus::from($newStatusRaw) : null;
+            } catch (\ValueError $e) {
+                throw new ValidationException('Invalid status provided.');
+            }
 
             if (!$requestId || !$newStatus) {
                 $this->sendErrorResponse(['success' => false, 'error' => 'Request ID and valid status are required.'], 400);
+                return;
             }
 
             $bookRequest = $this->bookRequestService->getRequestById((int)$requestId);
 
             if (!$bookRequest) {
-                throw new \Exception('Book request not found');
+                throw new NotFoundException('Book request not found');
             }
             
 
@@ -250,6 +269,7 @@ class BookRequestController extends Controller{
             }
             elseif ($bookRequest->status === BookSwapStatus::TAKENDOWN &&$bookRequest->owner->id !== $userId) {
                 $this->sendErrorResponse(['success' => false, 'error' => 'Unauthorized to take down the book post.'], 403);
+                return;
             }
             if ($bookRequest->status === BookSwapStatus::COMPLETED) {
                 $bookRequest->closed_at = new \DateTime();
@@ -259,8 +279,10 @@ class BookRequestController extends Controller{
             $this->bookRequestService->updateRequest($bookRequest);
 
             $this->sendSuccessResponse(['success' => true, 'message' => 'Book request status updated successfully'], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while updating the book request status: ' . $e->getMessage()], 500);
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while updating the book request status.'], 500);
         }
     }
     /**
@@ -273,8 +295,10 @@ class BookRequestController extends Controller{
         try {
             $statuses = array_map(fn($status) => $status->value, BookSwapStatus::cases());
             $this->sendSuccessResponse(['success' => true, 'statuses' => $statuses], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching book swap statuses: ' . $e->getMessage()], 500);
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching book swap statuses.'], 500);
         }
     }
     /**
@@ -303,8 +327,10 @@ class BookRequestController extends Controller{
                 return;
             }
             $this->sendSuccessResponse(['success' => true, 'bookRequest' => $bookRequest], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching the book request: ' . $e->getMessage()], 500);
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching the book request.'], 500);
         }
     }
 

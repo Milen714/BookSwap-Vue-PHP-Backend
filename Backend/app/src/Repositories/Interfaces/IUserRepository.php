@@ -8,7 +8,9 @@ interface IUserRepository {
     public function getUserById(int $id): ?User;
     public function createUser(User $user): bool;
     public function updateUser(User $user): bool;
+    public function setUserActive(int $userId, bool $isActive): bool;
     public function deductSwapToken(int $userId): bool;
     public function addSwapTokens(int $userId, int $amount): bool;
     public function numberOfListedBooks(int $userId): int;
+    public function getAdminAnalytics(): array;
 }

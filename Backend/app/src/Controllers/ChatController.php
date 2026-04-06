@@ -12,6 +12,9 @@ use App\Repositories\Interfaces\IDirectMessageRepository;
 use App\Repositories\DirectMessageRepository;
 use App\Services\DirectMessageService;
 use App\Models\DirectMessage;
+use App\Exceptions\ApplicationException;
+use App\Exceptions\ForbiddenException;
+use App\Exceptions\UnauthorizedException;
 
 /**
  * ChatController
@@ -58,8 +61,7 @@ class ChatController extends Controller
             // Security check to ensure users can only access their own messages
             $requestSenderId = $_GET['senderId'] ?? null;
             if ($senderId !== (int)$requestSenderId) {
-                http_response_code(403);
-                echo json_encode(['error' => 'You do not have permission to access this resource.']);
+                $this->sendErrorResponse('You do not have permission to access this resource.', 403);
                 return;
             }
             
@@ -68,9 +70,10 @@ class ChatController extends Controller
             $messages = $this->directMessageService->getDirectMessages($senderId, $recipientId);
             
             echo json_encode(['success' => true, 'messages' => $messages]);
-        } catch (\Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Failed to retrieve messages']);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse($e->getMessage(), $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse('Failed to retrieve messages', 500);
         }
     }
     
@@ -85,13 +88,13 @@ class ChatController extends Controller
     {
         $data = $this->getPostData();
         $recipientId = $data['recipientId'] ?? null;
-        $senderId = $this->validateSender((int)($data['senderId'] ?? 0));
         $message = $data['message'] ?? null;
         if (!$recipientId || !$message) {
             $this->sendErrorResponse('Recipient ID and message are required', 400);
             return;
         }
         try {
+            $senderId = $this->validateSender((int)($data['senderId'] ?? 0));
             $directMessage = DirectMessage::fromArray($data, $senderId);
             
             // Save to database
@@ -108,10 +111,12 @@ class ChatController extends Controller
                 'created_at' => $createdAt,
             ]));
             // Return success response
-            echo json_encode(['success' => true]);
+            $this->sendSuccessResponse(['success' => true], 200);
             exit;
-        } catch (\Exception $e) {
-            $this->sendErrorResponse('Failed to send message: ' . $e->getMessage(), 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse($e->getMessage(), $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse('Failed to send message', 500);
         }
     }
     /**
@@ -121,16 +126,14 @@ class ChatController extends Controller
      * @return int The validated sender ID
      */
     private function validateSender(int $senderId): int {
-        try {
-            $userId = JWTMiddleware::getUserIdFromToken();
-            if ($userId !== $senderId) {
-                throw new \Exception("You do not have permission to access this resource.");
-            }
-            return $userId;
-        } catch (\Exception $e) {
-            $this->sendErrorResponse('Unauthorized', 401);
-            exit();
+        $userId = JWTMiddleware::getUserIdFromToken();
+        if ($senderId <= 0) {
+            throw new UnauthorizedException('Unauthorized');
         }
+        if ($userId !== $senderId) {
+            throw new ForbiddenException('You do not have permission to access this resource.');
+        }
+        return $userId;
     }
     /**
      * Get list of all users the current user has messaged with
@@ -142,8 +145,10 @@ class ChatController extends Controller
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
             $partners = $this->directMessageService->getMyChatPartners($userId);
-            echo json_encode(['success' => true, 'partners' => $partners]);
-        } catch (\Exception $e) {
+            $this->sendSuccessResponse(['success' => true, 'partners' => $partners], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse($e->getMessage(), $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
             $this->sendErrorResponse('Failed to retrieve chat partners', 500);
         }
     }

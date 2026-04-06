@@ -4,6 +4,7 @@ use App\Repositories\Interfaces\IUserRepository;
 use App\Repositories\UserRepository;
 use App\Services\Interfaces\IUserService;
 use App\Models\User;
+use App\Exceptions\ForbiddenException;
 class UserService implements IUserService {
     private IUserRepository $userRepository;
 
@@ -21,6 +22,9 @@ class UserService implements IUserService {
     public function authenticateUser(string $email, string $password): ?User {
         $user = $this->userRepository->getUserByEmail($email);
         if ($user && password_verify($password, $user->password_hash)) {
+            if (!$user->isActive) {
+                throw new ForbiddenException('This account has been suspended.');
+            }
             return $user;
         }
         return null;
@@ -35,6 +39,9 @@ class UserService implements IUserService {
     public function updateUser(User $user): bool {
         return $this->userRepository->updateUser($user);
     }
+    public function setUserActive(int $userId, bool $isActive): bool {
+        return $this->userRepository->setUserActive($userId, $isActive);
+    }
     public function deductSwapToken(int $userId): bool {
         return $this->userRepository->deductSwapToken($userId);
     }
@@ -43,5 +50,8 @@ class UserService implements IUserService {
     }
     public function numberOfListedBooks(int $userId): int {
         return $this->userRepository->numberOfListedBooks($userId);
+    }
+    public function getAdminAnalytics(): array {
+        return $this->userRepository->getAdminAnalytics();
     }
 }

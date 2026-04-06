@@ -21,6 +21,7 @@ use App\Services\Interfaces\IPaymentService;
 use App\Services\PaymentService;
 use App\config\Secrets;
 use App\Middleware\JWTMiddleware;
+use App\Exceptions\ApplicationException;
 
 /**
  * CheckoutController
@@ -84,8 +85,10 @@ class CheckoutController extends Controller{
             }
             
             $this->paymentService->stripeCheckout($currentBookRequest);
+        } catch (ApplicationException $e) {
+          $this->sendErrorResponse($e->getMessage(), $e->getHttpStatusCode());
         } catch (Exception $e) {
-            $this->sendErrorResponse('An error occurred while creating the checkout session: ' . $e->getMessage(), 500);
+          $this->sendErrorResponse('An error occurred while creating the checkout session.', 500);
         }
     } 
     
@@ -118,8 +121,10 @@ class CheckoutController extends Controller{
             'customer_email' => $session->customer_details->email,
             'amount_total' => $session->amount_total
           ], 200);
+        } catch (ApplicationException $e) {
+          $this->sendErrorResponse($e->getMessage(), $e->getHttpStatusCode());
         } catch (Exception $e) {
-          $this->sendErrorResponse('An error occurred while retrieving the checkout status: ' . $e->getMessage(), 500);
+          $this->sendErrorResponse('An error occurred while retrieving the checkout status.', 500);
         }
 
     }

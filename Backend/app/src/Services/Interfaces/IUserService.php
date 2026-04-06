@@ -57,6 +57,15 @@ interface IUserService {
      * @return bool True if update successful, false otherwise
      */
     public function updateUser(User $user): bool;
+
+    /**
+     * Set whether a user account is active
+     *
+     * @param int $userId User ID
+     * @param bool $isActive Active state to save
+     * @return bool True if update successful, false otherwise
+     */
+    public function setUserActive(int $userId, bool $isActive): bool;
     
     /**
      * Deduct one swap token from user balance
@@ -82,4 +91,11 @@ interface IUserService {
      * @return int Number of books listed by user
      */
     public function numberOfListedBooks(int $userId): int;
+
+    /**
+     * Retrieve admin analytics for users and swaps
+     *
+     * @return array Analytics summary and breakdowns
+     */
+    public function getAdminAnalytics(): array;
 }

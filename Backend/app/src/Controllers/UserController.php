@@ -11,6 +11,7 @@ use Stripe\Terminal\Location;
 use App\Services\AuthService;
 use App\Services\Interfaces\IAuthService;
 use App\Exceptions\PasswordStrengthException;
+use App\Exceptions\ApplicationException;
 use App\Models\DTOs\UserDTO;
 
 /**
@@ -54,7 +55,9 @@ class UserController extends Controller
             'country' => $user->country
         ];
         $this->sendSuccessResponse($address, 200);
-         } catch (\Exception $e) {
+         } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
             $this->sendErrorResponse(['error' => 'An error occurred while fetching the address.'], 500);
         } 
     }
@@ -72,8 +75,114 @@ class UserController extends Controller
             $token = $user->swapTokens;
 
             $this->sendSuccessResponse(['success' => true, 'tokens' => $token], 200);
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching user tokens.'], 401);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'error' => 'An error occurred while fetching user tokens.'], 500);
+        }
+    }
+
+    #[RequireRole([UserRole::ADMIN])]
+    /**
+     * Retrieve all users for the admin dashboard
+     *
+     * @param array $vars URL parameters
+     * @return void
+     */
+    public function getAllUsers($vars = [])
+    {
+        try {
+            $users = $this->userService->getAllUsers();
+
+            $this->sendSuccessResponse([
+                'success' => true,
+                'users' => $users,
+            ], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'An error occurred while fetching users.'], 500);
+        }
+    }
+
+    #[RequireRole([UserRole::ADMIN])]
+    /**
+     * Retrieve admin analytics for user and book swap activity
+     *
+     * @param array $vars URL parameters
+     * @return void
+     */
+    public function getAdminAnalytics($vars = [])
+    {
+        try {
+            $analytics = $this->userService->getAdminAnalytics();
+
+            $this->sendSuccessResponse([
+                'success' => true,
+                'analytics' => $analytics,
+            ], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'An error occurred while fetching analytics.'], 500);
+        }
+    }
+
+    #[RequireRole([UserRole::ADMIN])]
+    /**
+     * Ban or unban a user account from the admin dashboard
+     *
+     * @param array $vars URL parameters
+     * @return void
+     */
+    public function toggleUserStatus($vars = [])
+    {
+        try {
+            $data = $this->getPostData() ?? $_POST ?? [];
+            $userId = isset($data['userId']) ? (int) $data['userId'] : null;
+            $isActiveRaw = $data['isActive'] ?? null;
+
+            if (!$userId || $isActiveRaw === null) {
+                $this->sendErrorResponse(['error' => 'User ID and status are required.'], 400);
+                return;
+            }
+
+            $currentAdminId = JWTMiddleware::getUserIdFromToken();
+            if ($currentAdminId === $userId) {
+                $this->sendErrorResponse(['error' => 'You cannot change your own account status.'], 400);
+                return;
+            }
+
+            $user = $this->userService->getUserById($userId);
+            if (!$user) {
+                $this->sendErrorResponse(['error' => 'User not found.'], 404);
+                return;
+            }
+
+            $isActive = filter_var($isActiveRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if ($isActive === null) {
+                $this->sendErrorResponse(['error' => 'Invalid status value.'], 400);
+                return;
+            }
+
+            $updated = $this->userService->setUserActive($userId, $isActive);
+            if (!$updated) {
+                $this->sendErrorResponse(['error' => 'No changes were saved.'], 409);
+                return;
+            }
+
+            $this->sendSuccessResponse([
+                'success' => true,
+                'message' => $isActive ? 'User account unbanned successfully.' : 'User account banned successfully.',
+                'user' => [
+                    'id' => $user->id,
+                    'isActive' => $isActive,
+                ],
+            ], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'An error occurred while updating user status.'], 500);
         }
     }
 
@@ -109,7 +218,9 @@ class UserController extends Controller
                     'profilePic' => $user->profilePic ?? null
                 ]
             ], 200);
-        } catch (\Exception $e) {
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
             $this->sendErrorResponse(['error' => 'An error occurred while fetching user info.'], 500);
         }
     }
@@ -161,8 +272,10 @@ class UserController extends Controller
                 ]
             ], 200);
 
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['error' => $e->getMessage()], 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Failed to update profile.'], 500);
         }
     }
 
@@ -222,8 +335,10 @@ class UserController extends Controller
                 ]
             ], 200);
 
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['error' => $e->getMessage()], 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Failed to update address.'], 500);
         }
     }
 
@@ -289,6 +404,8 @@ class UserController extends Controller
 
         } catch (PasswordStrengthException $e) {
             $this->sendErrorResponse(['error' => $e->getMessage()], 400);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
             $this->sendErrorResponse(['error' => $e->getMessage()], 500);
         }
@@ -317,7 +434,9 @@ class UserController extends Controller
                 'success' => true,
                 'user' => $userDto
             ], 200);
-        } catch (\Exception $e) {
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
             $this->sendErrorResponse(['error' => 'An error occurred while fetching user info.'], 500);
         }
     }

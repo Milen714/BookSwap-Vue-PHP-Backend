@@ -14,6 +14,7 @@ use App\Models\Enums\UserRole;
 use App\Repositories\BookAPI;
 use App\Middleware\JWTMiddleware;
 use Predis\Client as RedisClient;
+use App\Exceptions\ApplicationException;
 
 /**
  * BookController
@@ -63,10 +64,10 @@ class BookController extends Controller
         try {
             $book = $this->bookService->getBookByISBNFromGoogleApi($isbn);
             $this->sendSuccessResponse(['success' => true, 'book' => $book], 200);
-        } catch (\Exception $e) {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Failed to fetch book preview.'], 500);
         }
     }
     /**
@@ -110,8 +111,10 @@ class BookController extends Controller
 
             $this->sendSuccessResponse(['success' => true, 'message' => 'Book added successfully'], 200);
         }
-        catch(\Exception $e){
-            $this->sendErrorResponse(['error' => $e->getMessage()], 400);
+        catch(ApplicationException $e){
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Failed to add book post.'], 500);
         }
     }
     /**
@@ -125,37 +128,20 @@ class BookController extends Controller
 {
     $isbn = $vars['isbn'] ?? null;
     if (!$isbn) {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'ISBN required']);
+        $this->sendErrorResponse(['error' => 'ISBN is required'], 400);
         return;
     }
     
     try {
         $book = $this->bookService->getBookByISBNFromGoogleApi($isbn);
-        $this->sendSuccessResponse($book, 200);
-    } catch (\Exception $e) {
-        $this->sendErrorResponse(['error' => $e->getMessage()], 400);
+        $this->sendSuccessResponse(['success' => true, 'book' => $book], 200);
+    } catch (ApplicationException $e) {
+        $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+    } catch (\Throwable $e) {
+        $this->sendErrorResponse(['error' => 'Failed to scan book.'], 500);
     }
 }
-    /**
-     * Retrieve and render book details page for a specific book
-     * 
-     * @param array $vars URL parameters
-     * @return void
-     */
-    public function viewBookDetails($vars = [])
-    {
-        $bookId = $vars['id'] ?? null;
-        if ($bookId === null) {
-            die("Book ID is required.");
-        }
-        $book = $this->bookService->getBookById((int)$bookId);
-        if ($book === null) {
-            die("Book not found.");
-        }
-        
-        echo require_once '/app/Views/Book/BookDetailsModal.php';
-    }
+    
     /**
      * Get book details via JSON API response
      * 
@@ -177,9 +163,11 @@ class BookController extends Controller
             return;
         }
         
-        $this->sendSuccessResponse($book, 200);
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['error' => $e->getMessage()], 400);
+        $this->sendSuccessResponse(['success' => true, 'book' => $book], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Failed to fetch book details.'], 500);
         }
     }
     
@@ -189,43 +177,8 @@ class BookController extends Controller
      * @param array $vars URL parameters
      * @return void
      */
-    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function bookPostConfirmation($vars = [])
-    {
-        echo require_once '/app/Views/Book/BookPostConfimation.php';
-    }
-    /**
-     * Deactivate and remove a book post from listings
-     * 
-     * @param array $vars URL parameters
-     * @return void
-     */
-    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
-    public function takeDownBookPost($vars = [])
-    {
-        $bookId = $vars['id'] ?? null;
-        if ($bookId === null) {
-            die("Book ID is required.");
-        }
-        $this->bookService->deactivateBookPost((int)$bookId);
-        header("Location: /myListings/" . $_SESSION['loggedInUser']->id);
-        exit();
-    }
-    /**
-     * Search and display books with optional genre and general search filters
-     * 
-     * @param array $vars URL parameters
-     * @return void
-     */
-    public function searchBooks($vars = [])
-    {
-        $genreFilter = $_GET['genre'] ?? null;
-        $generalFilter = $_GET['search'] ?? null;
-
-        $books = $this->bookService->getAllBooks($genreFilter, $generalFilter);
-
-        require_once '/app/Views/Book/BooksSection.php';
-    }
+    
+    
     /**
      * Retrieve paginated list of all books with filtering options
      * 
@@ -250,8 +203,10 @@ class BookController extends Controller
             $this->redisClient->publish('book-search', json_encode(['message' => 'Books searched', 'test' => getenv('REDIS_HOST')]));
             
             $this->sendSuccessResponse(['success' => true, 'books' => $books, 'hasNextPage' => $hasNextPage, 'currentPage' => $page], 200);
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching books: ' . $e->getMessage()], 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching books.'], 500);
         }
     }
 
@@ -261,15 +216,15 @@ class BookController extends Controller
      * @param array $vars URL parameters
      * @return void
      */
-    #[RequireRole([UserRole::USER, UserRole::ADMIN])]
     public function getAllGenres($vars = [])
     {
-        header('Content-Type: application/json');
         try {
             $genres = $this->bookService->getBooksGenres();
             $this->sendSuccessResponse(['success' => true, 'genres' => $genres], 200);
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres: ' . $e->getMessage()], 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres.'], 500);
         }
     }
     /**
@@ -292,8 +247,10 @@ class BookController extends Controller
             } else {
                 $this->sendErrorResponse(['error' => 'No books found for this user.'], 404);
             }
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['error' => 'Error fetching user books: ' . $e->getMessage()], 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Error fetching user books.'], 500);
         }
     }
 }

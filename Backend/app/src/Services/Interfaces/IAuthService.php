@@ -74,7 +74,7 @@ interface IAuthService
      * @param string $token Reset token to validate
      * @return bool True if token is valid and not expired
      */
-    public function validateResetToken(User $user, string $token): bool;
+    public function validateResetToken(?User $user, string $token): bool;
     
     /**
      * Validate that a user ID matches the current authenticated user

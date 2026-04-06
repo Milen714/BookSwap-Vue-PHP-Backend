@@ -2,6 +2,8 @@
 
 namespace App\Middleware;
 
+use App\Exceptions\ForbiddenException;
+use App\Services\UserService;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\ExpiredException;
@@ -42,9 +44,18 @@ class JWTMiddleware
 
         try {
             $decoded = JWT::decode($token, new Key(Secrets::$secretKey, Secrets::JWT_ALGORITHM));
+            $userId = $decoded->data->id ?? null;
+            if ($userId) {
+                $user = (new UserService())->getUserById((int) $userId);
+                if ($user && !$user->isActive) {
+                    throw new ForbiddenException('This account has been suspended.');
+                }
+            }
             return $decoded;
         } catch (ExpiredException $e) {
             throw new \Exception('Token has expired', 401);
+        } catch (ForbiddenException $e) {
+            throw $e;
         } catch (\Exception $e) {
             throw new \Exception('Invalid token: ' . $e->getMessage(), 401);
         }

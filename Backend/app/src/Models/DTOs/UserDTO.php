@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models\DTOs;
+
+use App\Models\Enums\UserRole;
 use App\Models\User;
 
 class UserDTO
@@ -16,6 +18,7 @@ class UserDTO
     public ?string $state;
     public ?string $country;
     public ?string $post_code;
+    public ?UserRole $role;
 
 
     public function __construct(User $user)
@@ -31,6 +34,7 @@ class UserDTO
         $this->state = $user->state;
         $this->country = $user->country;
         $this->post_code = $user->post_code;
+        $this->role = $user->role;
     }
 
     public function toArray(): array
@@ -46,7 +50,8 @@ class UserDTO
             'address' => $this->address,
             'state' => $this->state,
             'country' => $this->country,
-            'post_code' => $this->post_code
+            'post_code' => $this->post_code,
+            'role' => $this->role?->value
 
         ];
     }

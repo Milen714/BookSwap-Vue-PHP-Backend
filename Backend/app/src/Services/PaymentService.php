@@ -13,6 +13,9 @@ use App\Repositories\Interfaces\IBookRepository;
 use App\Repositories\BookRepository;
 use App\Services\Interfaces\IMailService;
 use App\Services\MailService;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\ForbiddenException;
+use App\Exceptions\ValidationException;
 
 class PaymentService implements IPaymentService {
     private IUserService $userService;
@@ -71,15 +74,17 @@ echo json_encode([
         
         $swapRequest = $this->bookSwapRequestRepository->getRequestById($requestId);
         if (!$swapRequest) {
-            throw new \Exception('Swap request not found');
+            throw new NotFoundException('Swap request not found');
         }
         
         if ($swapRequest->requester->id !== $userId) {
-            throw new \Exception('User is not the requester of this swap');
+            throw new ForbiddenException('User is not the requester of this swap');
             }
             if ($swapRequest->status === BookSwapStatus::PENDING) {
             $this->bookSwapRequestRepository->updateRequestStatus($requestId, BookSwapStatus::SHIPPINGPAID->value);
-            $this->userService->deductSwapToken($userId);
+            if (!$this->userService->deductSwapToken($userId)) {
+                throw new ValidationException('Insufficient swap tokens for checkout');
+            }
             $this->mailService->notifyRequester($swapRequest->requester->email, $swapRequest);
             $this->bookRepository->deactivateBookPost($swapRequest->book->id);
         }

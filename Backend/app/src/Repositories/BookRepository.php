@@ -13,6 +13,7 @@ use App\Repositories\BookSwapRequestRepository;
 use App\Services\BookRequestService;
 use App\Services\UserService;
 use App\Repositories\UserRepository;
+use App\Exceptions\RepositoryException;
 class BookRepository extends Repository implements IBookRepository {
       private BookRequestService $bookRequestService;
       private BookSwapRequestRepository $bookSwapRequestRepository;
@@ -22,9 +23,9 @@ class BookRepository extends Repository implements IBookRepository {
 
     public function __construct() {
         $this->bookSwapRequestRepository = new BookSwapRequestRepository();
-        $this->bookRequestService = new BookRequestService($this->bookSwapRequestRepository);
+        $this->bookRequestService = new BookRequestService();
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository);
+        $this->userService = new UserService();
     }
 
     private function mapBook(array $data): Book {
@@ -92,7 +93,7 @@ class BookRepository extends Repository implements IBookRepository {
             }
             return $books;
         } catch (PDOException $e) {
-            die("Error fetching books: " . $e->getMessage());
+            throw new RepositoryException("Error fetching books.", $e);
         }
     }
 
@@ -109,7 +110,7 @@ class BookRepository extends Repository implements IBookRepository {
             }
             return null;
         } catch (PDOException $e) {
-            die("Error fetching book by ID: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book by ID.", $e);
         }
     }
 
@@ -141,7 +142,7 @@ class BookRepository extends Repository implements IBookRepository {
             $this->bookRequestService->createRequest($bookRequest);
 
         } catch (PDOException $e) {
-            die("Error saving book: " . $e->getMessage());
+            throw new RepositoryException("Error saving book.", $e);
         }
     }
     
@@ -153,7 +154,7 @@ class BookRepository extends Repository implements IBookRepository {
             $stmt->bindParam(':id', $bookId);
             $stmt->execute();
         } catch (PDOException $e) {
-            die("Error deactivating book: " . $e->getMessage());
+            throw new RepositoryException("Error deactivating book.", $e);
         }
     }
     public function getBooksGenres(): array {
@@ -165,7 +166,7 @@ class BookRepository extends Repository implements IBookRepository {
             $genresData = $stmt->fetchAll(PDO::FETCH_COLUMN);
             return $genresData;
         } catch (PDOException $e) {
-            die("Error fetching book genres: " . $e->getMessage());
+            throw new RepositoryException("Error fetching book genres.", $e);
         }
     }
     public function getBooksByUserId(int $userId): array {
@@ -182,7 +183,7 @@ class BookRepository extends Repository implements IBookRepository {
             }
             return $books;
         } catch (PDOException $e) {
-            die("Error fetching books by user ID: " . $e->getMessage());
+            throw new RepositoryException("Error fetching books by user ID.", $e);
         }
     }
 }

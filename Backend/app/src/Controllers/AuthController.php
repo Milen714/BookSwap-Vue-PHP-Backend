@@ -4,6 +4,10 @@ use App\Framework\Controller;
 use App\Exceptions\UserAlreadyExistsException;
 use App\Exceptions\RequiredFieldException;
 use App\Exceptions\PasswordStrengthException;
+use App\Exceptions\ApplicationException;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\ServiceException;
+use App\Exceptions\ValidationException;
 use App\Models\DTOs\UserDTO;
 use App\Models\User;
 use App\Models\Enums\UserRole;
@@ -64,8 +68,10 @@ class AuthController extends Controller {
             $this->sendErrorResponse(['success' => false, 'message' => "Invalid email or password. Please try again."], 401);
              return;
         }
-        } catch (\Exception $e) {
-            $this->sendErrorResponse($e->getMessage(), 500);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse($e->getMessage(), $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse('Login failed due to an unexpected error.', 500);
         }
     }
     /**
@@ -102,9 +108,10 @@ class AuthController extends Controller {
             //     'loggedIn' => true,
             //     'user' => $dto,
             // ], 200);
-        } catch (\Exception $e) {
-            $code = $e->getCode() ?: 500;
-            $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => $e->getMessage()], $code);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => 'Failed to fetch logged in user.'], 500);
         }
     }
     /**
@@ -139,12 +146,14 @@ class AuthController extends Controller {
 
             $created = $this->userService->createUser($user);
             if (!$created) {
-                throw new \Exception('Failed to create user.');
+                throw new ServiceException('Failed to create user.');
             }
 
             $this->sendSuccessResponse(['success' => true, 'message' => 'Signup for ' . htmlspecialchars($user->email) . ' successful. Feel free to log in.'], 201);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
+            $this->sendErrorResponse(['success' => false, 'message' => 'Signup failed due to an unexpected error.'], 500);
         }
     }
     
@@ -160,7 +169,7 @@ class AuthController extends Controller {
         try {
             $user = $this->userService->getUserByEmail($email);
             if (!$user) {
-                throw new \Exception("No user found with that email address.");
+                throw new NotFoundException("No user found with that email address.");
             }
             $token = $this->authService->generatePasswordResetToken($user);
             $resetLink = Secrets::$frontendUrl . "/reset-password?token=" . urlencode($token) . "&email=" . urlencode($user->email);
@@ -169,8 +178,10 @@ class AuthController extends Controller {
             $this->sendSuccessResponse(['success' => true, 'message' => 'Password reset link has been sent to your email address.']);
             
             
-        } catch (\Exception $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => 'Failed to process forgot password request.'], 500);
         }
     }
     /**
@@ -185,14 +196,20 @@ class AuthController extends Controller {
             $email = $_GET['email'] ?? '';
             $user = $this->userService->getUserByEmail($email);
 
+            if (!$user) {
+                throw new NotFoundException("No user found with that email address.");
+            }
+
             if ($this->authService->validateResetToken($user, $token)) {
                 $this->sendSuccessResponse(['success' => true, 'message' => 'Token is valid. You can now reset your password.', 'email' => $email, 'token' => $token], 200);
             } else {
-                throw new \Exception("Invalid or expired password reset token.");
+                throw new ValidationException("Invalid or expired password reset token.");
             }
             
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
+            $this->sendErrorResponse(['success' => false, 'message' => 'Failed to validate reset token.'], 500);
         }
         // Reset password logic here
     }
@@ -210,7 +227,7 @@ class AuthController extends Controller {
         $repeatPassword = $data['repeatPassword'] ?? $_POST['repeatPassword'] ?? '';
         try {
             // Validate password strength
-            $passwordValidation = $this->authService->validatePassword($data['password']);
+            $passwordValidation = $this->authService->validatePassword($newPassword);
             if ($newPassword !== $repeatPassword) {
                 $this->sendErrorResponse(['success' => false, 'message' => "Passwords do not match."], 400);
                 return;
@@ -221,6 +238,9 @@ class AuthController extends Controller {
                 }
 
             $user = $this->userService->getUserByEmail($email);
+            if (!$user) {
+                throw new NotFoundException("No user found with that email address.");
+            }
             if ($this->authService->validateResetToken($user, $token)) {
                 // Token is valid, proceed with password reset
                 // Update the user's password
@@ -232,10 +252,12 @@ class AuthController extends Controller {
                 // Redirect to login with success message
                 $this->sendSuccessResponse(['success' => true, 'message' => 'Password has been reset successfully.'], 200);
             } else {
-                throw new \Exception("Invalid or expired password reset token.");
+                throw new ValidationException("Invalid or expired password reset token.");
             }
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], 400);
+            $this->sendErrorResponse(['success' => false, 'message' => 'Failed to reset password.'], 500);
         }
     }
 
