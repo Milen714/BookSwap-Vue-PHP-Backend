@@ -5,7 +5,7 @@
  * For Vite, use VITE_ prefix for environment variables.
  * 
  * Create a .env file in the frontend root to override defaults:
- * VITE_API_DOMAIN=http://localhost:8000
+ * VITE_API_BASE_URL=http://localhost
  */
 
 const config = {
@@ -14,7 +14,10 @@ const config = {
    * @type {string}
    * @default 'http://localhost'
    */
-  apiDomain: import.meta.env.VITE_API_DOMAIN || 'http://localhost',
+  apiDomain:
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_API_DOMAIN ||
+    'http://localhost',
   /**
    * Stripe Public Key - Used for Stripe integration
    * @type {string}

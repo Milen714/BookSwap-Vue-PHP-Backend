@@ -38,9 +38,6 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', ['App\Controllers\HomeController', 'home']);
     $r->addRoute('GET', '/not-authorized', ['App\Controllers\HomeController', 'notAuthorized']);
     $r->addRoute('GET', '/searchBooks', ['App\Controllers\BookController', 'searchBooks']);
-   // $r->addRoute('GET', '/login', ['App\Controllers\HomeController', 'login']);
-   // $r->addRoute('GET', '/login/{error}', ['App\Controllers\HomeController', 'login']);
-   // $r->addRoute('POST', '/login', ['App\Controllers\HomeController', 'loginPost']);
     $r->addRoute('POST', '/logout', ['App\Controllers\HomeController', 'logout']);
     $r->addRoute('POST', '/setTheme', ['App\Controllers\HomeController', 'setTheme']);
     $r->addRoute('POST', '/fetchBookPreview', ['App\Controllers\BookController', 'fetchBookPreview']);

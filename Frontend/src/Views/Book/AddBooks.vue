@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import AddBookForm from '@/components/organisms/AddBookForm.vue'
 import Spinner from '@/components/molecules/Spinner.vue'
-import BookPreview from '@/components/BookPreview.vue'
+import BookPreview from '@/components/molecules/BookPreview.vue'
 import { useBooksStore } from '@/stores/books.js'
 
 const booksStore = useBooksStore()

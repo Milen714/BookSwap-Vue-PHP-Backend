@@ -2,7 +2,7 @@
 import ModalManual from '@/components/organisms/ModalManual.vue'
 import { useBookRequestsStore } from '@/stores/bookRequests'
 import { onMounted, ref, watch, computed } from 'vue'
-import BookPostCard from '@/components/BookPostCard.vue'
+import BookPostCard from '@/components/molecules/BookPostCard.vue'
 
 const bookRequestsStore = useBookRequestsStore()  
 const props = defineProps({

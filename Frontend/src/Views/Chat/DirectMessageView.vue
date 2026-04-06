@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import DMChat from '@/components/DMChat.vue'
+import DMChat from '@/components/organisms/DMChat.vue'
 import { useChatStore } from '@/stores/chat.js'
 import { useAuthStore } from '@/stores/auth.js'
 

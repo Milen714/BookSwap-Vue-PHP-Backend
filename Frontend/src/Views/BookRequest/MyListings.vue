@@ -1,10 +1,10 @@
 <script setup>
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import ListingsFilterButtonBar from '@/components/ListingsFilterButtonBar.vue';
+import ListingsFilterButtonBar from '@/components/molecules/ListingsFilterButtonBar.vue';
 import { onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { useBookRequestsStore } from '@/stores/bookRequests.js'
-import BookSwapRequestCard from '@/components/BookSwapRequestCard.vue'
+import BookSwapRequestCard from '@/components/molecules/BookSwapRequestCard.vue'
 
 const authStore = useAuthStore()
 const bookRequestsStore = useBookRequestsStore()

@@ -1,36 +1,28 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from '@/utils/axios.js'
+import axios, { getAuthToken, setAuthToken as setApiAuthToken } from '@/utils/axios.js'
+
+let responseInterceptorInitialized = false
 
 export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref(null)
-  const token = ref(localStorage.getItem('authToken') || null)
+  const token = ref(getAuthToken())
   const loading = ref(true)
   const isLoggedIn = computed(() => !!user.value)
 
-  // Set up axios interceptors to add JWT token to requests
+  // Set up axios interceptors to handle expired or invalid sessions
   const setupAxiosInterceptors = () => {
-    axios.interceptors.request.use(
-      (config) => {
-        if (token.value) {
-          config.headers.Authorization = `Bearer ${token.value}`
-        } else {
-          console.warn('No JWT token available for request:', config.url)
-        }
-        return config
-      },
-      (error) => {
-        return Promise.reject(error)
-      }
-    )
+    if (responseInterceptorInitialized) {
+      return
+    }
 
-    // Handle 401 responses - token expired or invalid
+    responseInterceptorInitialized = true
+
     axios.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          // Clear auth on unauthorized
           clearAuth()
         }
         return Promise.reject(error)
@@ -68,14 +60,14 @@ export const useAuthStore = defineStore('auth', () => {
   function setAuthToken(newToken, newUser) {
     token.value = newToken
     user.value = newUser
-    localStorage.setItem('authToken', newToken)
+    setApiAuthToken(newToken)
   }
 
   // Clear auth state on logout
   function clearAuth() {
     token.value = null
     user.value = null
-    localStorage.removeItem('authToken')
+    setApiAuthToken(null)
   }
 
   return {

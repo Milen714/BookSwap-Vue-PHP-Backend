@@ -5,7 +5,7 @@ import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
 import InputGroup from '@/components/organisms/InputGroup.vue'
 import FormHeader from '@/components/organisms/FormHeader.vue'
-import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
+import PasswordStrengthFeedback from '@/components/molecules/PasswordStrengthFeedback.vue'
 import axios from '@/utils/axios.js'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
 

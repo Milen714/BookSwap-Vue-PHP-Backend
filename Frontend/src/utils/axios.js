@@ -1,6 +1,9 @@
 import axios from 'axios';
 import config from '../config.js';
 
+const AUTH_TOKEN_KEY = 'authToken';
+const LEGACY_AUTH_TOKEN_KEY = 'auth_token';
+
 // Create axios instance with base URL
 const apiClient = axios.create({
   baseURL: config.apiDomain,
@@ -10,14 +13,32 @@ const apiClient = axios.create({
 });
 
 // Store token in memory (also persisted in localStorage for page reloads)
-let authToken = localStorage.getItem('auth_token') || null;
+let authToken =
+  localStorage.getItem(AUTH_TOKEN_KEY) ||
+  localStorage.getItem(LEGACY_AUTH_TOKEN_KEY) ||
+  null;
+
+function getStoredAuthToken() {
+  const storedToken =
+    localStorage.getItem(AUTH_TOKEN_KEY) ||
+    localStorage.getItem(LEGACY_AUTH_TOKEN_KEY) ||
+    null;
+
+  authToken = storedToken;
+  return storedToken;
+}
 
 // Request interceptor to add token to all requests
 apiClient.interceptors.request.use(
   (config) => {
-    if (authToken) {
-      config.headers.Authorization = `Bearer ${authToken}`;
+    const token = getStoredAuthToken();
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else if (config.headers?.Authorization) {
+      delete config.headers.Authorization;
     }
+
     return config;
   },
   (error) => {
@@ -32,10 +53,13 @@ apiClient.interceptors.request.use(
  */
 export function setAuthToken(token) {
   authToken = token;
+
   if (token) {
-    localStorage.setItem('auth_token', token);
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY);
   } else {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY);
   }
 }
 
@@ -44,7 +68,7 @@ export function setAuthToken(token) {
  * @returns {string|null} The authentication token or null
  */
 export function getAuthToken() {
-  return authToken;
+  return getStoredAuthToken();
 }
 
 export default apiClient;

@@ -153,5 +153,166 @@
     width: 75vw;
     height: 75vh;
     }
+
+    /* Admin dashboard styles */
+    .admin-shell {
+        @apply text-colors bg-colors;
+    }
+
+    .admin-panel-surface {
+        @apply rounded-2xl border shadow-md bg-colors-secondary-light text-colors;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .dark .admin-panel-surface {
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-nav-button {
+        @apply w-full rounded-xl px-4 py-3 text-left transition-colors duration-200;
+    }
+
+    .admin-nav-button:hover {
+        background-color: rgba(128, 128, 128, 0.12);
+    }
+
+    .admin-nav-button-active {
+        background-color: rgba(128, 128, 128, 0.18);
+    }
+
+    .admin-stat-card {
+        @apply rounded-2xl border p-4 shadow-sm bg-colors-secondary-light text-colors;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .dark .admin-stat-card {
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-search {
+        @apply w-full rounded-xl border px-4 py-3 bg-colors-tertiary text-colors placeholder:text-gray-500 outline-none transition-shadow;
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .dark .admin-search {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-search:focus {
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+    }
+
+    .admin-filter-chip {
+        @apply inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors;
+        border-color: rgba(0, 0, 0, 0.12);
+        background-color: rgba(128, 128, 128, 0.12);
+    }
+
+    .dark .admin-filter-chip {
+        border-color: rgba(255, 255, 255, 0.12);
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-filter-chip-active {
+        background-color: rgba(37, 99, 235, 0.16);
+        color: rgb(30, 64, 175);
+        border-color: rgba(37, 99, 235, 0.22);
+    }
+
+    .dark .admin-filter-chip-active {
+        background-color: rgba(96, 165, 250, 0.16);
+        color: rgb(191, 219, 254);
+        border-color: rgba(96, 165, 250, 0.22);
+    }
+
+    .admin-action-button {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors;
+        background-color: rgba(128, 128, 128, 0.14);
+        color: inherit;
+    }
+
+    .admin-action-button:hover {
+        background-color: rgba(128, 128, 128, 0.2);
+    }
+
+    .admin-action-button-danger {
+        background-color: rgba(239, 68, 68, 0.14);
+        color: rgb(153, 27, 27);
+    }
+
+    .dark .admin-action-button-danger {
+        background-color: rgba(239, 68, 68, 0.18);
+        color: rgb(254, 202, 202);
+    }
+
+    .admin-action-button-success {
+        background-color: rgba(16, 185, 129, 0.14);
+        color: rgb(6, 95, 70);
+    }
+
+    .dark .admin-action-button-success {
+        background-color: rgba(16, 185, 129, 0.18);
+        color: rgb(167, 243, 208);
+    }
+
+    .admin-badge {
+        @apply inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold;
+    }
+
+    .admin-badge-success {
+        background-color: rgba(16, 185, 129, 0.14);
+        color: rgb(6, 95, 70);
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .dark .admin-badge-success {
+        background-color: rgba(16, 185, 129, 0.18);
+        color: rgb(167, 243, 208);
+        border-color: rgba(16, 185, 129, 0.28);
+    }
+
+    .admin-badge-danger {
+        background-color: rgba(239, 68, 68, 0.14);
+        color: rgb(153, 27, 27);
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .dark .admin-badge-danger {
+        background-color: rgba(239, 68, 68, 0.18);
+        color: rgb(254, 202, 202);
+        border-color: rgba(239, 68, 68, 0.28);
+    }
+
+    .admin-badge-warning {
+        background-color: rgba(245, 158, 11, 0.14);
+        color: rgb(146, 64, 14);
+        border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .dark .admin-badge-warning {
+        background-color: rgba(245, 158, 11, 0.18);
+        color: rgb(254, 215, 170);
+        border-color: rgba(245, 158, 11, 0.28);
+    }
+
+    .admin-badge-neutral {
+        background-color: rgba(128, 128, 128, 0.14);
+        color: inherit;
+        border-color: rgba(128, 128, 128, 0.18);
+    }
+
+    .dark .admin-badge-neutral {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .admin-empty-state {
+        @apply rounded-2xl border border-dashed p-8 text-center;
+        border-color: rgba(0, 0, 0, 0.12);
+    }
+
+    .dark .admin-empty-state {
+        border-color: rgba(255, 255, 255, 0.12);
+    }
 }
 

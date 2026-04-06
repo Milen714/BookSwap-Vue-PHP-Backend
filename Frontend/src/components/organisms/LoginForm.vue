@@ -63,7 +63,12 @@ onMounted(() => {
     } catch (error) {
       console.error('Login error:', error);
       showError.value = true;
-      message.value = error.response?.data?.message || 'An error occurred during login. Please try again.';
+      const errorData = error.response?.data;
+      message.value =
+        errorData?.message ||
+        errorData?.error?.message ||
+        (typeof errorData?.error === 'string' ? errorData.error : null) ||
+        'An error occurred during login. Please try again.';
     }
     finally {
       setTimeout(() => {

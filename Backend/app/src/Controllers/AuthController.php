@@ -102,12 +102,7 @@ class AuthController extends Controller {
             }
             $dto = new UserDTO($user);
              $this->sendSuccessResponse(['success' => true, 'user' => $dto], 200);
-            
-            // $this->sendSuccessResponse([
-            //     'success' => true,
-            //     'loggedIn' => true,
-            //     'user' => $dto,
-            // ], 200);
+           
         } catch (ApplicationException $e) {
             $this->sendErrorResponse(['success' => false, 'loggedIn' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {

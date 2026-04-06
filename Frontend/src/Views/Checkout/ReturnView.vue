@@ -2,8 +2,8 @@
 import { onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from '@/utils/axios.js'
-import CheckoutSuccessState from '@/components/CheckoutSuccessState.vue'
-import CheckoutFailureState from '@/components/CheckoutFailureState.vue'
+import CheckoutSuccessState from '@/components/molecules/CheckoutSuccessState.vue'
+import CheckoutFailureState from '@/components/molecules/CheckoutFailureState.vue'
 
 const route = useRoute()
 const loading = ref(true)

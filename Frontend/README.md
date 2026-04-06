@@ -1,46 +1,38 @@
-# BookSwap
+# Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+This folder contains the Vue 3 single-page app.
 
-## Recommended IDE Setup
+## Structure
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- `src/Views/` - page-level screens
+- `src/components/atoms/` - small reusable UI pieces
+- `src/components/molecules/` - simple composed components
+- `src/components/organisms/` - larger feature components
+- `src/stores/` - Pinia stores for app state and API calls
+- `src/Router/` - route definitions
+- `src/composables/` - shared logic hooks
+- `src/utils/` - helpers and axios setup
 
-## Recommended Browser Setup
+## Data flow
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+- Views render pages and compose feature components
+- Components call store actions or composables
+- Stores handle API requests and state updates
+- UI reacts to store state changes automatically
 
-## Customize configuration
+The app is organized by feature, so data moves from route → view → store → API, then back into the UI through reactive state.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Component structure
 
-## Project Setup
+- Atom components handle basic inputs, buttons, and icons
+- Molecules combine small UI pieces into reusable blocks
+- Organisms assemble full sections like navbars, forms, and cards
 
-Create your local environment file:
+## Setup
 
-```sh
-cp .env.example .env
-```
-
-Set `VITE_API_BASE_URL` in `.env` to your backend URL (default: `http://localhost`).
-
-```sh
+```bash
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+Set `VITE_API_BASE_URL` in `.env` to point at the backend.

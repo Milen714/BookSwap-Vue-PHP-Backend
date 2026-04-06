@@ -6,7 +6,7 @@ import InputGroup from '@/components/organisms/InputGroup.vue'
 import ErrorCard from '@/components/molecules/ErrorCard.vue'
 import SuccessCard from '@/components/molecules/SuccessCard.vue'
 import FormHeader from '@/components/organisms/FormHeader.vue'
-import PasswordStrengthFeedback from '@/components/PasswordStrengthFeedback.vue'
+import PasswordStrengthFeedback from '@/components/molecules/PasswordStrengthFeedback.vue'
 import { getPasswordFeedback, isPasswordStrong } from '@/utils/PasswordStrength.js'
 
 const authStore = useAuthStore()

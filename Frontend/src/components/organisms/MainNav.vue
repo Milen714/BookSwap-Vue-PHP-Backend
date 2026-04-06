@@ -203,6 +203,12 @@ const logout = async () => {
                         class="absolute right-0 top-full z-50 mt-2 w-44 rounded-lg border border-[#2C3233] bg-[#F2F0EF] shadow-lg dark:bg-[#0F0F0F]"
                     >
                         <ul class="py-1 text-sm text-colors" aria-labelledby="userMenuButton">
+                            <li v-if="authStore.user?.role === 'ADMIN'">
+                                <RouterLink to="/admin" class="block rounded-md px-4 py-2 hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="uiStore.closeUserMenu">
+                                    <i class="pi pi-user"></i>
+                                    Admin Panel
+                                </RouterLink>
+                            </li>
                             <li>
                                 <RouterLink to="/profile" class="block rounded-md px-4 py-2 hover:bg-[#CBCBCB] dark:hover:bg-[#222222]" @click="uiStore.closeUserMenu">
                                     <i class="pi pi-user"></i>

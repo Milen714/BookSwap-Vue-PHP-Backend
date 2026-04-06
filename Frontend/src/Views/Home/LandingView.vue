@@ -1,10 +1,10 @@
 <script setup>
-import HeroSection from '@/components/HeroSection.vue';
-import BookPostCard from '@/components/BookPostCard.vue'
-import BookDetailsModal from '@/components/BookDetailsModal.vue'
+import HeroSection from '@/components/organisms/HeroSection.vue';
+import BookPostCard from '@/components/molecules/BookPostCard.vue'
+import BookDetailsModal from '@/components/organisms/BookDetailsModal.vue'
 import BookRequestForm from '@/components/organisms/BookRequestForm.vue'
-import Pagination from '@/components/Pagination.vue'
-import Filter from '@/components/BookSearchFilter.vue'
+import Pagination from '@/components/molecules/Pagination.vue'
+import Filter from '@/components/molecules/BookSearchFilter.vue'
 import { onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.js'

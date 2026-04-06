@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import axios from '@/utils/axios.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useBookRequestsStore } from '@/stores/bookRequests.js'
-import BookPostCard from '@/components/BookPostCard.vue'
+import BookPostCard from '@/components/molecules/BookPostCard.vue'
 import router from '@/Router'
 
 const props = defineProps({

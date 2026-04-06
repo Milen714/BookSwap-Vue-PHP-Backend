@@ -6,7 +6,7 @@ import AccountSettingsSidebar from '@/components/organisms/AccountSettingsSideba
 import ProfileInformationForm from '@/components/organisms/ProfileInformationForm.vue'
 import ProfileSecurityForm from '@/components/organisms/ProfileSecurityForm.vue'
 import AccountAddressForm from '@/components/organisms/AccountAdressFrom.vue'
-import SettingsLanding from '@/components/SettingsLanding.vue'
+import SettingsLanding from '@/components/organisms/SettingsLanding.vue'
 const router = useRouter()
 const route = useRoute()
 const showError = ref(false)

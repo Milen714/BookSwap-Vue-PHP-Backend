@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
-import BookDetailsHeader from '@/components/BookDetailsHeader.vue'
+import BookDetailsHeader from '@/components/molecules/BookDetailsHeader.vue'
 import ModalManual from '@/components/organisms/ModalManual.vue'
 import Description from '@/components/molecules/ModalBookDescription.vue'
 

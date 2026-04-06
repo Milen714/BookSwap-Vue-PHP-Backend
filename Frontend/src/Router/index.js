@@ -15,6 +15,7 @@ import ForgotPassword from '@/Views/Account/ForgotPasswordView.vue';
 import ResetPasswordView from '@/Views/Account/ResetPasswordView.vue';
 import AccountSettingsView from '@/Views/Account/AccountSettingsView.vue';
 import ProfileView from '@/Views/Profile/ProfileView.vue';
+import AdminPanel from '@/Views/Admin/AdminPanel.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -95,6 +96,12 @@ const router = createRouter({
         meta: { requiresAuth: true }
     },
     {
+        path: '/admin',
+        name: 'admin-panel',
+        component: AdminPanel,
+        meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
         path: '/:catchAll(.*)', name: 'not-found', component: NotFound,
     },
 
@@ -102,7 +109,7 @@ const router = createRouter({
 });
 
 // Global navigation guard to check authentication
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
   
   // Wait for auth to be initialized if not already done
@@ -112,11 +119,14 @@ router.beforeEach(async (to, from, next) => {
   
   // If route requires auth but user is not logged in
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    // Redirect to login
-    next({ name: 'login', query: { redirect: to.path } })
-  } else {
-    next()
+    return { name: 'login', query: { redirect: to.path } }
   }
+
+    if (to.meta.requiresAdmin && authStore.user?.role !== 'ADMIN') {
+        return { name: 'not-found' }
+    }
+
+  return true
 })
 
 export default router;
