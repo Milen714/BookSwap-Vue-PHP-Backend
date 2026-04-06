@@ -44,13 +44,14 @@ class HomeController extends Controller
      */
     public function setTheme($vars = [])
     {
-        if (isset($_POST['theme'])) {
-            $theme = $_POST['theme'];
+        $data = $this->getPostData() ?? [];
+        $theme = $data['theme'] ?? ($_POST['theme'] ?? null);
+
+        if ($theme) {
             // Set a cookie wit 30 day expiry for the selected theme
             setcookie('theme', $theme, time() + (86400 * 30), '/');
             
             $this->sendSuccessResponse(['success' => true, 'message' => 'Theme updated successfully.', 'theme' => $theme], 200);
-            echo json_encode(['success' => true, 'theme' => $theme]);
         } else {
             $this->sendErrorResponse(['success' => false, 'message' => 'No theme selected'], 400);
         }

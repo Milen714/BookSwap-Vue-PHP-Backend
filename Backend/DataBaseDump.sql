@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Mar 31, 2026 at 12:08 PM
+-- Generation Time: Apr 06, 2026 at 09:28 PM
 -- Server version: 12.0.2-MariaDB-ubu2404
 -- PHP Version: 8.3.27
 
@@ -84,6 +84,10 @@ INSERT INTO `books` (`id`, `shared_by`, `title`, `author`, `isbn`, `published_ye
 (89, 12, 'Legendborn', 'Tracy Deonn', '1534441603', 2020, 'Young Adult Fiction', 'An Instant New York Times Bestseller! Winner of the Coretta Scott King - John Steptoe for New Talent Author Award Filled with mystery and an intriguingly rich magic system, Tracy Deonn’s YA contemporary fantasy Legendborn offers the dark allure of City of Bones with a modern-day twist on a classic legend and a lot of Southern Black Girl Magic. After her mother dies in an accident, sixteen-year-old Bree Matthews wants nothing to do with her family memories or childhood home. A residential program for bright high schoolers at UNC–Chapel Hill seems like the perfect escape—until Bree witnesses a magical attack her very first night on campus. A flying demon feeding on human energies. A secret society of so called “Legendborn” students that hunt the creatures down. And a mysterious teenage mage who calls himself a “Merlin” and who attempts—and fails—to wipe Bree’s memory of everything she saw. The mage’s failure unlocks Bree’s own unique magic and a buried memory with a hidden connection: the night her mother died, another Merlin was at the hospital. Now that Bree knows there’s more to her mother’s death than what’s on the police report, she’ll do whatever it takes to find out the truth, even if that means infiltrating the Legendborn as one of their initiates. She recruits Nick, a self-exiled Legendborn with his own grudge against the group, and their reluctant partnership pulls them deeper into the society’s secrets—and closer to each other. But when the Legendborn reveal themselves as the descendants of King Arthur’s knights and explain that a magical war is coming, Bree has to decide how far she’ll go for the truth and whether she should use her magic to take the society down—or join the fight.', 'http://books.google.com/books/content?id=gU_4DwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api', 'http://books.google.com/books/content?id=gU_4DwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api', 'Fair', '2026-03-27 14:25:44', '2026-03-30 16:50:05', 512, 1, 'asraws'),
 (90, 1, 'Cracking the Coding Interview, 6th Edition', 'Gayle Laakmann McDowell', '9780984782864', 2015, '', '', '', '', 'New', '2026-03-30 22:33:31', '2026-03-30 22:34:27', 0, 0, ''),
 (91, 1, 'Beyond Cracking the Coding Interview', 'Gayle Laakmann McDowell, Mike Mroczka, Aline Lerner, Nil Mamano', '9781955706001', 2025, 'Business & Economics', 'For over a decade, Cracking the Coding Interview has been hailed as the \"bible\" of interview prep. Now, Beyond Cracking the Coding Interview builds on that foundation to prepare you for today\'s tougher technical interviews and hiring climate. * 13 New Chapters and Expansions: Including topics such as two pointers, sliding windows, monotonic stacks & queues, prefix sums, heaps, and greedy algorithms. * 150+ New Problems: Ranging from fresh takes on old classics to brand-new algorithmic problems. * Triggers and Boosters: How to solve any question with boundary thinking (Big O and beyond), trigger analysis, and our top five problem-solving boosters. * Interview Replays: Watch close to a hundred interview replays, drawn from interviewing.io\'s collection of FAANG mock interviews. * Data-Driven Approaches to the Soft Squishy Stuff: Go deep into how to land interviews at top-tier companies, properly time your job search, master behavioral questions, and negotiate a better offer. And learn exactly what to say in most hiring situations you\'re likely to encounter.', 'http://books.google.com/books/content?id=BrcZ0QEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api', 'http://books.google.com/books/content?id=BrcZ0QEACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api', 'Good', '2026-03-30 22:38:36', '2026-03-30 22:38:36', 0, 1, '');
+INSERT INTO `books` (`id`, `shared_by`, `title`, `author`, `isbn`, `published_year`, `genre`, `description`, `cover_image_url`, `thumbnail_image_url`, `book_condition`, `created_at`, `updated_at`, `page_count`, `is_active`, `owner_review`) VALUES
+(92, 12, 'Animal Farm', 'George. Orwell', '9780241706985', 2024, 'Fiction', 'A special student edition of Orwell\'s timeless fable, with an introduction and study notes When the downtrodden animals of Manor Farm overthrow their master Mr Jones and take over the farm themselves, they imagine it is the beginning of a life of freedom and equality. But gradually a cunning, ruthless élite among them starts to take control, and the animals find themselves hopelessly ensnared as one form of tyranny is replaced with another. This special student edition of George Orwell\'s chilling satire is specifically designed for readers who are studying the text in detail. It has extra-wide margins to leave space for notes, and includes an introduction and notes by Orwell expert Ronald Carter, character sketches, a summary, a chronology, language notes and a selection of questions and topics for discussion and analysis.', 'http://books.google.com/books/content?id=5f1Z0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api', 'http://books.google.com/books/content?id=5f1Z0AEACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api', 'New', '2026-03-31 17:37:23', '2026-03-31 19:25:40', 0, 0, 'Oink, oink 🐽'),
+(93, 1, 'Animal Farm', 'George. Orwell', '9780241706985', 2024, 'Fiction', 'A special student edition of Orwell\'s timeless fable, with an introduction and study notes When the downtrodden animals of Manor Farm overthrow their master Mr Jones and take over the farm themselves, they imagine it is the beginning of a life of freedom and equality. But gradually a cunning, ruthless élite among them starts to take control, and the animals find themselves hopelessly ensnared as one form of tyranny is replaced with another. This special student edition of George Orwell\'s chilling satire is specifically designed for readers who are studying the text in detail. It has extra-wide margins to leave space for notes, and includes an introduction and notes by Orwell expert Ronald Carter, character sketches, a summary, a chronology, language notes and a selection of questions and topics for discussion and analysis.', 'http://books.google.com/books/content?id=5f1Z0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api', 'http://books.google.com/books/content?id=5f1Z0AEACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api', 'Good', '2026-03-31 19:27:53', '2026-03-31 19:27:53', 0, 1, 'OINK?🐽🔥'),
+(94, 21, 'Alice in Borderland, Vol. 1', 'Haro Aso', '9781974728374', 2022, 'Comics & Graphic Novels', 'An action-packed thriller and source of the hit Netflix drama where the only way to survive is to play the game! Battle Royale: Angel\'s Border; Deadman Wonderland; Death Note; Zom 100 The first game starts with a bang, but Ryohei manages to beat the clock and save his friends. It’s a short-lived victory, however, as they discover that winning only earns them a few days’ grace period. If they want to get home, they’re going to have to start playing a lot harder.', 'http://books.google.com/books/content?id=IgyMzgEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api', 'http://books.google.com/books/content?id=IgyMzgEACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api', 'New', '2026-04-06 21:23:20', '2026-04-06 21:23:20', 344, 1, '');
 
 -- --------------------------------------------------------
 
@@ -128,7 +132,7 @@ INSERT INTO `book_swap_requests` (`id`, `book_id`, `owner_id`, `requester_id`, `
 (95, 61, 14, 12, 'MjAwM2NjNGNhYzMwZmZjMTIzOThlMGYyM2RiZGFhZWU5ODFkZTBiMzJiZWY0MTQ1YzYxZTUxMWUxZmMzYjM0ZA==', 'YWM5NTE2ZDBjNmMxOTk1NjRjYThiMjhiMDYxZTZmYTM5MGRhM2ZiMmI2NDY0NWZlMTgzZTc1MTJmNTJkMzgyYQ==', 'SHIPPINGPAID', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-01-12 19:36:30', NULL, 20),
 (96, 62, 14, 12, 'MTU0Yzc5NGExMzU1NjU0ODFjYTE4NDNhYTgzZWFiMjUwZTMzZWY5NGYzM2ZhNDIzYmViMTFhMmFiOTMwYmFkZA==', 'YjgxZDhjMjY3YTc3ZDdiMDc2NjBjNjg5NmI5NDhjMGRhYjBiMjgyMzk3MjRkYzA5ZWM5ZGI3OGVhNzRiYTgyOQ==', 'PENDING', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-01-12 19:42:25', NULL, 20),
 (97, 63, 14, 12, 'MjM3MzllZGIyYjMzYTUwOTAyODM1ODllZTBkYzJjMjMxMmU4NTAwYmRlZWFiN2Y5MTRiMTg0MDI0MzFjYWIxNw==', 'OTU2ZmNlOTQ3ZjQ4NDNhZTAyMWI4Mzg5NzM5OWQ4Njg3OTcyY2NjOWQ2ZThhZjMwZGMxZGY0YzY2YWUyN2M3Ng==', 'SHIPPED', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-01-12 19:48:43', NULL, 8),
-(98, 64, 12, 14, 'ZjgwMjA4M2YzYTgyMzk5YzMyYjdlMDNjMGU1ZTc1MjU1YzMwNzBlYzczY2E4YmY3ZjYxOTM4ZGIyNWI0Mzg4MA==', 'YjkwMWRkNTIwNzUyNjg1NDUzNjkxYWE0MGMxMjY4MzdjYjY3ZmU2ZjUwYTY1YmFjMTExNmYyNGViMTBiYTU0Ng==', 'PENDING', 'Deje', '1057cm', 'Koog aan de Zaan', 'Netherlands ', '2026-01-12 20:18:00', NULL, 8),
+(98, 64, 12, 1, 'MWQ5NThjZTAyODAxOWE3YWY0NTg3ZTIwZmE2MThiZDJmNDI0OTQ5MjRiNDYxYjgxMDVhZTJhNmI0OGQ2YTUyMQ==', 'MTMyYjZjYWIyNjE0MTI5MDk3MDlmMTI1MjY5MDI1YjJkNjYzOTVhYjU0ODg2ZDNmYTc5ZmViMTA3Mjk1MGZlMw==', 'PENDING', 'Leliestraat 12', '1415zd', 'Amsterdam', 'Nl', '2026-01-12 20:18:00', NULL, 8),
 (99, 65, 12, NULL, NULL, NULL, 'TAKENDOWN', NULL, NULL, NULL, NULL, '2026-01-13 17:29:21', NULL, NULL),
 (100, 66, 1, 12, 'NDIxMjBlNmE2Y2ZmY2QzZmZiNDUyZjZiZDJmZDYyYzJiOTc2ZWMwMjgwYWQ5OTQ2NjY1ZDBjYjY2MzkyNjIwMQ==', 'OTBiNzQzNmVlYmI2NGNlZDQ5ZDJiZjZjNDMyMmQ0ZGIyY2QxY2YzNjUyNzg3OWZkYTMwNDA3YzliNDNhZThlNA==', 'PENDING', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-01-13 20:48:58', NULL, 5),
 (101, 67, 15, 12, 'YmE3NzU0ZDI4YzJiZjJkOGJkMTlmNzZlZDE2NmEwNWVhYzA2OGY4YzhkNjQ1YzMyN2IxMWQ3OTIzZGZiNDJlZg==', 'MTc2ODM3ZjM3NWIxZWFjMTFlMTBkYjY2ZTlmNTJhMWViNTJmZDFlYzAxZjc3NGE3YzRlMTdjOTJkOTI5OGVhMA==', 'PENDING', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-01-13 23:15:16', NULL, 8),
@@ -143,9 +147,12 @@ INSERT INTO `book_swap_requests` (`id`, `book_id`, `owner_id`, `requester_id`, `
 (120, 86, 12, NULL, NULL, NULL, 'TAKENDOWN', NULL, NULL, NULL, NULL, '2026-03-20 18:34:35', NULL, NULL),
 (121, 87, 12, NULL, NULL, NULL, 'TAKENDOWN', NULL, NULL, NULL, NULL, '2026-03-20 18:38:34', NULL, NULL),
 (122, 88, 12, NULL, NULL, NULL, 'TAKENDOWN', NULL, NULL, NULL, NULL, '2026-03-20 18:51:12', NULL, NULL),
-(123, 89, 12, 1, 'YzUwNjYyYTQ4ODU1ODI5ZWE1NjQ5ZTI5M2VhM2YwYWVhOWI1NjFhYjk2NjgzMDA4ZjJkMTY2OTdjMzIzOTkxYw==', 'NTM4ZWU0MWZkNGVmOWNhNzA1NGM0MGI3YjllZjRjY2EwNjRkZTk4NDY1YjQ3NzhhNjE0ZGY5N2IyZDUzOTJhNQ==', 'PENDING', 'lel12', '1415zd', 'Amsterdam', 'Nl', '2026-03-27 14:25:44', NULL, 20),
+(123, 89, 12, 21, 'YzMxYzdjZGYxNmMwNGU0MTRjYmQzMjMwZjE2ZGNhYWY4N2I4MjMwZDRlYjI0ZWNlM2E1ZjJjNGI5MGJkYWRmNQ==', 'NjJmOGNmMmZhNmRlNGM4MWY2OGM1NTk4ODUzN2IxYTgyZGU1NTI4MDQ4YWEwMDAwMWEyZTY5NjczNTcwMzBhYw==', 'PENDING', 'Bijdorplaan 15', '2015CE ', 'Haarlem', 'Netherlands', '2026-03-27 14:25:44', NULL, 8),
 (124, 90, 1, 12, 'YThjZDRlMTZhNzA3MjFiYWI5YjZkZDAyNGRmMWQxY2I3M2RlMjFkYmMwMzg2OGNiZDk4MTk0Y2NlM2VmYWZmMw==', 'MDAzNDA2YTMzNWY0NTk1MDU5YzgxZGJmODdkNmYxYjJhZjlmMmU4MWUyZmYxZTBjYzkwNGEyZWE3MTdhYzUwMQ==', 'COMPLETED', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-03-30 22:33:31', '2026-03-30 22:37:08', 5),
-(125, 91, 1, 12, 'NThkZjE3NzEzZTI1ZDNhZTI4OGY2YTY5MWE4OGZjODQ1YTYwMDQxNjRmOGYwNjBkZDZjODdmMTY0YjNkZWUyNg==', 'MDhlOWIzNTdiNTY4MzU5MjQ1NTk5YzVhODI5MjJjNzlkMGY1OWU1YTZlZjIzZjA4ZDQ1ZGRiYjM1YjEwNTcwOA==', 'PENDING', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-03-30 22:38:36', NULL, 8);
+(125, 91, 1, 12, 'NThkZjE3NzEzZTI1ZDNhZTI4OGY2YTY5MWE4OGZjODQ1YTYwMDQxNjRmOGYwNjBkZDZjODdmMTY0YjNkZWUyNg==', 'MDhlOWIzNTdiNTY4MzU5MjQ1NTk5YzVhODI5MjJjNzlkMGY1OWU1YTZlZjIzZjA4ZDQ1ZGRiYjM1YjEwNTcwOA==', 'PENDING', 'Oeverpad 382', '1068PL', 'Koog aan de Zaan', 'Netherlands', '2026-03-30 22:38:36', NULL, 8),
+(126, 92, 12, 1, 'NzUzZGEyMDcxMTNhYWRlMzk2MjUwYWJkYzhhODUwMGM1MWUyNzNkODc4ZTkyODU0YmVkYWZhYjc5YzJjNjYwNg==', 'YWMxYjM2MTI1MjA1ZGRjZjdiNzBmMmJjZDU3ZWRlM2E2MmUyMWMzYWIxNjVmODAxZTgwZmE5MzYyNDdlODY0Yw==', 'COMPLETED', 'Leliestraat 12', '1415zd', 'Amsterdam', 'Nl', '2026-03-31 17:37:23', '2026-03-31 19:26:41', 8),
+(127, 93, 1, NULL, NULL, NULL, 'PENDING', NULL, NULL, NULL, NULL, '2026-03-31 19:27:53', NULL, NULL),
+(128, 94, 21, 22, 'YzRkNzYwNjA3NWQyZmQyZjQwNWE5ZTViN2JmM2U5ZWE4NzI4ODVmZGJkZWJjMmNhMzgzNWFjODkwZDE3ZjIwMA==', 'NTFkZTIxMmYzOTRiNGE4NmQ1MzI4M2Y2ZjczODdjMjA0NzQ5MjJjZTkwZmQ3OTIzN2MwMWY1ZDMzYzc0ZGIwZA==', 'PENDING', 'Bijdorplaan 15', '2015CE ', 'Haarlem', 'Netherlands', '2026-04-06 21:23:20', NULL, 5);
 
 -- --------------------------------------------------------
 
@@ -334,7 +341,21 @@ INSERT INTO `direct_messages` (`id`, `sender_id`, `recipient_id`, `message`, `is
 (166, 1, 12, '2123', 0, '2026-03-27 23:09:00'),
 (167, 12, 21, 'asd', 0, '2026-03-27 23:13:08'),
 (168, 12, 1, 'sdasd', 0, '2026-03-27 23:13:14'),
-(169, 12, 1, '565456', 0, '2026-03-30 14:05:09');
+(169, 12, 1, '565456', 0, '2026-03-30 14:05:09'),
+(170, 12, 1, 'Ey pedal', 0, '2026-03-31 18:07:55'),
+(171, 12, 1, 'Kvo staaa', 0, '2026-03-31 18:07:59'),
+(172, 1, 12, 'Maniak', 0, '2026-03-31 18:08:07'),
+(173, 1, 12, 'Тва пише ли на български бе?', 0, '2026-03-31 18:08:43'),
+(174, 12, 1, 'ihaaaa', 0, '2026-03-31 18:27:34'),
+(175, 12, 1, 'Yo', 0, '2026-03-31 18:30:21'),
+(176, 1, 12, 'broken', 0, '2026-03-31 18:30:41'),
+(177, 12, 1, 'No', 0, '2026-03-31 18:30:44'),
+(178, 12, 1, 'hja;sd', 0, '2026-03-31 20:03:21'),
+(179, 12, 1, '54154', 0, '2026-04-06 10:51:04'),
+(180, 12, 1, '456', 0, '2026-04-06 10:51:13'),
+(181, 1, 12, 'srfsd', 0, '2026-04-06 10:51:16'),
+(182, 22, 21, 'Hello I am looking for the Admin', 0, '2026-04-06 21:25:41'),
+(183, 21, 22, 'Yes Karen ', 0, '2026-04-06 21:26:21');
 
 -- --------------------------------------------------------
 
@@ -358,30 +379,32 @@ CREATE TABLE `users` (
   `isActive` tinyint(1) DEFAULT NULL,
   `isVerified` tinyint(1) DEFAULT NULL,
   `swap_tokens` int(11) NOT NULL DEFAULT 0,
-  `state` varchar(20) NOT NULL
+  `state` varchar(20) NOT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `bio` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `fname`, `lname`, `role`, `email`, `password_hash`, `address`, `post_code`, `country`, `joined_at`, `resset_token`, `resset_token_expiry`, `isActive`, `isVerified`, `swap_tokens`, `state`) VALUES
-(1, 'Paami', 'Savov', 'ADMIN', 'paami97@gmail.com', '$2y$12$ZvMgJFKl8A3MOraul2S4mebyI9/VBvgw9gja/cen34XrqdTGW0VA2', 'lel12', '1415zd', 'Nl', '2025-11-20 16:33:08', 'NDkwOTkwYTg3NDA2ODJmMGQ3ZDM3YjllYTMzMzk3ZjUxM2U1ZWY5NDI2OTU5YzRhOTJkZGQxNGZlNjJkZDgwZg==', '2026-02-21 21:52:09', 1, 0, 9, 'Amsterdam'),
-(12, 'Milko', 'Savov', 'USER', 'milensavov1997@gmail.com', '$2y$12$SoVajkEYeCINMxEU29H63.7jOO6kplg3OL3i4Y4tM92g8RB5iQNZS', 'Oeverpad 382', '1068PL', 'Netherlands', '2025-12-16 20:57:04', NULL, NULL, 1, 0, 9, 'Koog aan de Zaan'),
-(14, 'Milen', 'Savov', 'USER', '580601@student.inholland.nl', '$2y$12$ugjzwpj49HGJVbfu919i3uY0VQPB48NBM3b3K8V2rf3NpldYllJ8e', 'Deje', '1057cm', 'Netherlands ', '2025-12-17 17:40:38', NULL, NULL, 1, 0, 1, 'Koog aan de Zaan'),
-(15, 'Vankata', 'Ivanov', 'USER', 'ligawow@abv.bg', '$2y$12$cFZsJa24Q2mwhyal5cusl.qdrKsG9VGqqXtQropGmwuhM2jcMpjwe', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-13 23:10:27', NULL, NULL, 1, 0, 0, 'Amsterdam'),
-(16, 'Test', 'User', 'USER', 'test@example.com', '$2y$12$FsAAvBkL09GIg8u6anrg2uHrY/ifNXwIp9Lt8ONUQa8l5u.wRL34C', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-13 23:43:28', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(20, 'User', 'Testov', 'USER', 'User@example.mail', '$2y$12$xZcNG7MLNJQT7tp4C4Elq.hDnT6b8BlCxGkweR2WKUF0raygSVku6', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-14 00:20:57', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(21, 'Admin', 'Testing', 'USER', 'test@admin.mail', '$2y$12$QC5U58LzcW6Qf5PXm9YHQO9QkTuDZLvfGMZOMLMa5CRkMPhWYpUPi', 'Bijdorplaan 15', '2015CE ', 'Netherlands', '2026-01-16 21:27:37', NULL, NULL, 1, 0, 1, 'Haarlem'),
-(22, 'User', 'Testing', 'USER', 'test@user.mail', '$2y$12$cwH.GlrFzcHQZ3GZnX3hC.nK/yHjxdg0B1DLVU7U7aft3uj4H8WTS', 'Bijdorplaan 15', '2015CE ', 'Netherlands', '2026-01-16 21:29:51', NULL, NULL, 1, 0, 1, 'Haarlem'),
-(23, 'Asan', 'Keksa', 'USER', 'asan@test.com', '$2y$12$SdQmDY0Y0c8BXwhnOxBoS.CfEmPId9Dt6qqB7TUWWp6v/KKb/9wQy', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-18 16:16:05', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(29, 'Milen', 'Savov', 'USER', 'milensav213ov1997@gmail.com', '$2y$12$xXJB.jIMMZHU4qPxNiXjo.gydKEEChF5L4FAQ.EKlTiu6J.9qNeM.', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-02-23 13:49:48', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(30, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com123', '$2y$12$a1VXFWX/FB25B.pEX6gKtOzBx84uBX4wkc7w/plg/7jMntbw0zy.y', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-20 10:41:50', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(31, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com55698', '$2y$12$gDEKi0XC0hd3fFIuxRDhQey6/9wpcbBXdN46tB5TUmAF9qTW16NeS', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-20 22:39:07', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(32, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com13123asda', '$2y$12$fKtHw6kMfi6zhkK7zeEXfO7zMP8cQHDp0CtfrIJPrhvD7lsq.lLp2', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-30 23:23:26', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(33, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com123123', '$2y$12$zw9OdcnjxoiRqKcUzdlty.UUm/fdkJ/Zpy66u2zety99/Ri14xuEq', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-30 23:43:55', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(34, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.comasda123123', '$2y$12$2gS8VuJXuIyJrQEE/S5OiOkUyMD/Fs8WNfAgPOtaE8Q1px0tEOmza', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-30 23:58:43', NULL, NULL, 1, 0, 0, 'amsterdam'),
-(35, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.comadad11222', '$2y$12$zOdkPd2gzMlj5rlbA8l.TenhmU98NHxZ10YfOC1Hk.uAJODkQ.bAG', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-31 00:49:28', NULL, NULL, 1, 0, 0, 'amsterdam');
+INSERT INTO `users` (`id`, `fname`, `lname`, `role`, `email`, `password_hash`, `address`, `post_code`, `country`, `joined_at`, `resset_token`, `resset_token_expiry`, `isActive`, `isVerified`, `swap_tokens`, `state`, `phone_number`, `bio`) VALUES
+(1, 'Paami', 'Savov', 'ADMIN', 'paami97@gmail.com', '$2y$12$ZvMgJFKl8A3MOraul2S4mebyI9/VBvgw9gja/cen34XrqdTGW0VA2', 'Leliestraat 11', '1415zd', 'Nl', '2025-11-20 16:33:08', 'MjBhMjhjYzZhN2UwNGRjNWY3OWI3N2Q4NDdlODZhMmRiNTQ3MDY2ZDBlMjY4OGU4MzZhM2Y3MTE5ZmM2YzNlYg==', '2026-03-31 19:55:55', 1, 0, 8, 'Amsterdam', '06268393265', 'This is my Bio'),
+(12, 'Milko', 'Savov', 'USER', 'milensavov1997@gmail.com', '$2y$12$kw1p2SVv/49smh/QM9FgjOadSrkcNu/J26X8VKsW1x3BBQLTo6JrO', 'Oeverpad 384', '1068PL', 'Netherlands', '2025-12-16 20:57:04', NULL, NULL, 1, 0, 10, 'Koog aan de Zaan', '06268393262', 'This is an epic BIO!!! 😂🤣👌🔥'),
+(14, 'Milen', 'Savov', 'USER', '580601@student.inholland.nl', '$2y$12$ugjzwpj49HGJVbfu919i3uY0VQPB48NBM3b3K8V2rf3NpldYllJ8e', 'Deje', '1057cm', 'Netherlands ', '2025-12-17 17:40:38', NULL, NULL, 1, 0, 1, 'Koog aan de Zaan', NULL, NULL),
+(15, 'Vankata', 'Ivanov', 'USER', 'ligawow@abv.bg', '$2y$12$cFZsJa24Q2mwhyal5cusl.qdrKsG9VGqqXtQropGmwuhM2jcMpjwe', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-13 23:10:27', NULL, NULL, 1, 0, 0, 'Amsterdam', NULL, NULL),
+(16, 'Test', 'User', 'USER', 'test@example.com', '$2y$12$FsAAvBkL09GIg8u6anrg2uHrY/ifNXwIp9Lt8ONUQa8l5u.wRL34C', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-13 23:43:28', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(20, 'User', 'Testov', 'USER', 'User@example.mail', '$2y$12$xZcNG7MLNJQT7tp4C4Elq.hDnT6b8BlCxGkweR2WKUF0raygSVku6', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-14 00:20:57', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(21, 'Admin', 'Testing', 'ADMIN', 'test@admin.mail', '$2y$12$QC5U58LzcW6Qf5PXm9YHQO9QkTuDZLvfGMZOMLMa5CRkMPhWYpUPi', 'Bijdorplaan 15', '2015CE ', 'Netherlands', '2026-01-16 21:27:37', NULL, NULL, 1, 0, 1, 'Haarlem', '06268393262', 'Admin Test Bio'),
+(22, 'User', 'Testing', 'USER', 'test@user.mail', '$2y$12$cwH.GlrFzcHQZ3GZnX3hC.nK/yHjxdg0B1DLVU7U7aft3uj4H8WTS', 'Bijdorplaan 15', '2015CE ', 'Netherlands', '2026-01-16 21:29:51', NULL, NULL, 1, 0, 1, 'Haarlem', '06268393265', 'My Bio'),
+(23, 'Asan', 'Keksa', 'USER', 'asan@test.com', '$2y$12$SdQmDY0Y0c8BXwhnOxBoS.CfEmPId9Dt6qqB7TUWWp6v/KKb/9wQy', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-01-18 16:16:05', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(29, 'Milen', 'Savov', 'USER', 'milensav213ov1997@gmail.com', '$2y$12$xXJB.jIMMZHU4qPxNiXjo.gydKEEChF5L4FAQ.EKlTiu6J.9qNeM.', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-02-23 13:49:48', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(30, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com123', '$2y$12$a1VXFWX/FB25B.pEX6gKtOzBx84uBX4wkc7w/plg/7jMntbw0zy.y', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-20 10:41:50', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(31, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com55698', '$2y$12$gDEKi0XC0hd3fFIuxRDhQey6/9wpcbBXdN46tB5TUmAF9qTW16NeS', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-20 22:39:07', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(32, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com13123asda', '$2y$12$fKtHw6kMfi6zhkK7zeEXfO7zMP8cQHDp0CtfrIJPrhvD7lsq.lLp2', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-30 23:23:26', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(33, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.com123123', '$2y$12$zw9OdcnjxoiRqKcUzdlty.UUm/fdkJ/Zpy66u2zety99/Ri14xuEq', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-30 23:43:55', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(34, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.comasda123123', '$2y$12$2gS8VuJXuIyJrQEE/S5OiOkUyMD/Fs8WNfAgPOtaE8Q1px0tEOmza', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-30 23:58:43', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL),
+(35, 'Milen', 'Savov', 'USER', 'milensavov1997@gmail.comadad11222', '$2y$12$zOdkPd2gzMlj5rlbA8l.TenhmU98NHxZ10YfOC1Hk.uAJODkQ.bAG', 'Oeverpad 382', '1068PL', 'Netherlands', '2026-03-31 00:49:28', NULL, NULL, 1, 0, 0, 'amsterdam', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -429,19 +452,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT for table `book_swap_requests`
 --
 ALTER TABLE `book_swap_requests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
 
 --
 -- AUTO_INCREMENT for table `direct_messages`
 --
 ALTER TABLE `direct_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=184;
 
 --
 -- AUTO_INCREMENT for table `users`

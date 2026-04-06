@@ -236,7 +236,7 @@ class BookRequestController extends Controller{
 
         try {
             $userId = JWTMiddleware::getUserIdFromToken();
-            $data = $this->getPostData();
+            $data = $this->getPostData() ?? [];
 
              if (!$data) {
                 $this->sendErrorResponse(['success' => false, 'error' => 'Invalid JSON'], 400);

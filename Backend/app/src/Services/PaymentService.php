@@ -17,13 +17,34 @@ use App\Exceptions\NotFoundException;
 use App\Exceptions\ForbiddenException;
 use App\Exceptions\ValidationException;
 
+/**
+ * Service handling Stripe checkout and swap completion after successful payment.
+ */
 class PaymentService implements IPaymentService {
+    /**
+     * User service for token/account operations.
+     */
     private IUserService $userService;
+
+    /**
+     * Repository for swap request state changes.
+     */
     private IBookSwapRequestRepository $bookSwapRequestRepository;
+
+    /**
+     * Repository for book listing state updates.
+     */
     private IBookRepository $bookRepository;
+
+    /**
+     * Mail notifications service.
+     */
     private IMailService $mailService;
 
 
+    /**
+     * Initialize payment workflow dependencies.
+     */
     public function __construct() {
         $this->userService = new UserService();
         $this->bookSwapRequestRepository = new BookSwapRequestRepository();
@@ -31,6 +52,12 @@ class PaymentService implements IPaymentService {
         $this->mailService = new MailService();
     }
 
+    /**
+     * Create an embedded Stripe checkout session for request shipping cost.
+     *
+     * @param BookSwapRequest $sessionSwapRequest Swap request context.
+     * @return void
+     */
     public function stripeCheckout(BookSwapRequest $sessionSwapRequest): void {
         $stripeSecretKey = Secrets::$stripeSecretKey;
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
@@ -63,6 +90,12 @@ echo json_encode([
 ]);
     }
 
+    /**
+     * Retrieve and verify an existing Stripe checkout session.
+     *
+     * @param mixed $sessionId Stripe session id.
+     * @return \Stripe\Checkout\Session Retrieved session object.
+     */
     public function verifyStripeSession($sessionId): \Stripe\Checkout\Session {
         $stripeSecretKey = Secrets::$stripeSecretKey;
         $stripe = new \Stripe\StripeClient($stripeSecretKey);
@@ -70,6 +103,16 @@ echo json_encode([
         return $stripe->checkout->sessions->retrieve($sessionId);
     }
 
+    /**
+     * Complete swap transaction after successful payment validation.
+     *
+     * @param int $requestId Swap request id.
+     * @param int $userId Authenticated requester id.
+     * @return void
+     * @throws NotFoundException When request does not exist.
+     * @throws ForbiddenException When user is not the request owner.
+     * @throws ValidationException When requester has no available swap tokens.
+     */
     public function completeSwapAfterPayment(int $requestId, int $userId): void {
         
         $swapRequest = $this->bookSwapRequestRepository->getRequestById($requestId);

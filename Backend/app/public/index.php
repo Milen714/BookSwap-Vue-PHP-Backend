@@ -45,7 +45,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/reset-password', ['App\Controllers\AuthController', 'resetPasswordPost']);
 
     // Theme / preferences routes
-    $r->addRoute('POST', '/setTheme', ['App\Controllers\HomeController', 'setTheme']);
+    $r->addRoute('PUT', '/setTheme', ['App\Controllers\HomeController', 'setTheme']);
 
     // Book routes
     $r->addRoute('POST', '/fetchBookPreview', ['App\Controllers\BookController', 'fetchBookPreview']);
@@ -58,7 +58,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
 
     // Book request routes
     $r->addRoute('POST', '/createBookRequest', ['App\Controllers\BookRequestController', 'requestBookSwap']);
-    $r->addRoute('POST', '/updateRequest', ['App\Controllers\BookRequestController', 'updateRequestStatus']);
+    $r->addRoute('PUT', '/updateRequest', ['App\Controllers\BookRequestController', 'updateRequestStatus']);
     $r->addRoute('GET', '/getBookSwapStatusses', ['App\Controllers\BookRequestController', 'getBookSwapStatusses']);
     $r->addRoute('GET', '/getBookRequestById', ['App\Controllers\BookRequestController', 'getRequestById']);
     $r->addRoute('GET', '/getMyBookRequests', ['App\Controllers\BookRequestController', 'getMyBookRequests']);
@@ -72,15 +72,15 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/getProfileAddress/{id}', ['App\Controllers\UserController', 'getProfileAddress']);
     $r->addRoute('GET', '/getUserInfo', ['App\Controllers\UserController', 'getUserInfo']);
     $r->addRoute('GET', '/getUserTokens', ['App\Controllers\UserController', 'getUserTokens']);
-    $r->addRoute('POST', '/updateProfile', ['App\Controllers\UserController', 'updateProfile']);
-    $r->addRoute('POST', '/changePassword', ['App\Controllers\UserController', 'changePassword']);
-    $r->addRoute('POST', '/updateAddress', ['App\Controllers\UserController', 'updateAddress']);
+    $r->addRoute('PUT', '/updateProfile', ['App\Controllers\UserController', 'updateProfile']);
+    $r->addRoute('PUT', '/changePassword', ['App\Controllers\UserController', 'changePassword']);
+    $r->addRoute('PUT', '/updateAddress', ['App\Controllers\UserController', 'updateAddress']);
     $r->addRoute('GET', '/getUser/{userId}', ['App\Controllers\UserController', 'getUserInfoById']);
 
     // Admin routes
     $r->addRoute('GET', '/getAllUsers', ['App\Controllers\UserController', 'getAllUsers']);
     $r->addRoute('GET', '/getAdminAnalytics', ['App\Controllers\UserController', 'getAdminAnalytics']);
-    $r->addRoute('POST', '/toggleUserStatus', ['App\Controllers\UserController', 'toggleUserStatus']);
+    $r->addRoute('PUT', '/toggleUserStatus', ['App\Controllers\UserController', 'toggleUserStatus']);
 
     // Chat routes
     $r->addRoute('GET', '/getChatMessages', ['App\Controllers\ChatController', 'getChatMessages']);

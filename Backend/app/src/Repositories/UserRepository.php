@@ -212,7 +212,7 @@ class UserRepository extends Repository implements IUserRepository {
             $stmt->execute();
             return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
-            throw new RepositoryException('Error adding swap tokens.', $e);
+            throw new RepositoryException('Error adding swap tokens.'. $e->getMessage(), $e);
         }
     }
 
@@ -271,6 +271,3 @@ class UserRepository extends Repository implements IUserRepository {
         }
     }
 }
-
-
-

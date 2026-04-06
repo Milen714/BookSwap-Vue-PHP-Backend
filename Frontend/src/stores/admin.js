@@ -64,7 +64,7 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
 
     try {
-      const response = await axios.post('/toggleUserStatus', {
+      const response = await axios.put('/toggleUserStatus', {
         userId,
         isActive,
       })

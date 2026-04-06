@@ -48,7 +48,7 @@ export const useProfileSettingsStore = defineStore('profileSettings', () => {
     message.value = ''
 
     try {
-      const response = await axios.post(`/updateProfile`, {
+      const response = await axios.put(`/updateProfile`, {
         userId: userId,
         phone_number: data.phone_number,
         bio: data.bio
@@ -112,7 +112,7 @@ export const useProfileSettingsStore = defineStore('profileSettings', () => {
     message.value = ''
 
     try {
-      const response = await axios.post(`/updateAddress`, {
+      const response = await axios.put(`/updateAddress`, {
         userId: userId,
         address: data.address,
         state: data.state,
@@ -180,7 +180,7 @@ export const useProfileSettingsStore = defineStore('profileSettings', () => {
     message.value = ''
 
     try {
-      const response = await axios.post(`/changePassword`, {
+      const response = await axios.put(`/changePassword`, {
         userId: userId,
         old_password: data.old_password,
         new_password: data.new_password,

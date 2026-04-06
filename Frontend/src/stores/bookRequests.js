@@ -132,7 +132,7 @@ export const useBookRequestsStore = defineStore('bookRequests', () => {
     error.value = null
 
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `/updateRequest`,
         { requestId, status }
       )

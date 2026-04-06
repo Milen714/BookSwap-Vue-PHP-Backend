@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios, { getAuthToken, setAuthToken as setApiAuthToken } from '@/utils/axios.js'
+import { useChatStore } from '@/stores/chat.js'
 
 let responseInterceptorInitialized = false
 
@@ -10,6 +11,18 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(getAuthToken())
   const loading = ref(true)
   const isLoggedIn = computed(() => !!user.value)
+
+  function clearSessionState() {
+    clearAuth()
+
+    // Ensure chat websocket/data are reset when auth is cleared.
+    try {
+      const chatStore = useChatStore()
+      chatStore.clearChat()
+    } catch (err) {
+      console.error('Failed to clear chat state during logout:', err)
+    }
+  }
 
   // Set up axios interceptors to handle expired or invalid sessions
   const setupAxiosInterceptors = () => {
@@ -23,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          clearAuth()
+          clearSessionState()
         }
         return Promise.reject(error)
       }
@@ -46,11 +59,11 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = response.data.user
         console.log('Logged in user:', user.value)
       } else {
-        clearAuth()
+        clearSessionState()
       }
     } catch (error) {
       console.error('Error fetching logged in user:', error)
-      clearAuth()
+      clearSessionState()
     } finally {
       loading.value = false
     }
@@ -67,7 +80,19 @@ export const useAuthStore = defineStore('auth', () => {
   function clearAuth() {
     token.value = null
     user.value = null
+    loading.value = false
     setApiAuthToken(null)
+  }
+
+  // Call backend logout for completeness, then always clear client session.
+  async function logout() {
+    try {
+      await axios.post(`/logout`, {})
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      clearSessionState()
+    }
   }
 
   return {
@@ -78,6 +103,7 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn,
     // Actions
     fetchLoggedInUser,
+    logout,
     setAuthToken,
     clearAuth,
     setupAxiosInterceptors,

@@ -245,10 +245,11 @@ export const useChatStore = defineStore('chat', () => {
    */
   function clearChat() {
     messages.value = []
-    conversations.value = []
+    partners.value = []
     activeConversationId.value = null
     currentUserId.value = null
     currentRecipientId.value = null
+    currentRecipientInfo.value = null
     unreadCounts.value = {}
     error.value = null
     closeWebSocket()

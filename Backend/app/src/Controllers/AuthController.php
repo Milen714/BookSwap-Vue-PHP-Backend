@@ -81,7 +81,38 @@ class AuthController extends Controller {
      * @return void
      */
     public function logout($vars = []) {
-        $this->sendSuccessResponse(['success' => true, 'message' => 'Logged out successfully'], 200);
+        try {
+            // For JWT auth logout is primarily client-side token removal.
+            // We still clear server-side session/cookie artifacts if they exist.
+            $token = JWTMiddleware::getTokenFromHeader();
+            $hadToken = !empty($token);
+
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_unset();
+                session_destroy();
+            }
+
+            if (ini_get('session.use_cookies')) {
+                $params = session_get_cookie_params();
+                setcookie(
+                    session_name(),
+                    '',
+                    time() - 42000,
+                    $params['path'],
+                    $params['domain'],
+                    $params['secure'],
+                    $params['httponly']
+                );
+            }
+
+            $this->sendSuccessResponse([
+                'success' => true,
+                'message' => 'Logged out successfully.',
+                'hadToken' => $hadToken,
+            ], 200);
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['success' => false, 'message' => 'Failed to process logout request.'], 500);
+        }
     }
     
     /**

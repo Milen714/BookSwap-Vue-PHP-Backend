@@ -49,14 +49,7 @@ const toggleTheme = async () => {
   try {
     const theme = isDark.value ? 'dark' : 'light'
     console.log('Saving theme to backend:', theme)
-    await axios.post(`/setTheme`, 
-      new URLSearchParams({ theme }).toString(),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
-    )
+    await axios.put(`/setTheme`, { theme })
   } catch (error) {
     console.error('Error saving theme preference:', error)
   }

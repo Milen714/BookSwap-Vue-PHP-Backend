@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue'
-import axios from '@/utils/axios.js'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useUIStore } from '@/stores/ui.js'
@@ -25,15 +24,10 @@ const userInitials = computed(() => {
 const credits = computed(() => authStore.user?.swapTokens ?? 0)
 
 const logout = async () => {
-    try {
-        await axios.post(`/logout`, {})
-    } catch (error) {
-        console.error('Logout error:', error)
-    } finally {
-        authStore.clearAuth()
-        uiStore.closeUserMenu()
-        router.push('/login')
-    }
+    await authStore.logout()
+    uiStore.closeUserMenu()
+    uiStore.closeNavMenu()
+    router.push('/login')
 }
 </script>
 

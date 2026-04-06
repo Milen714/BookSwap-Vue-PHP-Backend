@@ -234,8 +234,8 @@ class UserController extends Controller
      */
     public function updateProfile($vars = [])
     {
-        $data = $this->getPostData();
-        $userId = $data['userId'] ?? null;
+        $data = $this->getPostData() ?? [];
+        $userId = isset($data['userId']) ? (int) $data['userId'] : null;
         try {
             // Verify user is authenticated and owns this profile
             $authUserId = JWTMiddleware::getUserIdFromToken();
@@ -288,16 +288,8 @@ class UserController extends Controller
      */
     public function updateAddress($vars = [])
     {
-        $data = $this->getPostData();
-        $userId = $data['userId'] ?? null;
+        $data = $this->getPostData() ?? [];
         try {
-            // Verify user is authenticated and owns this profile
-            $authUserId = JWTMiddleware::getUserIdFromToken();
-            if (!$this->authService->validateUserId((int)$userId, $authUserId)) {
-                $this->sendErrorResponse(['error' => 'Unauthorized'], 403);
-                return;
-            }
-            
             if (!$data) {
                 $this->sendErrorResponse(['error' => 'Invalid JSON'], 400);
                 return;
@@ -305,7 +297,9 @@ class UserController extends Controller
 
             // Verify user is authenticated and owns this profile
             $authUserId = JWTMiddleware::getUserIdFromToken();
-            if ($authUserId !== $userId) {
+            $userId = isset($data['userId']) ? (int) $data['userId'] : $authUserId;
+
+            if (!$this->authService->validateUserId((int) $userId, $authUserId)) {
                 $this->sendErrorResponse(['error' => 'Unauthorized'], 403);
                 return;
             }
@@ -351,8 +345,8 @@ class UserController extends Controller
      */
     public function changePassword($vars = [])
     {
-        $data = $this->getPostData();
-        $userId = $data['userId'] ?? null;
+        $data = $this->getPostData() ?? [];
+        $userId = isset($data['userId']) ? (int) $data['userId'] : null;
         try {
             // Verify user is authenticated and owns this profile
             $authUserId = JWTMiddleware::getUserIdFromToken();

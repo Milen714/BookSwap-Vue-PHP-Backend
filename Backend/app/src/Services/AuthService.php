@@ -1,6 +1,6 @@
 <?php
 namespace App\Services;
-//require_once __DIR__ . '/../../config/config.php';
+
 use App\Models\Enums\UserRole;
 use App\Models\User;
 use App\Services\UserService;
@@ -13,20 +13,50 @@ use App\Exceptions\ValidationException;
 use App\Exceptions\ServiceException;
 use Dotenv\Parser\Value;
 
+/**
+ * Service responsible for authentication, JWT handling, and password reset token workflows.
+ */
 class AuthService implements IAuthService{
+    /**
+     * Cached authenticated user for role checks in the current lifecycle.
+     */
     private ?User $user = null;
+
+    /**
+     * Service used for user updates (for example reset token persistence).
+     */
     private UserService $userService;
+
+    /**
+     * Repository used to resolve users from token payload data.
+     */
     private UserRepository $userRepository;
 
+    /**
+     * Initialize auth dependencies.
+     */
     public function __construct()
     {   $this->userRepository = new UserRepository();
         $this->userService = new UserService();
         
     }
    
+    /**
+     * Check whether the cached authenticated user has the requested role.
+     *
+     * @param UserRole $roleToCheck Role that must match exactly.
+     * @return bool True when a user is loaded and role matches.
+     */
     public function hasRole(UserRole $roleToCheck): bool {
         return $this->user !== null && $this->user->role === $roleToCheck;
     }
+
+    /**
+     * Destroy the current session and redirect to login with a message.
+     *
+     * @param string $message Message appended to login route.
+     * @return void
+     */
     public function logout(string $message): void {
         session_unset();
         session_destroy();
@@ -35,12 +65,24 @@ class AuthService implements IAuthService{
         exit();
     }
     
+    /**
+     * Generate a secure action token used for one-time flows.
+     *
+     * @return string Base64-encoded random token.
+     * @throws \Random\RandomException When random bytes generation fails.
+     */
     public function generateActionToken(): string{
         $token = bin2hex(random_bytes(32));
         return base64_encode($token);
         
     }
 
+    /**
+     * Generate a signed JWT token for the given user.
+     *
+     * @param User $user Authenticated user.
+     * @return string Signed JWT token.
+     */
     public function generateJWTToken(User $user): string
     {
         $now = time();
@@ -69,6 +111,13 @@ class AuthService implements IAuthService{
         
         return JWT::encode($payload, Secrets::$secretKey, Secrets::JWT_ALGORITHM);
     }
+
+    /**
+     * Validate JWT signature and required claims.
+     *
+     * @param string $token Token to validate.
+     * @return bool True when token is valid and claim checks pass.
+     */
     public function validateToken(string $token): bool
     {
         try {
@@ -89,6 +138,13 @@ class AuthService implements IAuthService{
             return false; // Invalid token
         }
     }
+
+    /**
+     * Decode token and load the referenced user.
+     *
+     * @param string $token JWT token.
+     * @return User|null User when token is valid and user exists; otherwise null.
+     */
     public function getUserFromToken(string $token): ?User
     {
         try { 
@@ -104,6 +160,13 @@ class AuthService implements IAuthService{
 
         return null;        
     }
+
+    /**
+     * Validate password complexity requirements.
+     *
+     * @param string $password Raw password value.
+     * @return array{valid: bool, errors: string[]} Validation result and messages.
+     */
     public function validatePassword(string $password): array
 {
     $result = [
@@ -138,6 +201,15 @@ class AuthService implements IAuthService{
 
     return $result;
 }
+
+    /**
+     * Validate reset token value and expiration for a user.
+     *
+     * @param User|null $user User owning the reset token.
+     * @param string $token Token sent by client.
+     * @return bool True when token matches and is not expired.
+     * @throws ValidationException When token is invalid or expired.
+     */
     public function validateResetToken(?User $user, string $token): bool
     {
         if (!$user || $user->resset_token !== $token) {
@@ -153,6 +225,14 @@ class AuthService implements IAuthService{
         return true;
 
     }
+
+    /**
+     * Validate that a target user id matches authenticated user id.
+     *
+     * @param int $idToValidate User id from route/body.
+     * @param int $userId Authenticated user id.
+     * @return bool True when both ids are identical.
+     */
     public function validateUserId(int $idToValidate, int $userId): bool
     {
         try {
@@ -167,6 +247,7 @@ class AuthService implements IAuthService{
      * 
      * @param int $length Token length in bytes
      * @return string Base64 encoded secure token
+     * @throws \Random\RandomException When random bytes generation fails.
      */
     public function generateSecureToken(int $length = 32): string {
         $str = bin2hex(random_bytes($length));
@@ -178,6 +259,7 @@ class AuthService implements IAuthService{
      * 
      * @param User $user User to generate token for
      * @return string Generated reset token
+        * @throws ServiceException When token generation or persistence fails.
      */
     public function generatePasswordResetToken(User $user): string {
         try {

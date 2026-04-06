@@ -24,6 +24,81 @@ Request flow:
 4. Controllers call services and repositories
 5. JSON or view responses are returned depending on the route
 
+## REST API (final)
+
+Base URL in local development is typically `http://localhost`.
+
+- Content type: `application/json`
+- Auth: JWT via `Authorization: Bearer <token>` for protected routes
+- CORS preflight: `OPTIONS` is supported
+
+### Auth
+
+- `POST /login`
+- `POST /logout`
+- `POST /signUp`
+- `GET /getLoggedInUser`
+- `POST /forgot-password`
+- `GET /reset-password`
+- `POST /reset-password`
+
+### Theme / Preferences
+
+- `PUT /setTheme`
+
+### Books
+
+- `POST /fetchBookPreview`
+- `POST /addBook`
+- `GET /scanBook/{isbn}`
+- `GET /getAllBooks`
+- `GET /getAllGenres`
+- `GET /getBookDetails`
+- `GET /getUserBooks/{userId}`
+
+### Book Requests
+
+- `POST /createBookRequest`
+- `PUT /updateRequest`
+- `GET /getBookSwapStatusses`
+- `GET /getBookRequestById`
+- `GET /getMyBookRequests`
+- `GET /getMyBookListings`
+
+### Checkout
+
+- `GET /create-checkout-session`
+- `POST /checkout-status`
+
+### User / Profile
+
+- `GET /getProfileAddress/{id}`
+- `GET /getUserInfo`
+- `GET /getUserTokens`
+- `PUT /updateProfile`
+- `PUT /changePassword`
+- `PUT /updateAddress`
+- `GET /getUser/{userId}`
+
+### Admin
+
+- `GET /getAllUsers`
+- `GET /getAdminAnalytics`
+- `PUT /toggleUserStatus`
+
+### Chat
+
+- `GET /getChatMessages`
+- `POST /sendDirectMessage`
+- `GET /getChatPartners`
+
+## REST notes
+
+- Update-style operations are currently implemented with `PUT` (`/setTheme`, `/updateRequest`, `/updateProfile`, `/changePassword`, `/updateAddress`, `/toggleUserStatus`).
+- Create-style operations are implemented with `POST`.
+- Read-style operations are implemented with `GET`.
+- There are currently no explicit `DELETE` endpoints in the dispatcher.
+
 ## Auth and permissions
 
 - JWT is used for stateless authentication
