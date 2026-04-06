@@ -25,7 +25,7 @@ BookSwap is a full-stack book exchange app where users can list books, browse th
 
 ```bash
 cd Backend
-docker compose up
+docker compose up -d --build
 ```
 
 2. Import the database dump:
