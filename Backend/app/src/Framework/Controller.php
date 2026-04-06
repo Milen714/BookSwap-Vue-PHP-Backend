@@ -6,37 +6,10 @@ namespace App\Framework;
  * Controller
  * 
  * Base controller class providing common utilities for all application controllers.
- * Includes methods for view rendering, JSON response handling, and POST data processing.
+ * Includes methods for JSON response handling and POST data processing.
  */
 class Controller
 {
-    /**
-     * Render a view file with optional layout template
-     * 
-     * Loads a view file with provided variables, captures output, and renders
-     * within a layout template to create the final HTML output.
-     * 
-     * @param string $viewName The name of the view file (without .php extension)
-     * @param array $vars Variables to pass to the view
-     * @param string $layout The layout template file path
-     * @return void
-     */
-    protected function view($viewName, $vars = [], $layout = 'layouts/mainLayout')
-    {
-        // Load the view and capture output
-        ob_start();
-        extract($vars);
-        
-        require __DIR__ . '/../../Views/' . $viewName . '.php';
-        // ob_get_clean(); prevent double output and turns the inside of the require ^^ into a string which is stored in $content
-        $content = ob_get_clean();
-        
-        // Load the layout with the content
-        extract(array_merge($vars, ['content' => $content]));
-        require __DIR__ . '/../../Views/' . $layout . '.php';
-        // The layout will use the $content variable to display the view content in the main tag 
-        //Layout is foooter and header around the content
-    }
     /**
      * Send a successful JSON response to the client
      * 

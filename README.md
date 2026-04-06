@@ -2,6 +2,15 @@
 
 BookSwap is a full-stack book exchange app where users can list books, browse the catalog, request swaps, pay shipping, and chat in real time.
 
+## Features
+
+- Real-time chat powered by the WebSocket server
+- Admin dashboard for managing users and platform activity
+- Swap token economy for book exchanges
+- Password reset flow with email notifications
+- Email notifications for swaps and account actions
+- Stripe integration for shipping payments
+
 ## Tech stack
 
 - Frontend: Vue 3, Vite, Pinia, Vue Router, Tailwind CSS
@@ -23,7 +32,7 @@ docker compose up
 
 - Open PHPMyAdmin at http://localhost:8080
 - Log in with root / secret123
-- Import Backend/DataBaseDump.sql into developmentdb
+- Import [Backend/DataBaseDump.sql](Backend/DataBaseDump.sql) into the developmentdb database
 
 3. Start the frontend:
 
