@@ -12,6 +12,7 @@ use App\Repositories\BookRepository;
 use App\Middleware\RequireRole;
 use App\Models\Enums\UserRole;
 use App\Models\PaginatedList;
+use App\Clients\OllamaClient;
 
 /**
  * HomeController
@@ -32,7 +33,7 @@ class HomeController extends Controller
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
         $this->bookRepository = new BookRepository();
-        $this->bookService = new BookService($this->bookRepository);
+        $this->bookService = new BookService($this->bookRepository, new OllamaClient());
     }
 
    

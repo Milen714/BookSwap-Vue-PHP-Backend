@@ -49,38 +49,76 @@ class BookRepository extends Repository implements IBookRepository {
             $book->shared_by->email = $data['email'] ?? '';
             $book->shared_by->state = $data['state'] ?? '';
             $book->owner_review = $data['owner_review'] ?? null;
+            $book->embedding = Book::parseEmbedding($data['embedding'] ?? null);
+            $book->distance = isset($data['distance']) && $data['distance'] !== null ? (float) $data['distance'] : null;
             //$book->condition = $data['book_condition'] ?? '';
         return $book;
     }
-    public function getAllBooks(?string $genreFilter, ?string $generalFilter, ?int $limit = null, ?int $offset = null): array {
+    public function getAllBooks(?string $genreFilter, ?array $searchEmbedding = null, ?string $searchText = null, ?float $maxDistance = null, ?int $limit = null, ?int $offset = null): array {
         $genre = '';
-        $general = '';
+        $semantic = '';
+        $selectDistance = '';
+        $orderBy = '';
+        $keywordOrder = '';
         $pagination = '';
        
         try {
             $pdo = $this->connect();
             
             if ($genreFilter !== null && trim($genreFilter) !== '') {
-                $genre = ' AND B.genre LIKE :genre';
+                $genre = ' AND B.genre ILIKE :genre';
             }
-            if ($generalFilter !== null && trim($generalFilter) !== '') {
-                $general = ' AND (B.title LIKE :general OR B.author LIKE :general OR B.isbn LIKE :general)';
+
+            if ($searchEmbedding !== null) {
+                $selectDistance = ', B.embedding <=> :embedding AS distance';
+                $semantic = ' AND B.embedding IS NOT NULL';
+
+                $searchTerms = $this->getSearchTerms($searchText);
+                if ($searchTerms !== []) {
+                    $keywordConditions = [];
+                    foreach ($searchTerms as $index => $term) {
+                        $placeholder = ':search_term_' . $index;
+                        $keywordConditions[] = 'B.title ILIKE ' . $placeholder;
+                        $keywordConditions[] = 'B.author ILIKE ' . $placeholder;
+                        $keywordConditions[] = 'B.genre ILIKE ' . $placeholder;
+                        $keywordConditions[] = 'B.description ILIKE ' . $placeholder;
+                    }
+                    $keywordOrder = 'CASE WHEN ' . implode(' OR ', $keywordConditions) . ' THEN 0 ELSE 1 END, ';
+                }
+
+                $orderBy = ' ORDER BY ' . $keywordOrder . 'B.embedding <=> :embedding ASC';
+
+                if ($maxDistance !== null) {
+                    $semantic .= ' AND B.embedding <=> :embedding <= :max_distance';
+                }
             }
+
             if ($limit !== null && $offset !== null) {
                 $pagination .= ' LIMIT :limit OFFSET :offset';
             }
             
-            $query = 'SELECT U.id as user_id, U.fname, U.lname, U.email, U.state, B.*  
+            $query = 'SELECT U.id as user_id, U.fname, U.lname, U.email, U.state, B.*' . $selectDistance . '  
             FROM users U JOIN books B ON U.id = B.shared_by 
-            WHERE B.is_active = 1' . $genre . $general . $pagination;   
+            WHERE B.is_active = 1' . $genre . $semantic . $orderBy . $pagination;   
             $stmt = $pdo->prepare($query);
             
             if ($genreFilter !== null && trim($genreFilter) !== '') {
                 $stmt->bindValue(':genre', '%' . trim($genreFilter) . '%');
             }
-            if ($generalFilter !== null && trim($generalFilter) !== '') {
-                $stmt->bindValue(':general', '%' . trim($generalFilter) . '%');
+
+            if ($searchEmbedding !== null) {
+                $embedding = Book::formatEmbedding($searchEmbedding);
+                $stmt->bindValue(':embedding', $embedding, PDO::PARAM_STR);
+
+                foreach ($this->getSearchTerms($searchText) as $index => $term) {
+                    $stmt->bindValue(':search_term_' . $index, '%' . $term . '%');
+                }
+
+                if ($maxDistance !== null) {
+                    $stmt->bindValue(':max_distance', $maxDistance);
+                }
             }
+
             if ($limit !== null && $offset !== null) {
                 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
                 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -95,6 +133,22 @@ class BookRepository extends Repository implements IBookRepository {
         } catch (PDOException $e) {
             throw new RepositoryException("Error fetching books.", $e);
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getSearchTerms(?string $searchText): array {
+        if ($searchText === null || trim($searchText) === '') {
+            return [];
+        }
+
+        $terms = preg_split('/[^a-z0-9]+/i', strtolower($searchText)) ?: [];
+        $stopWords = ['a', 'an', 'and', 'about', 'book', 'books', 'for', 'i', 'me', 'of', 'on', 'or', 'the', 'to', 'want', 'with'];
+
+        return array_values(array_unique(array_filter($terms, static function (string $term) use ($stopWords): bool {
+            return strlen($term) > 2 && !in_array($term, $stopWords, true);
+        })));
     }
 
     public function getBookById(int $id): ?Book {
@@ -118,8 +172,8 @@ class BookRepository extends Repository implements IBookRepository {
     public function saveBook(Book $book): void {
         try {
             $pdo = $this->connect();
-            $query = 'INSERT INTO books (title, author, isbn, shared_by, page_count, published_year, genre, description, cover_image_url, thumbnail_image_url, book_condition, owner_review) 
-                      VALUES (:title, :author, :isbn, :shared_by, :page_count, :published_year, :genre, :description, :cover_image_url, :thumbnail_image_url, :book_condition, :owner_review)';
+            $query = 'INSERT INTO books (title, author, isbn, shared_by, page_count, published_year, genre, description, cover_image_url, thumbnail_image_url, book_condition, owner_review, embedding) 
+                      VALUES (:title, :author, :isbn, :shared_by, :page_count, :published_year, :genre, :description, :cover_image_url, :thumbnail_image_url, :book_condition, :owner_review, :embedding)';
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':title', $book->title);
             $stmt->bindParam(':author', $book->author);
@@ -135,6 +189,8 @@ class BookRepository extends Repository implements IBookRepository {
             
             $condition = $book->condition->value;
             $stmt->bindParam(':book_condition', $condition);
+            $embedding = Book::formatEmbedding($book->embedding);
+            $stmt->bindValue(':embedding', $embedding, $embedding === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
             $stmt->execute();
             $bookId = (int) $pdo->lastInsertId();
             $book->id = $bookId;
@@ -160,7 +216,7 @@ class BookRepository extends Repository implements IBookRepository {
     public function getBooksGenres(): array {
         try {
             $pdo = $this->connect();
-            $query = 'SELECT DISTINCT genre FROM books WHERE is_active = 1 AND genre IS NOT NULL AND genre != ""';
+            $query = "SELECT DISTINCT genre FROM books WHERE is_active = 1 AND genre IS NOT NULL AND genre != ''";
             $stmt = $pdo->prepare($query);
             $stmt->execute();
             $genresData = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -184,6 +240,34 @@ class BookRepository extends Repository implements IBookRepository {
             return $books;
         } catch (PDOException $e) {
             throw new RepositoryException("Error fetching books by user ID.", $e);
+        }
+    }
+
+    public function updateBook(Book $book): Book {
+        try {
+            $pdo = $this->connect();
+            $query = 'UPDATE books SET title = :title, author = :author, isbn = :isbn, page_count = :page_count, published_year = :published_year, genre = :genre, description = :description, cover_image_url = :cover_image_url, thumbnail_image_url = :thumbnail_image_url, owner_review = :owner_review, book_condition = :book_condition, embedding = :embedding WHERE id = :id';
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':id', $book->id);
+            $stmt->bindParam(':title', $book->title);
+            $stmt->bindParam(':author', $book->author);
+            $stmt->bindParam(':isbn', $book->isbn);
+            $stmt->bindParam(':page_count', $book->page_count);
+            $stmt->bindParam(':published_year', $book->published_year);
+            $stmt->bindParam(':genre', $book->genre);
+            $stmt->bindParam(':description', $book->description);
+            $stmt->bindParam(':cover_image_url', $book->cover_image_url);
+            $stmt->bindParam(':thumbnail_image_url', $book->thumbnail_image_url);
+            $stmt->bindParam(':owner_review', $book->owner_review);
+
+            $condition = $book->condition->value;
+            $stmt->bindParam(':book_condition', $condition);
+            $embedding = Book::formatEmbedding($book->embedding);
+            $stmt->bindValue(':embedding', $embedding, $embedding === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stmt->execute();
+            return $book;
+        } catch (PDOException $e) {
+            throw new RepositoryException("Error updating book.", $e);
         }
     }
 }

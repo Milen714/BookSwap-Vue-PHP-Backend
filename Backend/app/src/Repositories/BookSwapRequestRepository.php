@@ -211,13 +211,13 @@ class BookSwapRequestRepository extends Repository implements IBookSwapRequestRe
     public function getRequestsByUserId(User $user, bool $includeClosed, bool $isOwner, ?BookSwapStatus $statusFilter): array{
         switch($statusFilter) {
             case BookSwapStatus::ALL:
-                $statusFilterQuery = ' AND bsr.status NOT IN ("TAKENDOWN", "COMPLETED") ';
+                $statusFilterQuery = " AND bsr.status NOT IN ('TAKENDOWN', 'COMPLETED') ";
                 break;
             case BookSwapStatus::COMPLETED:
-                $statusFilterQuery = ' AND bsr.status = "COMPLETED" ';
+                $statusFilterQuery = " AND bsr.status = 'COMPLETED' ";
                 break;
             case BookSwapStatus::TAKENDOWN:
-                $statusFilterQuery = ' AND bsr.status = "TAKENDOWN" ';
+                $statusFilterQuery = " AND bsr.status = 'TAKENDOWN' ";
                 break;
             case null:
                 $statusFilterQuery = '';

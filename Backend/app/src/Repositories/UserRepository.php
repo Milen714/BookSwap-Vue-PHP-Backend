@@ -26,8 +26,8 @@ class UserRepository extends Repository implements IUserRepository {
                     u.country,
                     u.state,
                     u.joined_at,
-                    u.isActive,
-                    u.isVerified,
+                    u."isActive" AS "isActive",
+                    u."isVerified" AS "isVerified",
                     u.swap_tokens,
                     (
                         SELECT COUNT(*)
@@ -116,7 +116,7 @@ class UserRepository extends Repository implements IUserRepository {
     public function createUser(User $user): bool {
         try {
             $pdo = $this->connect();
-            $query = 'INSERT INTO users (fname, lname, role, email, password_hash, address, post_code,  state, country, phone_number, bio, isActive, isVerified) 
+            $query = 'INSERT INTO users (fname, lname, role, email, password_hash, address, post_code,  state, country, phone_number, bio, "isActive", "isVerified") 
                       VALUES (:fname, :lname, :role, :email, :password_hash, :address, :post_code, :state, :country, :phone_number, :bio, :isActive, :isVerified)';
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':fname', $user->fname);
@@ -144,7 +144,7 @@ class UserRepository extends Repository implements IUserRepository {
             $pdo = $this->connect();
             $query = 'UPDATE users SET fname = :fname, lname = :lname, role = :role, email = :email, 
                     password_hash = :password_hash, address = :address, post_code = :post_code, swap_tokens = :swap_tokens, 
-                    country = :country, state = :state, phone_number = :phone_number, bio = :bio, isActive = :isActive, isVerified = :isVerified, 
+                    country = :country, state = :state, phone_number = :phone_number, bio = :bio, "isActive" = :isActive, "isVerified" = :isVerified, 
                     resset_token = :resset_token, resset_token_expiry = :resset_token_expiry
                     WHERE id = :id';
             $stmt = $pdo->prepare($query);
@@ -176,7 +176,7 @@ class UserRepository extends Repository implements IUserRepository {
     public function setUserActive(int $userId, bool $isActive): bool {
         try {
             $pdo = $this->connect();
-            $query = 'UPDATE users SET isActive = :isActive WHERE id = :id';
+            $query = 'UPDATE users SET "isActive" = :isActive WHERE id = :id';
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':isActive', $isActive, PDO::PARAM_BOOL);
             $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
@@ -236,9 +236,9 @@ class UserRepository extends Repository implements IUserRepository {
 
             $summaryQueries = [
                 'totalUsers' => 'SELECT COUNT(*) FROM users',
-                'activeUsers' => 'SELECT COUNT(*) FROM users WHERE isActive = 1',
-                'bannedUsers' => 'SELECT COUNT(*) FROM users WHERE isActive = 0',
-                'verifiedUsers' => 'SELECT COUNT(*) FROM users WHERE isVerified = 1',
+                'activeUsers' => 'SELECT COUNT(*) FROM users WHERE "isActive" = 1',
+                'bannedUsers' => 'SELECT COUNT(*) FROM users WHERE "isActive" = 0',
+                'verifiedUsers' => 'SELECT COUNT(*) FROM users WHERE "isVerified" = 1',
                 'adminUsers' => "SELECT COUNT(*) FROM users WHERE role = 'ADMIN'",
                 'totalListings' => 'SELECT COUNT(*) FROM books',
                 'activeListings' => 'SELECT COUNT(*) FROM books WHERE is_active = 1',
@@ -257,8 +257,8 @@ class UserRepository extends Repository implements IUserRepository {
             }
 
             $statusBreakdown = $pdo->query('SELECT status, COUNT(*) AS total FROM book_swap_requests GROUP BY status ORDER BY total DESC')->fetchAll(PDO::FETCH_ASSOC);
-            $monthlyTrend = $pdo->query("SELECT DATE_FORMAT(created_at, '%Y-%m') AS month, COUNT(*) AS total FROM book_swap_requests WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 5 MONTH) GROUP BY DATE_FORMAT(created_at, '%Y-%m') ORDER BY month ASC")->fetchAll(PDO::FETCH_ASSOC);
-            $genreBreakdown = $pdo->query('SELECT b.genre AS genre, COUNT(*) AS total FROM book_swap_requests r INNER JOIN books b ON b.id = r.book_id WHERE b.genre IS NOT NULL AND b.genre != "" GROUP BY b.genre ORDER BY total DESC LIMIT 6')->fetchAll(PDO::FETCH_ASSOC);
+            $monthlyTrend = $pdo->query("SELECT TO_CHAR(created_at, 'YYYY-MM') AS month, COUNT(*) AS total FROM book_swap_requests WHERE created_at >= CURRENT_DATE - INTERVAL '5 months' GROUP BY TO_CHAR(created_at, 'YYYY-MM') ORDER BY month ASC")->fetchAll(PDO::FETCH_ASSOC);
+            $genreBreakdown = $pdo->query("SELECT b.genre AS genre, COUNT(*) AS total FROM book_swap_requests r INNER JOIN books b ON b.id = r.book_id WHERE b.genre IS NOT NULL AND b.genre != '' GROUP BY b.genre ORDER BY total DESC LIMIT 6")->fetchAll(PDO::FETCH_ASSOC);
 
             return [
                 'summary' => $summary,

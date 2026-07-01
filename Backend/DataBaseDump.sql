@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Apr 06, 2026 at 09:28 PM
+-- Generation Time: Jul 01, 2026 at 03:03 PM
 -- Server version: 12.0.2-MariaDB-ubu2404
 -- PHP Version: 8.3.27
 
@@ -355,7 +355,8 @@ INSERT INTO `direct_messages` (`id`, `sender_id`, `recipient_id`, `message`, `is
 (180, 12, 1, '456', 0, '2026-04-06 10:51:13'),
 (181, 1, 12, 'srfsd', 0, '2026-04-06 10:51:16'),
 (182, 22, 21, 'Hello I am looking for the Admin', 0, '2026-04-06 21:25:41'),
-(183, 21, 22, 'Yes Karen ', 0, '2026-04-06 21:26:21');
+(183, 21, 22, 'Yes Karen ', 0, '2026-04-06 21:26:21'),
+(184, 12, 15, 'Vanka ko staa', 0, '2026-04-06 21:35:17');
 
 -- --------------------------------------------------------
 
@@ -464,7 +465,7 @@ ALTER TABLE `book_swap_requests`
 -- AUTO_INCREMENT for table `direct_messages`
 --
 ALTER TABLE `direct_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=184;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
 
 --
 -- AUTO_INCREMENT for table `users`

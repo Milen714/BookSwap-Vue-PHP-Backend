@@ -15,6 +15,11 @@ services:
             - .env
         volumes:
             - ./app:/app
+            - ./scripts:/scripts
+            - ./DataBaseDump.sql:/DataBaseDump.sql
+        depends_on:
+            - postgres
+            - ollama
     mysql:
         image: mariadb:latest
         environment:
@@ -35,6 +40,25 @@ services:
             - PMA_HOST=mysql
         depends_on:
             - mysql
+
+    postgres:
+        image: pgvector/pgvector:pg16
+        environment:
+            POSTGRES_USER: '${POSTGRES_USER:-developer}'
+            POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-secret123}'
+            POSTGRES_DB: '${POSTGRES_DB:-bookswap_vectors}'
+        volumes:
+            - postgresdata:/var/lib/postgresql/data
+            - ./postgres-init:/docker-entrypoint-initdb.d
+        ports:
+            - "${POSTGRES_PORT:-5432}:5432"
+
+    ollama:
+        image: ollama/ollama:latest
+        volumes:
+            - ollamadata:/root/.ollama
+        ports:
+            - "${OLLAMA_PORT:-11435}:11434"
         
     # 🟢 NEW: The Redis Message Broker
     redis:
@@ -59,6 +83,8 @@ services:
 
 volumes:
     mysqldata: {}
+    postgresdata: {}
+    ollamadata: {}
 
 
 # version: '3'

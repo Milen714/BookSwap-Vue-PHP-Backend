@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use App\config\Secrets;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ExternalServiceException;
+use App\Clients\OllamaClient;
 
 
 /**
@@ -18,6 +19,7 @@ class BookService implements IBookService {
      * Repository abstraction for persistence operations.
      */
     private IBookRepository $bookRepository;
+    private OllamaClient $ollamaClient;
 
     /**
      * HTTP client used for external Google Books API calls.
@@ -33,27 +35,34 @@ class BookService implements IBookService {
      * Number of items returned in paginated calls (+1 sentinel to detect next page).
      */
     public const ITEMS_PER_PAGE = 10 + 1; // +1 to check if there's a next page
+    private const SEMANTIC_MAX_DISTANCE = 0.7;
 
     /**
      * @param IBookRepository $bookRepository Book repository implementation.
      */
-    public function __construct(IBookRepository $bookRepository) {
+    public function __construct(IBookRepository $bookRepository, OllamaClient $ollamaClient) {
         $this->bookRepository = $bookRepository;
+        $this->ollamaClient = $ollamaClient;
         $this->httpClient = new Client();
     }
 
     /**
-     * Get books optionally filtered by genre/general query and optionally paginated.
+     * Get books optionally filtered by genre/semantic query and optionally paginated.
      *
      * @param string|null $genreFilter Optional genre filter.
-     * @param string|null $generalFilter Optional text search filter.
+     * @param string|null $generalFilter Optional semantic search text.
      * @param int|null $page Optional page number (1-based). Null returns full result set.
      * @return array<Book> Matching books.
      */
     public function getAllBooks(?string $genreFilter, ?string $generalFilter, ?int $page = null): array {
+        $searchEmbedding = null;
+
+        if ($generalFilter !== null && trim($generalFilter) !== '') {
+            $searchEmbedding = $this->ollamaClient->getEmbedding(trim($generalFilter));
+        }
         // If page is null return all books
         if($page === null){
-            return $this->bookRepository->getAllBooks($genreFilter, $generalFilter);
+            return $this->bookRepository->getAllBooks($genreFilter, $searchEmbedding, $generalFilter, self::SEMANTIC_MAX_DISTANCE);
         }
         // Page number valideation
         if($page < 1){
@@ -62,7 +71,7 @@ class BookService implements IBookService {
 
         $offset = $page !== null ? ($page - 1) * (self::ITEMS_PER_PAGE - 1) : null;
 
-        return $this->bookRepository->getAllBooks($genreFilter, $generalFilter, self::ITEMS_PER_PAGE, $offset);
+        return $this->bookRepository->getAllBooks($genreFilter, $searchEmbedding, $generalFilter, self::SEMANTIC_MAX_DISTANCE, self::ITEMS_PER_PAGE, $offset);
     }
 
     /**
@@ -82,6 +91,7 @@ class BookService implements IBookService {
      * @return void
      */
     public function saveBook(Book $book): void {
+        $book->embedding = $this->ollamaClient->getEmbedding($book->getEmbeddingString());
         $this->bookRepository->saveBook($book);
     }
 
@@ -173,5 +183,10 @@ class BookService implements IBookService {
      */
     public function getBooksByUserId(int $userId): array {
         return $this->bookRepository->getBooksByUserId($userId);
+    }
+
+    public function updateBook(Book $book): Book {
+        $book->embedding = $this->ollamaClient->getEmbedding($book->getEmbeddingString());
+        return $this->bookRepository->updateBook($book);
     }
 }

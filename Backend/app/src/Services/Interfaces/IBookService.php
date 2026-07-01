@@ -17,7 +17,7 @@ interface IBookService {
      * @param string|null $generalFilter General search term
      * @return array List of Book objects matching criteria
      */
-    public function getAllBooks(?string $genreFilter, ?string $generalFilter): array;
+    public function getAllBooks(?string $genreFilter, ?string $generalFilter, ?int $page = null): array;
     
     /**
      * Retrieve a single book by ID
@@ -65,4 +65,6 @@ interface IBookService {
      * @return array List of Book objects owned by user
      */
     public function getBooksByUserId(int $userId): array;
+
+    public function updateBook(Book $book): Book;
 }

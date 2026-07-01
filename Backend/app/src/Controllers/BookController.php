@@ -15,6 +15,7 @@ use App\Repositories\BookAPI;
 use App\Middleware\JWTMiddleware;
 use Predis\Client as RedisClient;
 use App\Exceptions\ApplicationException;
+use App\Clients\OllamaClient;
 
 /**
  * BookController
@@ -29,6 +30,7 @@ class BookController extends Controller
     private BookService $bookService;
     private BookRepository $bookRepository;
     private RedisClient $redisClient;
+    private OllamaClient $ollamaClient;
     
     /**
      * Initialize book services and repository dependencies
@@ -37,7 +39,8 @@ class BookController extends Controller
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
         $this->bookRepository = new BookRepository();
-        $this->bookService = new BookService($this->bookRepository);
+        $this->ollamaClient = new OllamaClient();
+        $this->bookService = new BookService($this->bookRepository, $this->ollamaClient);
         $this->redisClient = new RedisClient([
             'scheme' => getenv('REDIS_SCHEME'),
             'host'   => getenv('REDIS_HOST'),
@@ -224,7 +227,7 @@ class BookController extends Controller
         } catch (ApplicationException $e) {
             $this->sendErrorResponse(['success' => false, 'message' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
-            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres.'], 500);
+            $this->sendErrorResponse(['success' => false, 'message' => 'Error fetching genres.' . $e->getMessage()], 500);
         }
     }
     /**
@@ -251,6 +254,21 @@ class BookController extends Controller
             $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
         } catch (\Throwable $e) {
             $this->sendErrorResponse(['error' => 'Error fetching user books.'], 500);
+        }
+    }
+
+    public function embedBooks($vars = [])
+    {
+        try {
+            $books = $this->bookService->getAllBooks(null, null, null);
+            foreach ($books as $book) {
+                $this->bookService->updateBook($book);
+            }
+            $this->sendSuccessResponse(['success' => true, 'message' => 'Embeddings generated for all books.'], 200);
+        } catch (ApplicationException $e) {
+            $this->sendErrorResponse(['error' => $e->getMessage()], $e->getHttpStatusCode());
+        } catch (\Throwable $e) {
+            $this->sendErrorResponse(['error' => 'Error generating embeddings for books.'. $e->getMessage()], 500);
         }
     }
 }

@@ -20,6 +20,7 @@ use App\Services\MockPostNlService;
 use App\Exceptions\ApplicationException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
+use App\Clients\OllamaClient;
 
 /**
  * BookRequestController
@@ -45,7 +46,7 @@ class BookRequestController extends Controller{
         $this->userRepository = new UserRepository();
         $this->userService = new UserService();
         $this->bookRepository = new BookRepository();
-        $this->bookService = new BookService($this->bookRepository);
+        $this->bookService = new BookService($this->bookRepository, new OllamaClient());
         $this->authService = new AuthService();
         $this->bookSwapRequestRepository = new BookSwapRequestRepository();
         $this->bookRequestService = new BookRequestService();

@@ -55,6 +55,7 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/getAllGenres', ['App\Controllers\BookController', 'getAllGenres']);
     $r->addRoute('GET', '/getBookDetails', ['App\Controllers\BookController', 'getBookDetails']);
     $r->addRoute('GET', '/getUserBooks/{userId}', ['App\Controllers\BookController', 'getUserBooks']);
+    $r->addRoute('GET', '/embedBooks', ['App\Controllers\BookController', 'embedBooks']);
 
     // Book request routes
     $r->addRoute('POST', '/createBookRequest', ['App\Controllers\BookRequestController', 'requestBookSwap']);
